@@ -1,0 +1,583 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<title>品检报工</title>
+		<link rel="stylesheet" href="../../../mui/css/mui.min.css" />
+		<link rel="stylesheet" href="../../../jxm/css/jxm.css">
+		<style type="text/css">
+			ul {
+				margin: 0px 0px;
+			}
+			
+			.mui-bar {
+				-webkit-box-shadow: none;
+				box-shadow: none;
+			}
+			
+			.head-search {
+				padding-top: 1px;
+				height: 50px !important;
+			}
+			
+			.head-search button {
+				height: 48px;
+				width: 18%;
+				border: none;
+				border-radius: 0 !important;
+				background-color: #f7f7f7;
+			}
+			
+			.head-search input {
+				width: 62%;
+				height: 50px;
+				border: none;
+			}
+			
+			.processes-title {
+				font-size: 14px;
+				color: #000000;
+			}
+			
+			.processes-value {
+				font-size: 12px;
+				color: #555555;
+			}
+			/*清除框架自带的内边距样式*/
+			/*清除每组输入框下面的线*/
+			
+			#processes_info li {
+				display: inline-block;
+				list-style: none;
+				text-align: center;
+				vertical-align: top;
+			}
+			
+			.mui-input-group .mui-input-row:after {
+				height: 0px;
+			}
+			
+			#quantity,
+			#processes_info {
+				padding-left: 10px;
+				padding-right: 10px;
+			}
+			
+			#quantity ul li {
+				list-style: none;
+				display: inline-block;
+				vertical-align: middle;
+				text-align: center;
+				vertical-align: middle;
+				font-size: 12px;
+				width: 13%;
+			}
+			
+			#quantity ul li:nth-child(1) {
+				width: 18%;
+			}
+			
+			#quantity ul li:nth-child(2) {
+				width: 15%;
+			}
+			
+			#quantity ul li:nth-child(3) {
+				width: 15%;
+			}
+			
+			#quantity ul li:nth-child(4) {
+				width: 15%;
+			}
+			
+			#quantity ul li:nth-child(5) {
+				width: 15%;
+			}
+			
+			#quantity ul li:nth-child(6) {
+				width: 15%;
+			}
+			
+			.quantity-title {
+				font-size: 12px;
+				display: inline-block;
+				color: #FFFFFF;
+				border-radius: 5px 5px;
+				width: 100%;
+				height: 40px;
+				text-align: center;
+				padding: 9px;
+			}
+			
+			#quantity p {
+				margin-bottom: 1px;
+			}
+			
+			#badp input[type=button],
+			#okp input[type=button] {
+				display: inline-block;
+				width: 100%;
+				height: 40px;
+				padding: 0 0;
+				background-color: #848483;
+				border-radius: 5px 5px;
+				color: #FFFFFF;
+				font-weight: 700;
+			}
+			
+			#affirm {
+				background-color: #00AAEF;
+				color: #FFFFFF;
+				border-radius: 5px 5px;
+			}
+			
+			#quantity input[type=button]:active {
+				background-color: #AFAFAF;
+			}
+			
+			#quantity ul {
+				padding-inline-start: 10px;
+			}
+			
+			#processes_info ul {
+				padding-left: 0px;
+			}
+			
+			#baddescs select {
+				background: #fffff;
+				/*border: 1px solid grey !important;*/
+				font-size: 14px;
+				padding-right: 0px;
+				padding-left: 8px;
+				margin-bottom: 0;
+				height: 35px;
+				margin: 0px 0px;
+				padding: 5px 5px;
+			}
+			td input[type=text]{
+				background: #fffff;
+				/*border: 1px solid grey !important;*/
+				font-size: 14px;
+				padding-right: 0px;
+				padding-left: 8px;
+				margin-bottom: 0;
+				height: 35px;
+				margin: 0px 0px;
+				padding: 5px 5px;
+			}
+			td input[readonly=readonly]{
+				border: none;
+			}
+			#fixed {
+				height: auto;
+				padding-left: 0px;
+				padding-right: 0px;
+			}
+			
+			#baddescs {
+				vertical-align: top;
+				margin: 0px auto;
+			}
+			
+			#baddescs th {
+				background-color: #464b5e;
+				color: #FFFFFF;
+			}
+			
+			#baddescs td,
+			#baddescs th {
+				font-weight: lighter;
+				text-align: center;
+				font-size: 14px;
+				border: 1px solid gainsboro !important;
+				padding: 0px 5px;
+				height: 40px;
+			}
+			
+			.s1 {
+				width: 30%;
+			}
+			
+			.s2 {
+				width: 40%;
+			}
+			
+			.s3 {
+				width: 15%;
+			}
+			
+			.s4 {
+				width: 15%;
+			}
+		</style>
+
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav mui-bar-primary">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<h1 class="mui-title" id="title">品检报工</h1>
+		</header>
+
+		<nav class="mui-bar mui-bar-footer">
+			<center>
+				<button type="button" id="btnshowreport" class="mui-btn mui-btn-primary mui-pull-left" style="width:30%;">查看报表</button>
+				<!--<button type="button" id="btncommit" class="mui-btn mui-btn-primary mui-pull-right" style="width:30%;" disabled="disabled">提交 </button>-->
+			</center>
+		</nav>
+		<section class="mui-bar mui-bar-header-secondary" id="fixed">
+			<form class="mui-input-group">
+				<div class="mui-input-row head-search">
+					<button type="button" id="btnscan" class="mui-icon iconfont icon-saoma1 mui-pull-left" style=""></button>
+					<!--扫描资产条码-->
+					<input type="text" id="barcode" autofocus="autofocus" class="mui-input" placeholder="扫描二维码" />
+					<!--资产条码输入框-->
+					<button style="font-weight: bolder;" id='showQrPicker' class="mui-icon mui-icon-plusempty mui-pull-right" type='button'></button>
+				</div>
+				<div id="processes_info">
+					<ul>
+						<li style="width: 17%;">
+							<p class="processes-title">产品编号</p>
+							<p id="sp_id" class="processes-value"></p>
+						</li>
+						<li style="width: 1px;background-color: lightgrey;height: 40px;"></li>
+						<li style="width: 27%;">
+							<p class="processes-title">产品名称</p>
+							<p id="sp_name" class="processes-value"></p>
+						</li>
+						<li style="width: 1px;background-color: lightgrey;height: 40px;"></li>
+						<li style="width: 27%;">
+							<p class="processes-title">工单号</p>
+							<p id="pro_code" class="processes-value"></p>
+						</li>
+						<li style="width: 1px;background-color: lightgrey;height: 40px;"></li>
+						<li style="width: 20%;">
+							<p class="processes-title">工单数量</p>
+							<p id="pro_num" style="color: red;" class="processes-value"></p>
+						</li>
+					</ul>
+				</div>
+
+				<!--数量统计-->
+				<div id="quantity">
+					<ul style="border-top: 1px solid lightgray;padding: 5px 0px;" id="okp">
+						<li>
+							<p class="quantity-title" style="background-color: #00B050;">良品</p>
+						</li>
+						<li>
+							<input type="button" id="ok_add" value="+"></input>
+						</li>
+						<li>
+							<p style="color: #000000;font-size: 12px;">当日合计</p>
+							<p id="now_total" style="color: #5E5E5E;"></p>
+						</li>
+						<li>
+							<p style="color: #000000;font-size: 12px;">良率</p>
+							<p id="now_yield" style="color: #5E5E5E;"></p>
+						</li>
+						<li>
+							<p style="color: #000000;font-size: 12px;">工单合计</p>
+							<p id="pro_total" style="color: #5E5E5E;"></p>
+						</li>
+						<li>
+							<p style="color: #000000;font-size: 12px;">良率</p>
+							<p id="pro_yield" style="color: #5E5E5E;"></p>
+						</li>
+					</ul>
+					<ul style="border-top: 1px solid lightgray;padding: 5px 0px;" id="badp">
+						<li>
+							<p class="quantity-title" style="background-color: #FF0000;">不良品</p>
+						</li>
+						<li>
+							<!--<input type="button" id="no_add" value="+"></input>-->
+						</li>
+						<li>
+							<p style="color: #000000;font-size: 12px;">当日合计</p>
+							<p id="no_now_total" style="color: #5E5E5E;"></p>
+						</li>
+						<li></li>
+						<li>
+							<p style="color: #000000;font-size: 12px;">工单合计</p>
+							<p id="no_pro_total" style="color: #5E5E5E;"></p>
+						</li>
+						<li></li>
+					</ul>
+				</div>
+			</form>
+		</section>
+		<div class="mui-content" style="background-color: #FFFFFF;padding:10px 10px;margin-top: 250px;">
+			<div style="padding: 10px 0px;display: none;" id="ngreasons">
+				<table id="baddescs" style="overflow-y: scroll;" class="mui-table">
+					<tr>
+						<th class="s1">等级</th>
+						<th class="s2">不良描述</th>
+						<th class="s3">数量</th>
+						<th class="s4">确认</th>
+					</tr>
+				</table>
+			</div>
+		</div>
+
+		<script src="../../../mui/js/mui.min.js"></script>
+		<script src="../../../jxm/js/jxm.js"></script>
+		<script src="../../../jxm/js/JxDao.js"></script>
+		<script src="../../../jxm/js/json2.js"></script>
+		<script src="../../../jxm/js/jxm-image-input.js"></script>
+		<script src="../../util/jxm-util.js"></script>
+		<script src="../../../Resources/js/jquery-3.3.1.min.js"></script>
+		<script src="../../../Resources/js/juicer-min.js"></script>
+		<script src="../../../Resources/js/juicerUtil.js"></script>
+		<script type="text/javascript" charset="UTF-8">
+			mui.init({
+				swipeBack: false //关闭-右滑关闭功能
+			});
+			document.getElementById("barcode").focus();
+			//页面初始化完成加载此方法
+			mui.plusReady(function() {
+				//初始化1秒后扫描工单号获取焦点
+				//$('#barcode').focus();
+				$("#no_add").attr("disabled", "disabled");
+				$("#ok_add").attr("disabled", "disabled");
+			});
+			/*扫描工单号*/
+			document.getElementById('btnscan').addEventListener('tap', function() {
+				jxm.open('../../util/barcode_scan.html');
+			});
+			//扫描工单号完成
+			var scanSucess = function(result) {
+				$('#barcode').data("code", result);
+				addAsset(result);
+			};
+
+			var now_total; //今日良品
+			var no_now_total; //今日不良
+			var pro_total; //工单合计良品
+			var no_pro_total; //工单合计不良品
+			var ngitems = new Array(); //不良信息
+			var passnum = 0; //良品数量
+			var ngstatus = 0;
+			var ngarr = {};
+			//回车后根据工单号读取信息
+			document.getElementById('barcode').addEventListener('keypress', function(event) {
+				if(event.keyCode == 13) {
+					//阻止默认回车键事件
+					var barcode = document.getElementById('barcode').value;
+					$('#barcode').data("code", barcode);
+					$('#barcode').val('');
+					addAsset(barcode);
+				}
+				return false;
+			});
+			/*工单信息方法*/
+			var addAsset = function(barcode) {
+				var params = "funid=app_full&eventcode=qryQCWork&qrcode=" + barcode;
+				jxm.post(params, function(data) {
+					//console.log(JSON.stringify(data));
+					console.log(JSON.stringify(data));
+					$('#sp_id').html(data.sp_code); //产品编号
+					$('#sp_name').html(data.sp_name); //产品名称
+					$('#pro_code').html(data.div_code); //工单编号
+					$('#pro_num').html(data.div_num); //工单数量
+					$('#sp_id').attr("plan", barcode);
+					$('#sp_name').attr("sp_id", data.sp_id);
+					console.log(data.sp_id);
+					setbadDesc();
+				});
+				params = "funid=app_full&eventcode=qrySp&qrcode=" + barcode;
+				jxm.post(params, function(data) {
+					console.log(JSON.stringify(data));
+					$('#pro_total').html(data.pass_num); //工单合计（良品）
+					$('#no_pro_total').html(data.ng_num); //工单合计（不良品）
+					$('#no_now_total').html(data.curr_ng); //今日合计（不良品）
+					$('#now_total').html(data.curr_pass); //今日合计（良品）
+					getValue();
+					setNum(now_total, no_now_total, pro_total, no_pro_total);
+				});
+				$("#no_add").removeAttr("disabled");
+				$("#ok_add").removeAttr("disabled");
+			};
+			/**
+			 * 良品添加按钮点击时 工单合计+1 当日合计+1 良率重算
+			 */
+			$("#ok_add").on("click", function() {
+				if(ngstatus == 1) {
+					mui.toast("您有一条不良信息未填写完整]")
+					return;
+				}
+				getValue();
+				setNum(now_total + 1, no_now_total, pro_total + 1, no_pro_total);
+				passnum = 1;
+				submitData();
+			});
+			var setNum = function(now_total, no_now_total, pro_total, no_pro_total) {
+				//console.log(now_total+", "+no_now_total+", "+pro_total+", "+no_pro_total)
+				$('#pro_total').html(pro_total); //工单合计（良品）
+				$('#no_now_total').html(no_now_total);
+				$('#now_total').html(now_total);
+				$('#no_pro_total').html(no_pro_total); //工单合计（良品）
+				if(now_total == "0" || no_now_total == "0") {
+					$('#now_yield').html("0%"); //当日良率
+				} else {
+
+					$('#now_yield').html((now_total / (no_now_total + now_total) * 100).toFixed(2) + "%"); //当日良率
+				}
+				if(pro_total == "0" || no_pro_total == "0") {
+					$('#pro_yield').html("0%"); //合计良率
+				} else {
+					$('#pro_yield').html((pro_total / (no_pro_total + pro_total) * 100).toFixed(2) + "%"); //合计良率
+				}
+			};
+			mui("#baddescs").on("tap", ".descok", function() {
+				if(ngstatus == 1) {
+					mui.toast("您有一条不良信息未填写完整");
+					return;
+				}
+				var bad_desc_id = $(this).parent().attr("id");
+				var bad_desc_name = $(this).prev().prev().find("input").val();
+				var bad_type_id = $(this).parent().find("option:selected").val();
+				var bad_type_name = $(this).parent().find("option:selected").text();
+				if(bad_type_id == "" || bad_type_id == undefined) {
+					mui.toast("请先选择不良类型！");
+					return;
+				}
+				if(bad_desc_name == "" || bad_desc_name == undefined) {
+					mui.toast("请先填写不良描述！");
+					return;
+				}
+				getValue();
+				setNum(now_total, no_now_total + 1, pro_total, no_pro_total + 1);
+				var num = 0;
+				if($(this).prev().html() != undefined && $(this).prev().html() != "") {
+					num = parseInt($(this).prev().html());
+				}
+				$(this).parent().find(".num").html(num + 1);
+				ngarr.desc_id = bad_desc_id;
+				ngarr.bad_desc = bad_desc_name;
+				ngarr.bad_id = bad_type_id;
+				ngarr.bad_name = bad_type_name;
+				ngarr.ng_det_num = 1;
+				ngitems.push(ngarr);
+				submitData();
+				ngstatus = 0;
+				mui.toast("您已选择：" + bad_desc_name);
+				ngarr = {};
+			})
+			/**
+			 * 查看报表
+			 */
+			$('#btnshowreport').on("tap", function() {
+				var href = "processes_fqc_view.html";
+				var param = {
+					plan_id: $('#sp_id').attr("plan")
+				};
+				jxm.open(href, {
+					extras: {
+						selectParams: param
+					}
+				});
+			});
+			var getValue = function() {
+				now_total = parseInt($('#now_total').html()); //今日良品
+				no_now_total = parseInt($('#no_now_total').html()); //今日不良
+				pro_total = parseInt($('#pro_total').html());
+				no_pro_total = parseInt($('#no_pro_total').html());
+			};
+			//提交
+			var submitData= function() {
+				if(ngstatus == 1) {
+					mui.toast("您有一条不良信息未填写完整")
+					return;
+				}
+				if(passnum == 0 && ngitems.length == 0) {
+					mui.toast("未添加新数据，不能上报")
+					return;
+				}
+				//div_code   user_id    user_name    dept_id   dept_name   pass_num  ng_num  {[ng_num,bad_id,bad_name,desc_id,bad_desc],[]}
+				var params = "funid=app_full&eventcode=upQCDet&user_name=" + jxm.getUserName() + "&user_id=" + jxm.getUserId() + "&dept_name=" + jxm.getDeptName() + "&dept_id=" + jxm.getDeptId();
+				params += "&plan_id=" + $('#sp_id').attr("plan") + "&pass_num=" + passnum + "&ng_num=" + ngitems.length + "&ng_det=" + JSON.stringify(ngitems);
+				//console.log(JSON.stringify(params));
+				jxm.post(params, function(data) {
+					mui.toast('提交成功');
+					//console.log(ngitems.length);
+					pageClear();
+				});
+			};
+			var battypes = [];
+			var setbadType = function() {
+				var param = "funid=queryevent&eventcode=query_data&query_funid=bad_type&limit=50&start=0";
+				jxm.post(param, function(data) {
+					battypes = data.root;
+				});
+			};
+			var setbadDesc = function() {
+				setbadType();
+				var param = "funid=app_full&eventcode=qryBadDesc&sp_id=" + $('#sp_name').attr("sp_id");
+				//var param = "funid=excp_manage&eventcode=qryType";
+				jxm.post(param, function(data) {
+					console.log(JSON.stringify(data));
+					var html = "";
+					mui.each(data, function(i, obj) {
+						html += '<tr id="' + obj.desc_id + '"><td class="s1"><select><option value="' + obj.bad_id + '">' + obj.bad_name + '</option></select></td><td class="s2"><input type="text" readonly="readonly" value="' + obj.bad_desc + '"/></td><td class="num s3"></td><td class="descok s4"><span class="mui-icon mui-icon-plusempty"></span></td></tr>';
+					});
+					var options = '<select>';
+					mui.each(battypes, function(i, obj) {
+						options += '<option value="' + obj.bad_type__bad_id + '">' + obj.bad_type__bad_name + '</option>';
+					});
+					options += "</select>";
+					html += '<tr id="-1"><td class="s1">' + options + '</td><td class="s2"><input type="text" value=""/></td><td class="num s3"></td><td class="descok" class="s4"><span class="mui-icon mui-icon-plusempty"></span></td></tr>';
+					$('#baddescs').html(html);
+					$('#baddescs tr:odd').css("background-color", "#F6F6F6");
+				});
+			};
+			/**
+			 * 选择工单
+			 */
+			$("#showQrPicker").on('click', function(e) {
+				var href = "../../util/select-process-forcheck.html";
+				var param = {
+					callbackWinId: mui.currentWebview.id,
+					callbackEvent: "selectprocess",
+					dept_id: jxm.getDeptId(),
+					mutilsel: false //不需要多选
+				};
+				jxm.open(href, {
+					extras: {
+						selectParams: param
+					}
+				});
+			});
+			/**
+			 * 选择工单回调函数
+			 */
+			window.addEventListener("selectprocess", function(e) {
+				var obj = e.detail;
+				console.log(JSON.stringify(obj.dataid));
+				addAsset(obj.dataid);
+				$("#ngreasons").show();
+			});
+			//清空当前页面控件值
+			var pageClear = function() {
+				/*$('#sp_id').html(''); //产品编号
+				$('#sp_name').html(''); //产品名称
+				$('#pro_code').html(''); //工单编号
+				$('#pro_num').html(''); //工单数量
+				$('#pro_total').html("0"); //工单合计（良品）
+				$('#no_pro_total').html("0"); //工单合计（不良品）
+				$('#no_now_total').html("0"); //今日合计（不良品）
+				$('#now_total').html("0"); //今日合计（良品）
+				$('#reasonli').hide(); //不良自己描述
+				$('#reasonli').val('');
+				$('#badtypes').val(''); //不良类型
+				$('#baddescs').val(''); //不良描述
+				$('#now_yield').html(""); //当日良率
+				$('#pro_yield').html(""); //合计良率*/
+				ngitems = [];
+				passnum = 0;
+				ngstatus = 0;
+				//$(".num").html("");
+			}
+		</script>
+	</body>
+
+</html>

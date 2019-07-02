@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+    <title>审批单据</title>
+    <link rel="stylesheet" href="../../mui/css/mui.min.css"/>
+    <link rel="stylesheet" href="../../jxm/css/jxm.css">
+    <style>
+	    .mui-content {
+	    	padding-bottom: 59px !important;
+	    }
+
+		.order-det {
+			width: 100%;
+			background-color: #FFFFFF;
+		}
+		.order-det tr th {
+			color: #929292;
+			font-weight: normal;
+			text-align: left;
+			padding: 6px 15px;
+			line-height: 30px;
+			/*background-color:#f7f7f7 !important;*/
+		}
+		.order-det tr td  {
+			padding: 8px;
+			font-size: 15px;
+			line-height: 30px;
+		}
+		.order-det tr td:first-child  {
+			padding-left: 15px;
+		}
+		.order-det tr:nth-of-type(even) {
+			background-color:#f7f7f7;
+		}
+	   	
+	    h5 {
+	    	font-size: 14px;
+	    	padding: 8px 5px 6px;
+	    	background-color: #efeff4;
+	    }
+	    
+	    .mui-media-object {
+			margin: 0 !important;
+			margin-right: 10px !important;
+			height:48px !important;
+			line-height:48px !important;
+			width:48px !important;
+			max-width:48px !important;
+		}
+		.mui-media-body {
+			padding-top: 12px;
+		}
+		.mui-table-view .mui-table-view-cell:after {
+			left: 0px;
+			background-color:#D8D8D8;
+		}
+		.check-time {
+			padding-top: 10px;
+		}
+		.check-time:before {
+			  content: ''; 
+			  position: absolute; 
+			  top: -15px;
+			  right: 40px; 
+			  height: 150%; 
+			  width: 2px; 
+			  background-color:#D8D8D8; 
+		}
+		.check-time:after {
+			  content: ''; 
+			  position: absolute; 
+			  top: 11px; 
+			  right: 32px;
+			  height: 14px; 
+			  width: 14px; 
+			  border-radius: 10px;
+			  border: 2px solid #D8D8D8;
+			  background-color:#FFF; 
+		}
+		#hischeckList.mui-table-view .mui-table-view-cell:after {
+			left: 120px;
+			background-color:#D8D8D8;
+		}
+		
+		.mui-grid-view.mui-grid-9 .mui-table-view-cell {
+			margin: 2px;
+			padding: 2px;
+			background-color: #E6E6FA
+		}
+		.mui-grid-view.mui-grid-9 .mui-table-view-cell .mui-media-body {
+			margin: 0px;
+			height: 30px;
+		}
+	</style>
+</head>
+<body>
+	<header class="mui-bar mui-bar-nav mui-bar-primary">
+		<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+		<h1 class="mui-title"><span id="pageTitle"></span></h1>
+		<input type="hidden" id="type_value" value="Y">
+	</header>
+	
+	<div class="mui-content">
+		<!--单据主表信息-->
+		<div id="orderContent">
+			<h5 id="orderTitle"></h5>
+			<ul id="orderGrid" class="mui-table-view jxm-form"></ul>
+		</div>
+		<!--单据明细信息-->
+		<div id="orderDetail">
+		</div>
+		<!--单据附件信息-->
+		<div id="attachContent">
+			<h5>相关附件 [<span id='attach-num'>0</span>]</h5>
+			<ul id="fileDetail" class="mui-table-view"></ul>
+		</div>
+	    <!--单据审批信息-->
+		<h5>审批意见 [<span id='check-num'>0</span>]</h5>
+		<ul id="hischeckList" class="mui-table-view"></ul>
+		<!--当前审批人-->
+		<div id="checkUserContent">
+			<h5>当前审批人</h5>
+			<ul id="checkUserList" class="mui-table-view mui-grid-view mui-grid-9"></ul>
+		</div>
+	</div>
+		
+	<div class="mui-loader">加载中...</div>
+	
+	<script src="../../mui/js/mui.min.js"></script>
+	<script src="../../jxm/js/jxm.js"></script>
+	<script type="text/javascript" charset="UTF-8">
+	  	mui.init();
+		
+		var mainlist = document.querySelector('.mui-content');
+		
+		mui.ready(function(){
+			
+		});
+
+	  	mui.plusReady(function(){
+	  		var self = plus.webview.currentWebview();
+	  		
+	  		//从审批消息页面获取参数
+			var funid = self.funid;  	//功能ID
+			var dataid = self.dataid; 	//记录主键
+			console.log("funid="+funid+";dataid="+dataid);
+			
+			if (funid == null || dataid == null) {
+				mui.alert('缺少参数！');
+				return;
+			}
+			
+			//加载审批意见
+			document.getElementById('hischeckList').innerHTML = ''; //去除原有审批意见
+			var loadHisCheckHtml = function() {
+				jxm.post(
+					'funid=wf_assign&eventcode=hischeck&chk_funid='+funid+'&chk_dataid='+dataid,  
+					function(data){
+						//返回数据格式：
+						//{check_user, check_date, check_desc, node_title}
+						
+						var html = '';
+						if (data != null && data.length > 0) {
+							mui.each(data, function(i, obj){
+								var record = obj;
+								html += '<li class="mui-table-view-cell">'+
+								            '<div class="mui-table">'+
+								            	'<div class="mui-table-cell mui-col-xs-4 check-time">'+
+								                    '<span>'+ jxm.shortTime(record.check_date, true) +'</span>'+
+								                '</div>'+
+								                '<div class="mui-table-cell mui-col-xs-8">'+
+								                    record.check_user +'-'+ record.node_title +
+								                    '<p>'+ record.check_desc +'</p>'+
+								                '</div>'+
+								            '</div>'+
+								        '</li>';
+							});
+							document.getElementById('hischeckList').innerHTML = html;
+							
+							document.getElementById('check-num').innerHTML = data.length;
+						} else {
+							document.getElementById('check-num').innerHTML = '0';
+						}
+						
+					}, {hasmask:false}
+				);
+			};
+			loadHisCheckHtml();
+			
+			//加载当前审批人
+			document.getElementById('checkUserList').innerHTML = '';
+			var loadCheckUserHtml = function() {
+				jxm.post(
+					'funid=wf_assign&eventcode=queryassign&check_funid='+funid+'&keyid='+dataid,  
+					function(data){
+						//返回数据格式：
+						//[{assign_user,task_desc,node_title,run_state,start_date,limit_date,
+						//assign_userid,fun_id,assign_id,task_id,instance_id,data_id}]
+						
+						var html = '';
+						if (data != null && data.length > 0) {
+							mui.each(data, function(i, obj){
+								html += '<li class="mui-table-view-cell mui-media mui-col-xs-4 mui-col-sm-3 ">'+
+		                    		'<span class="mui-icon mui-icon-person"></span>'+
+		                    		'<div class="mui-media-body">'+obj.assign_user+'</div>'+
+		                    		'</li>';
+							});
+							document.getElementById('checkUserList').innerHTML = html;
+							document.getElementById('checkUserContent').classList.remove('mui-hidden');
+						} else {
+							document.getElementById('checkUserContent').classList.add('mui-hidden');
+						}
+						
+					}, {hasmask:false}
+				);
+			};
+			loadCheckUserHtml();
+			
+			//加载单据信息
+			document.getElementById('orderTitle').innerHTML = '';
+			document.getElementById('orderGrid').innerHTML = '';
+			document.getElementById('orderDetail').innerHTML = '';
+			document.getElementById('fileDetail').innerHTML = '';
+			var loadOrderInfoHtml = function() {
+				jxm.post(
+					'funid=wf_assign&eventcode=orderinfo&chk_funid='+funid+'&chk_dataid='+dataid,
+					function(data){
+						if (!data) {
+							jxm.loadhint(mainlist, false);
+							return;
+						}
+						//alert(JSON.stringify(data));
+						//加载单据主表内容
+						var order_title = data.order_content.title;
+						document.getElementById('pageTitle').innerHTML = order_title;
+						document.getElementById('orderTitle').innerHTML = order_title;
+						
+						//单据呈现扩展脚本
+						var incs = data.order_content.orderinc, inc = null;
+						if (incs.length > 0) {
+							inc = window.eval("("+incs+")");
+						}
+						
+						var order_content = data.order_content.data;
+						var orderhtml = '';
+						if (order_content != null) {
+							mui.each(order_content, function(n, obj){
+								var record = obj;
+								//是否有指定字段呈现方法
+								var rn = record.name, fn = null;
+								if (inc && inc[rn]) fn = inc[rn];
+								if (fn) {
+									if (typeof fn == "string") fn = window.eval("("+fn+")");
+									orderhtml += fn(record);
+								} else {
+								//标准字段呈现方法
+									var hiddent = record.hidden ? ' mui-hidden' : '';
+									orderhtml += '<li class="mui-table-view-cell'+ hiddent +'" name="'+ record.name +'">';
+									orderhtml += '<label>'+ record.title +'</label>';
+									orderhtml += '<span>'+ record.value +'</span></li>';
+								}
+							});
+							document.getElementById('orderGrid').innerHTML = orderhtml;
+						} else {
+							document.getElementById('orderGrid').innerHTML = '无单据信息';
+						}
+						
+						//加载单据明细内容
+						var orderdethtml = '';
+						mui.each(data.order_detail, function(n, obj) {
+							var detGrid = obj;
+							
+							var detFunId = detGrid.funid;
+							orderdethtml += '<div>'; //明细功能
+							
+							var orderdet_title = detGrid.title;
+							//$('#orderDetTitle').html(orderdet_title); 
+							orderdethtml += '	<h5>'+orderdet_title+'</h5>';
+							
+							orderdethtml += '		<table class="order-det  mui-table-view">';
+							
+							//构建明细表格列
+							var colinfo = detGrid.colinfo;
+							orderdethtml += '<tr>';
+							mui.each(colinfo, function(n, obj){
+								var record = obj;
+								orderdethtml += '<th width="'+ record.width +'" name="'+ record.name +'">'+ record.title +'</th>';
+							});
+							orderdethtml += '</tr>';
+							
+							//加载明细表格数据
+							var order_detail = detGrid.data;
+							if (order_detail != null && order_detail.length > 0) {
+								mui.each(order_detail, function(i, obj){
+									var record = obj;
+									orderdethtml += '<tr>';
+									if (record.col1 != null) {
+										orderdethtml += '<td>'+ record.col1 +'</td>';
+									}
+									if (record.col2 != null) {
+										orderdethtml += '<td>'+ record.col2 +'</td>';
+									}
+									if (record.col3 != null) {
+										orderdethtml += '<td>'+ record.col3 +'</td>';
+									}
+									orderdethtml += '</tr>';
+								});
+							} else {
+								orderdethtml += '<tr><td colspan="'+ colinfo.length +'">无数据！</td></tr>';
+							}
+							orderdethtml += '</table></div>';
+						});
+						document.getElementById('orderDetail').innerHTML = orderdethtml;
+						
+						//加载单据附件内容
+						var file_detail = data.file_detail;
+						var filehtml = '';
+						if (file_detail != null && file_detail.length > 0) {
+							mui.each(file_detail, function(i, obj){
+								var record = obj;
+								var filetype = record.type;
+								var fileurl = jxm.getURL() + '?nousercheck=1&' +record.url +'&user_code=jxstar';
+								
+								var imgPath = '';
+								if (filetype.indexOf('word') > -1) {
+									imgPath = '../../jxm/img/file_type/docx.png';
+								} else if (filetype.indexOf('excel') > -1 || filetype.indexOf('sheet') > -1) {
+									imgPath = '../../jxm/img/file_type/xlsx.png';
+								} else if (filetype.indexOf('pdf') > -1) {
+									imgPath = '../../jxm/img/file_type/pdf.png';
+								} else if (filetype.indexOf('ppt') > -1 || filetype.indexOf('powerpoint') > -1) {
+									imgPath = '../../jxm/img/file_type/pptx.png';
+								} else if (filetype.indexOf('zip') > -1 || filetype.indexOf('octet-stream') > -1) {
+									imgPath = '../../jxm/img/file_type/rar.png';
+								} else if (filetype.indexOf('text') > -1) {
+									imgPath = '../../jxm/img/file_type/text.png';
+								} else if (filetype.indexOf('image') > -1) {
+									imgPath = '../../jxm/img/file_type/jpeg.png';
+								}
+								filehtml += '<li class="mui-table-view-cell mui-media filedet">';
+							    filehtml += '<a dataurl="'+ fileurl +'" title="'+ record.title +'">';
+							    filehtml += '<img class="mui-media-object mui-pull-left" src="'+ imgPath +'">';
+							    filehtml += '<div class="mui-media-body">'+ record.title +'</div></a></li>';
+							});
+							
+							document.getElementById('attachContent').classList.remove('mui-hidden');
+							
+							document.getElementById('fileDetail').innerHTML = filehtml;
+							document.getElementById('attach-num').innerHTML = file_detail.length;
+							//绑定附件点击事件
+							mui("#fileDetail").on('tap','li',function(e){
+								var ax = this.getElementsByTagName('a')[0];
+					      		var url = ax.getAttribute('dataurl');
+					      		jxm.openRemoteFile(url);
+					      	});
+						} else {
+							document.getElementById('attach-num').innerHTML = '0';
+							document.getElementById('attachContent').classList.add('mui-hidden');
+						}
+						jxm.loadhint(mainlist, true);
+					}, {hasmask:false, errorcall:function(e){
+						mui.alert(e.message);
+						//一定要返回，否则没办法继续打开
+						mui.back();
+					}}
+				);
+			};
+			//加载单据信息
+			loadOrderInfoHtml();
+	  	});
+	</script>
+</body>
+</html>

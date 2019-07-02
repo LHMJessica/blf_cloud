@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+    <title>账户余额</title>
+    <link rel="stylesheet" href="../../../mui/css/mui.min.css"/>
+    <link rel="stylesheet" href="../../../jxm/css/jxm.css">
+    <style type="text/css">
+    	.mui-bar {
+			-webkit-box-shadow: none;
+			box-shadow: none;
+		}
+		.head-search {
+			padding-top: 1px;
+			height: 50px !important; 
+		}
+		.head-search button {
+			height: 48px; 
+			width: 18%;
+			border: none;
+			border-radius: 0 !important;
+			background-color:#f7f7f7;
+		}
+		.head-search input {
+			width:62%; 
+			height: 50px; 
+			border: none;
+			font-size: 14px;
+		}
+		.iconfont, .mui-icon-search{
+			font-size:24px;
+		}
+		.mui-table-view:before {
+			height: 0;
+		}
+    </style>
+    
+</head>
+<body>
+	<header class="mui-bar mui-bar-nav mui-bar-primary">
+		<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+		<h1 class="mui-title">账户余额</h1>
+	</header>
+	
+	<div class="mui-content">
+		<div id='main-list' class="mui-indexed-list mui-hidden">
+			<!--数据列表-->
+			<ul  class="mui-table-view mui-table-view-striped mui-table-view-condensed"></ul>
+		</div>
+		<div class="mui-loader">加载中...</div>
+		
+	</div>
+	
+	<script src="../../../mui/js/mui.min.js"></script>
+	<script src="../../../jxm/js/jxm.js"></script>
+	<script src="../../../app/util/jxm-util.js"></script>
+	<script src="../../../app/util/combo-data.js"></script>
+	<script type="text/javascript" charset="UTF-8">
+		mui.init();
+		
+		mui.plusReady(function(){
+			loadDataList();
+		});
+		
+  		//加载数据列表
+  		var loadDataList = function(){
+  			var html = '';
+  			var hdcall = function(data) {
+  				total = data.total;
+  				var sumx = 0;
+  				
+  				mui.each(data.root, function(i, obj){
+					var record = obj;
+					var audits = ComboData.audit;
+					var st = record.jz_bill__edit_date;
+					if (st && st.length > 0) {
+						st = st.split(' ')[0];
+					}
+					
+					html += '<li class="mui-table-view-cell" id="'+ record.jz_account__account_id +'">';
+				    html +=    '<div class="mui-table">';
+				    html +=    '<div class="mui-table-cell mui-col-xs-6">';
+				    html +=    '	'+ record.jz_account__account_name;
+				    html +=    '</div>';
+				    html +=    '<div class="mui-table-cell mui-col-xs-6">';
+				    html +=    record.jz_account__last_num;
+				    html +=    '</div>';
+				    html +=    '</div>';
+				    html += '</li>';
+				    
+				    sumx += parseFloat(record.jz_account__last_num);
+  				});
+  				html += '<li class="mui-table-view-cell"> <div class="mui-table">';
+  				html += '<div class="mui-table-cell mui-col-xs-6" style="font-weight: bold;">';
+				html += '合计</div>';
+				html += '<div class="mui-table-cell mui-col-xs-6" style="font-weight: bold;">';
+				html += sumx+'</div>';
+				html += ' </div> </li>';
+				
+  				mui('ul')[0].innerHTML = html;
+  				
+				var mainList = document.getElementById("main-list");
+  				jxm.loadhint(mainList, (html.length > 0));
+  			};
+  			
+  			//发送请求
+  			var params = 'funid=queryevent&eventcode=query_data&query_funid=jz_account&limit=100&start=0';
+			jxm.post(params, hdcall);
+  		};
+  		
+    </script>
+</body>
+</html>

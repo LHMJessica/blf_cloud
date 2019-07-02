@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+    <title></title>
+    <link rel="stylesheet" href="../../mui/css/mui.min.css"/>
+    <link rel="stylesheet" href="../../jxm/css/jxm.css">
+    <style type="text/css">
+    	.mui-bar {
+			-webkit-box-shadow: none;
+			box-shadow: none;
+		}
+		h5 {
+	    	font-size: 14px;
+	    	padding: 8px 5px 6px;
+	    	background-color: #efeff4;
+	    }
+		
+	</style>
+</head>
+<body>
+	<header class="mui-bar mui-bar-nav mui-bar-primary">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<h1 class="mui-title">出差</h1>
+			<a class="mui-icon mui-icon-minus mui-pull-right mui-hidden"></a>
+	</header>
+	<nav class="mui-bar mui-bar-footer">
+		<button type="button" id="btnquery" class="mui-btn mui-btn-primary mui-btn-outlined mui-pull-left" style="width: 30%;" >查询</button>
+		<button type="button" id="btncommit" class="mui-btn mui-btn-primary mui-pull-right" style="width: 30%;">提交</button>
+	</nav>
+	
+	<div class="mui-content">
+		
+		<form class="mui-input-group">
+			<div class="mui-input-row" >
+				<label>出差类型 <span style="color:red">*</span></label>
+				<select id="apptype">
+					<option value="0">出差</option>
+					<option value="1">外勤</option>
+				</select>
+			</div>
+			<div class="mui-input-row" >
+				<label>天数   </label>
+				<input id="day_num" type="number" class="mui-input-clear" placeholder="点击填写"/>
+			</div>
+			<div class="mui-input-row" >
+				<label>出差地点 <span style="color:red">*</span></label>
+				<input id="address" type="text" class="mui-input-clear" placeholder="点击填写"/>
+			</div>
+			<div class="mui-input-row" >
+				<label>费用预算 </label>
+				<input id="money" type="text" class="mui-input-clear" placeholder="点击填写"/>
+			</div>
+			<div class="mui-input-row" >
+				<label>开始时间 <span style="color:red">*</span></label>
+				<input id="begin_date" type="datetime-local" class="mui-input-clear" placeholder="点击选择"/>
+			</div>
+			<div class="mui-input-row" >
+				<label>结束时间</label>
+				<input id="end_date" type="datetime-local" class="mui-input-clear" placeholder="点击选择"/>
+			</div>
+			
+		</form>
+		<h5>出差事由 <span style="color:red">*</span></h5>
+		<form class="mui-input-group">
+			<textarea id="summary" rows="6" placeholder="填写出差事由"></textarea>
+		</form>
+		
+	</div>
+	
+	<script src="../../mui/js/mui.min.js"></script>
+	<script src="../../jxm/js/jxm.js"></script>
+	<script type="text/javascript" charset="UTF-8">
+      	mui.init();
+      	
+      	mui.ready(function(){
+      		var self = plus.webview.currentWebview();
+      		var keyid = self.keyid;
+      		if(keyid){
+      			showData(keyid);//将数据显示到表单上
+      			document.body.querySelectorAll(".mui-icon-minus")[0].classList.remove("mui-hidden");
+      			//删除申请表
+      			document.body.querySelectorAll(".mui-icon-minus")[0].addEventListener('tap',function(){
+      				var params = "funid=oa_appcc&eventcode=delete&keyid="+keyid;
+      				jxm.post(params,function(){
+      					mui.toast("删除成功.");
+      					var wf_free = plus.webview.getWebviewById("oa-app-wf-free.html");
+      					var wf_dyn = plus.webview.getWebviewById("oa-app-wf-dyn.html");
+      					if(wf_free){
+      						wf_free.close();
+      					}
+      					if(wf_dyn){
+      						wf_dyn.close();
+      					}
+      					self.close();
+      					var listPage = plus.webview.getWebviewById("oa-appcc-list.html");
+      					if(listPage){
+      						mui.fire(listPage,"load-data",{});
+      					}
+      					jxm.backHome("oa");
+      				})
+      			});
+      			document.getElementById('btncommit').removeEventListener('tap',commitApply);
+      			//更新数据并提交
+      			document.getElementById('btncommit').addEventListener('tap',function(){
+      				var apptype = document.getElementById('apptype').value;
+		  			var days = document.getElementById('day_num').value;
+		  			var address = document.getElementById('address').value;
+		  			var begin_date = document.getElementById('begin_date').value;
+		  			var end_date = document.getElementById('end_date').value;
+		  			var money = document.getElementById('money').value;
+		  			var summary = document.getElementById('summary').value;
+		  			
+		  			if (!address || address.length == 0) {
+		  				mui.alert('请输入出差地点！');
+		  				return false;
+		  			}
+		  			if (!begin_date || begin_date.length == 0) {
+		  				mui.alert('请选择开始时间！');
+		  				return false;
+		  			}else{
+		  				begin_date = document.getElementById('begin_date').value;
+		  				begin_date = jxm.dealDateTime(begin_date);
+		  			}
+		  			if (end_date.length != 0) {
+		  				end_date = document.getElementById('end_date').value;
+		  				end_date = jxm.dealDateTime(end_date);
+		  			}
+		  			if (!summary || summary.length == 0) {
+		  				mui.alert('请输入出差事由！');
+		  				return false;
+		  			}
+      				
+      				
+      				var hdcall = function(){
+      					mui.toast("提交成功，已进入审批流程");
+      					var wf_free = plus.webview.getWebviewById("oa-app-wf-free.html");
+      					var wf_dyn = plus.webview.getWebviewById("oa-app-wf-dyn.html");
+      					if(wf_free){
+      						wf_free.close();
+      					}
+      					if(wf_dyn){
+      						wf_dyn.close();
+      					}
+      					jxm.backHome("oa");
+      					self.close();
+      				}
+      				
+      				var e = encodeURIComponent;
+		  			var params = 'funid=oa_appcc&eventcode=saveInfo&apply_type=cc';
+		  			params += '&apptype='+ e(apptype);
+		  			params += '&begin_date='+ begin_date;
+		  			params += '&end_date='+ end_date;
+		  			params += '&keyid='+ keyid;
+		  			params += '&days='+ days;
+		  			params += '&money='+ money;
+		  			params += '&address='+ e(address);
+		  			params += '&summary='+ e(summary);
+		  			jxm.post(params, hdcall);
+      			});
+      			
+      		}
+      	});
+      	
+      	//提交出差申请
+  		var commitApply = function() {
+  			var apptype = document.getElementById('apptype').value;
+  			var days = document.getElementById('day_num').value;
+  			var address = document.getElementById('address').value;
+  			var begin_date = document.getElementById('begin_date').value;
+  			var end_date = document.getElementById('end_date').value;
+  			var money = document.getElementById('money').value;
+  			var summary = document.getElementById('summary').value;
+  			
+  			if (!address || address.length == 0) {
+  				mui.alert('请输入出差地点！');
+  				return false;
+  			}
+  			if (!begin_date || begin_date.length == 0) {
+  				mui.alert('请选择开始时间！');
+  				return false;
+  			}else{
+  				begin_date = document.getElementById('begin_date').value;
+  				begin_date = jxm.dealDateTime(begin_date);
+  			}
+  			if (end_date.length != 0) {
+  				end_date = document.getElementById('end_date').value;
+  				end_date = jxm.dealDateTime(end_date);
+  			}
+  			if (!summary || summary.length == 0) {
+  				mui.alert('请输入出差事由！');
+  				return false;
+  			}
+  			var hdcall = function(data) {
+  				//提交表单
+				if(data.type == "none"){
+					var url = "funid=oa_appcc&eventcode=appaudit&keyid="+data.apply_id;
+					jxm.post(url,function(){
+						mui.toast("表单提交成功");
+						newApply();
+						jxm.backHome('oa');
+					});
+				}else if(data.type =="dyn"){
+					jxm.open("oa-app-wf-dyn.html",{extras:{page:"oa-appcc.html",data:data}});
+				}else if(data.type == "free"){
+					jxm.open("oa-app-wf-free.html",{extras:{page:"oa-appcc.html",data:data}});
+				}else {
+					mui.toast("提交表单出错。");
+				}
+  			};
+  			   
+  			var e = encodeURIComponent;
+  			var params = 'funid=oa_appcc&eventcode=submit&apply_type=cc';
+  			params += '&apptype='+ e(apptype);
+  			params += '&begin_date='+ begin_date;
+  			params += '&end_date='+ end_date;
+  			params += '&days='+ days;
+  			params += '&money='+ money;
+  			params += '&address='+ e(address);
+  			params += '&summary='+ e(summary);
+  			jxm.post(params, hdcall);
+  		};
+  		
+  		var newApply = function(){
+  			//清除原有的单据信息
+  			var textinputs = document.body.querySelectorAll('input');
+			mui.each(textinputs, function(n, obj){
+				obj.value = '';
+			});
+			document.getElementById('summary').value = '';
+  		};
+  		
+  		//打开请假页面
+  		var queryApply = function(){
+  			if (plus) {
+  				var targetWin = plus.webview.getWebviewById('oa-appcc-list.html');
+				if (targetWin) mui.fire(targetWin, 'load-data', {});
+  			}
+  			jxm.open('oa-appcc-list.html');
+  		};
+      	
+      	var showData = function(keyid){
+      		var params ="eventcode=query_data&funid=queryevent&pagetype=grid&query_funid=oa_appcc&limit=50&start=0";
+			params +="&where_sql=oa_apply.apply_id=?";
+			params +="&where_type=string";
+			params +="&where_value="+keyid;
+			jxm.post(params,function(data){
+				if(data&&data.root.length>0){
+					var obj = data.root[0];
+					document.getElementById('apptype').value = obj.oa_apply__app_type;
+					document.getElementById('day_num').value = obj.oa_apply__app_days;
+					document.getElementById('address').value = obj.oa_apply__app_addr;
+					document.getElementById('money').value = obj.oa_apply__app_money;
+		  			document.getElementById('begin_date').value = obj.oa_apply__begin_date.replace(" ","T");
+		  			document.getElementById('end_date').value = obj.oa_apply__end_date.replace(" ","T");
+		  			document.getElementById('summary').value =obj.oa_apply__app_desc; 
+				}
+			});
+      	}
+      	
+      	//点击提交按钮后提交出差申请
+		document.getElementById('btncommit').addEventListener('tap', commitApply);
+		//点击查询
+		document.getElementById('btnquery').addEventListener('tap', queryApply);
+    </script>
+</body>
+</html>

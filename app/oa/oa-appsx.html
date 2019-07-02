@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+    <title></title>
+    <link rel="stylesheet" href="../../mui/css/mui.min.css"/>
+    <link rel="stylesheet" href="../../jxm/css/jxm.css">
+    <style type="text/css">
+    	.mui-bar {
+			-webkit-box-shadow: none;
+			box-shadow: none;
+		}
+		h5 {
+	    	font-size: 14px;
+	    	padding: 8px 5px 6px;
+	    	background-color: #efeff4;
+	    }
+		
+	</style>
+</head>
+<body>
+	<header class="mui-bar mui-bar-nav mui-bar-primary">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<h1 class="mui-title">事项</h1>
+			<a class="mui-icon mui-icon-minus mui-pull-right mui-hidden"></a>
+	</header>
+	<nav class="mui-bar mui-bar-footer">
+		<button type="button" id="btnquery" class="mui-btn mui-btn-primary mui-btn-outlined mui-pull-left" style="width: 30%;" >查询</button>
+		<button type="button" id="btncommit" class="mui-btn mui-btn-primary mui-pull-right" style="width: 30%;">提交</button>
+	</nav>
+	
+	<div class="mui-content">
+		
+		<form class="mui-input-group">
+			<div class="mui-input-row" >
+				<label>主题 <span style="color:red">*</span></label>
+				<input id="theme" type="text" class="mui-input-clear" placeholder="请输入事项主题"/>
+			</div>
+			<div class="mui-input-row" >
+				<label>类型</label>
+				<select id="apptype">
+					<option value="0">请示</option>
+					<option value="1">报告</option>
+				</select>
+			</div>
+		</form>
+		<h5>事项描述  <span style="color:red">*</span></h5>
+		<form class="mui-input-group">
+			<textarea id="summary" rows="6" placeholder="填写事项描述"></textarea>
+		</form>
+		
+		<h5>上传图片</h5>
+		<div class="jxm-image-input">
+			<div id='image-list' class="image-list"></div>
+		</div>
+	</div>
+	
+	<script src="../../mui/js/mui.min.js"></script>
+	<script src="../../jxm/js/jxm.js"></script>
+	<script src="../../jxm/js/jxm-image-input.js"></script>
+	<script src="../util/jxm-util.js"></script>
+	<script type="text/javascript" charset="UTF-8">
+      	mui.init();
+      	
+      	mui.plusReady(function(){
+      		var self = plus.webview.currentWebview();
+      		var keyid = self.keyid;
+      		if(keyid){
+      			showData(keyid);//将数据显示到表单上
+      			document.body.querySelectorAll(".mui-icon-minus")[0].classList.remove("mui-hidden");
+      			//删除申请表
+      			document.body.querySelectorAll(".mui-icon-minus")[0].addEventListener('tap',function(){
+      				var params = "funid=oa_appsx&eventcode=delete&keyid="+keyid;
+      				jxm.post(params,function(){
+      					mui.toast("删除成功.");
+      					var wf_free = plus.webview.getWebviewById("oa-app-wf-free.html");
+      					var wf_dyn = plus.webview.getWebviewById("oa-app-wf-dyn.html");
+      					if(wf_free){
+      						wf_free.close();
+      					}
+      					if(wf_dyn){
+      						wf_dyn.close();
+      					}
+      					self.close();
+      					var listPage = plus.webview.getWebviewById("oa-appsx-list.html");
+      					if(listPage){
+      						mui.fire(listPage,"load-data",{});
+      					}
+      					jxm.backHome("oa");
+      				})
+      			});
+      			document.getElementById('btncommit').removeEventListener('tap',commitApply);
+      			//更新数据并提交
+      			document.getElementById('btncommit').addEventListener('tap',function(){
+      				var theme = document.getElementById('theme').value;
+		  			var apptype = document.getElementById('apptype').value;
+		  			var summary = document.getElementById('summary').value;
+		  			
+		  			if (!theme || theme.length == 0) {
+		  				mui.alert('请输入主题！');
+		  				return false;
+		  			}
+		
+		  			if (!summary || summary.length == 0) {
+		  				mui.alert('请输入事项描述！');
+		  				return false;
+		  			}
+		  			
+		  			
+      				var hdcall = function(){
+      					mui.toast("提交成功，已进入审批流程");
+      					var wf_free = plus.webview.getWebviewById("oa-app-wf-free.html");
+      					var wf_dyn = plus.webview.getWebviewById("oa-app-wf-dyn.html");
+      					if(wf_free){
+      						wf_free.close();
+      					}
+      					if(wf_dyn){
+      						wf_dyn.close();
+      					}
+      					jxm.backHome("oa");
+      					self.close();
+      				}
+      				
+      				var e = encodeURIComponent;
+		  			var params = 'funid=oa_appsx&eventcode=saveInfo&apply_type=sx' ;
+		  			params += '&theme='+ e(theme);
+					params += '&apptype='+ apptype;
+					params += '&summary='+ e(summary);   
+		  			params += '&keyid='+ keyid;
+		  			jxm.post(params, hdcall);
+      			});
+      			
+      		}
+      	});
+      	
+      	//提交事项申请
+  		var commitApply = function() {
+  			var theme = document.getElementById('theme').value;
+  			var apptype = document.getElementById('apptype').value;
+  			var summary = document.getElementById('summary').value;
+  			
+  			if (!theme || theme.length == 0) {
+  				mui.alert('请输入主题！');
+  				return false;
+  			}
+
+  			if (!summary || summary.length == 0) {
+  				mui.alert('请输入事项描述！');
+  				return false;
+  			}
+  			
+  	
+  			
+  			var hdcall = function(data) {
+  				
+  				var submitForm = function(){
+					//提交表单
+					if(data.type == "none"){
+						var url = "funid=oa_appsx&eventcode=appaudit&keyid="+data.apply_id;
+						jxm.post(url,function(){
+							mui.toast("表单提交成功");
+							newApply();
+							jxm.backHome('oa');
+						});
+					}else if(data.type =="dyn"){
+						jxm.open("oa-app-wf-dyn.html",{extras:{page:"oa-appsx.html",data:data}});
+					}else if(data.type == "free"){
+						jxm.open("oa-app-wf-free.html",{extras:{page:"oa-appsx.html",data:data}});
+					}else {
+						mui.toast("提交表单出错。");
+					}
+				}
+  				
+  				//上传图片附件
+  				var params = {
+					dataid:data.apply_id,
+					datafunid:'oa_appsx',
+					callback:function(){
+  						jxm.imgUI.clearImage();
+  						submitForm();
+					}
+				};
+				
+				jxm.imgUI.uploadImages(params);
+				
+  			};
+  			//保存表单
+  			var e = encodeURIComponent;
+  			var params = 'funid=oa_appsx&eventcode=submit&apply_type=sx';
+  			params += '&theme='+ e(theme);
+  			params += '&apptype='+ apptype;
+  			params += '&summary='+ e(summary);   
+  			jxm.post(params, hdcall);  
+  		};
+  		
+  		
+  		var newApply = function(){
+  			//清除原有的单据信息
+  			var textinputs = document.body.querySelectorAll('input');
+			mui.each(textinputs, function(n, obj){
+				obj.value = '';
+			});
+			document.getElementById('summary').value = '';
+  		};
+  		
+  		//打开事项列表页面
+  		var querySX = function(){
+  			if (plus) {
+  				var targetWin = plus.webview.getWebviewById('oa-appsx-list.html');
+				if (targetWin) mui.fire(targetWin, 'load-data', {});
+  			}
+  			jxm.open('oa-appsx-list.html');
+  		};
+  		
+  		var showData = function(keyid){
+      		var params ="eventcode=query_data&funid=queryevent&pagetype=grid&query_funid=oa_appsx&limit=50&start=0";
+			params +="&where_sql=oa_apply.apply_id=?";
+			params +="&where_type=string";
+			params +="&where_value="+keyid;
+			jxm.post(params,function(data){
+				if(data&&data.root.length>0){
+					var obj = data.root[0];
+					document.getElementById('theme').value = obj.oa_apply__app_title;
+					document.getElementById('apptype').value = obj.oa_apply__app_type;
+		  			document.getElementById('summary').value =obj.oa_apply__app_desc; 
+		  			
+		  			//加载图片
+					jxm.imgUI.downImages({dataid:keyid, tablename:'oa_apply', callback:function(datas){
+						var cnt = datas.length;
+						var ds = (cnt == 0)?'none':'';
+						document.querySelector(".jxm-image-input").setAttribute('style', 'display: '+ds+';');
+					}});
+					//加载图片查看控件
+					setTimeout(function(){
+						jxm.imgUI.newImageDiv();
+					}, 1000);
+				}
+			});
+      	}
+  		
+  		
+      	//点击提交按钮后提交事项申请
+		document.getElementById('btncommit').addEventListener('tap', commitApply);
+      	//点击查询按钮跳转到事项列表
+		document.getElementById('btnquery').addEventListener('tap', querySX);
+      	
+      	jxm.imgUI.newImageDiv();
+    </script>
+</body>
+</html>

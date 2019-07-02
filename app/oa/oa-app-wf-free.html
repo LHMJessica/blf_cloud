@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title>设置自由审批</title>
+	    <link rel="stylesheet" href="../../mui/css/mui.min.css"/>
+	    <link rel="stylesheet" href="../../jxm/css/jxm.css">
+	    <style type="text/css">
+	    	.spare-det {
+				width: 100%;
+				background-color: #FFFFFF;
+			}
+			.spare-det li:nth-of-type(odd) {
+				background-color:#f7f7f7;
+			}
+			.spare-det .mui-row{
+				background-color:inherit;
+			}
+			.listtip {
+				padding-top: 20px;
+				text-align: center;
+				background-color: white;
+				height: 90px;
+				color: #CCCCCC;
+			}
+	    </style>
+	</head>
+	<body>
+		<header class="mui-bar mui-bar-nav mui-bar-primary">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<h1 class="mui-title">设置自由审批</h1>
+			<a class="mui-icon mui-pull-right icon-header " id="add">
+				<i class="iconfont icon-xinjian1"></i>
+			</a>
+		</header>
+		<nav class="mui-bar mui-bar-footer">
+			<center>
+				<button type="button" id="btncommit" class="mui-btn mui-btn-primary" style="width: 50%;">提交</button>
+			</center>
+		</nav>
+		<div class="mui-content" style="margin-top: 10px;">
+			<div  id="freeContent">
+				<h5 class="mui-row">
+		   			<span  class="mui-col-xs-4" style="padding-left: 10px;"> 审批序号</span>
+			    	<span class="mui-col-xs-4"> 审批人</span>
+			    	<span class="mui-col-xs-4"> 所属部门</span>
+			   </h5>
+				<form class="mui-input-group" >
+					<div class="listtip">请点击“+”添加审批人记录，左滑可以删除</div>
+					<ul class="mui-table-view spare-det">
+					</ul>
+				</form>
+			</div>
+		</div>
+		<script src="../../mui/js/mui.min.js"></script>
+		<script src="../../jxm/js/jxm.js"></script>
+		<script type="text/javascript" charset="UTF-8">
+			mui.init();
+			mui.plusReady(function(){
+				var self = plus.webview.currentWebview();
+				var data = self.data;
+				var page = self.page;
+				var datas = data.data;
+				var freeCon = document.getElementById("freeContent");
+				var addbtn = document.getElementById("add");
+				mui.each(datas,function(i, obj){
+					var record = obj;
+					var ul = freeCon.getElementsByTagName("ul")[0];
+					var html = '<li class="mui-table-view-cell" >';
+					html +='<div class="mui-slider-right mui-disabled">';
+		      		html += '<a class="mui-btn mui-btn-red">删除</a></div>';
+		      		html += '<div class="mui-slider-handle mui-row">';
+					html += '<span class="mui-col-xs-4 ">'+record.free_index+'</span>';
+					html += '<span class="mui-col-xs-4  " user-id="'+record.user_id+'" user-code='+recode.user_code+'>'+record.user_name+'</span>';
+					html += '<span class="mui-col-xs-4 " dept-id="'+record.dept_id+'">'+record.dept_name+'</span>';
+					html +='</div></li>';
+					ul.innerHTML = html;
+				});
+				// 提交分配人表单
+				document.getElementById("btncommit").addEventListener('tap',function(){
+					resetIndex();
+					var funid = data.funId;
+					var dataid = data.apply_id;
+					var processid = data.processId;
+					var ul = document.getElementById("freeContent").getElementsByTagName("ul")[0];
+					var liList = ul.querySelectorAll("li");
+					var free_indexs = "";
+					var user_ids = "";
+					var user_codes = "";
+					var user_names = "";
+					var dept_names = "";
+					mui.each(liList,function(i,obj){
+						var span = obj.getElementsByTagName("span");
+						free_indexs += span[0].innerText +",";
+						user_ids += span[1].getAttribute("user-id")+",";
+						user_codes += span[1].getAttribute("user-code")+",";
+						user_names += span[1].innerText+",";
+						dept_names += span[2].innerText+",";
+					});
+					var e = encodeURIComponent;
+					var params = "funid=wf_free_user&eventcode=savewf";
+					params +="&fun_id="+e(funid);
+					params +="&data_id="+e(dataid);
+					params +="&process_id="+e(processid);
+					params += "&freeIndexs="+e(free_indexs);
+					params += "&userIds="+e(user_ids);
+					params += "&userCodes="+e(user_codes);
+					params += "&userNames="+e(user_names);
+					params += "&deptNames="+e(dept_names);
+					jxm.post(params,function(){
+						mui.confirm('是否直接提交进入审批？', '提示', ['确认', '回到编辑页面'], function(e) {
+							if (e.index == 0) {
+								var url = "funid="+funid+"&eventcode=appaudit&keyid="+data.apply_id;
+								jxm.post(url,function(){
+									mui.toast("表单提交成功");
+									var targetWin = plus.webview.getWebviewById(page);
+									if (targetWin) {
+										targetWin.close();
+									}
+									self.close();
+									jxm.backHome('oa');
+								});
+							} else {
+								var targetWin = plus.webview.getWebviewById(page);
+								if (targetWin) {
+									targetWin.close();
+								}
+								jxm.open(page,{extras:{keyid:data.apply_id}});
+							}
+						});
+					});
+					
+				});
+			});
+			
+			
+			//左滑删除
+	      	var btnArray = ['确认', '取消'];
+	  		mui('#freeContent ul').on('slideleft', 'li', function(event) {
+				var elem = this;
+				mui.confirm('确认删除该条记录？', '提示', btnArray, function(e) {
+					if (e.index == 0) {
+						elem.parentNode.removeChild(elem);
+						var length = mui("#freeContent ul > li").length;
+						if(length == 0){
+							document.body.querySelector('.listtip').classList.remove('mui-hidden');
+						}
+					} else {
+						setTimeout(function() {
+							mui.swipeoutClose(elem);
+						}, 0);
+					}
+				});
+			});
+			
+			
+			//选择审批人
+			var cbe1 = 'select-user';
+			document.getElementById('add').addEventListener('tap', function(){
+				var href = "../../app/util/select-user.html";
+				var param = {callbackWinId:mui.currentWebview.id, callbackEvent:cbe1};
+				jxm.open(href,{extras:{selectParams:param}});
+			});
+			window.addEventListener(cbe1, function(event){
+				var obj = event.detail;
+				var username = obj.dataname;
+				var deptname = obj.datadesc.substring(0,obj.datadesc.indexOf("|"));
+				var userid = obj.dataid;
+				var usercode = obj.datacode;
+				if(userid == "" || deptname == ""){
+					mui.alert("请确保信息完整，审批人及其所属部门不能为空");
+					return;
+				}
+				var freeCon = document.getElementById("freeContent");
+				var ul = freeCon.getElementsByTagName("ul")[0];
+				document.body.querySelector('.listtip').classList.add('mui-hidden');
+				var free_index = getIndex();
+				var html = '<li class="mui-table-view-cell" >';
+				html +='<div class="mui-slider-right mui-disabled">';
+	      		html += '<a class="mui-btn mui-btn-red">删除</a></div>';
+	      		html += '<div class="mui-slider-handle mui-row">';
+				html += '<span class="mui-col-xs-4 ">'+free_index+'</span>';
+				html += '<span class="mui-col-xs-4  " user-id="'+userid+'" user-code="'+usercode+'">'+username+'</span>';
+				html += '<span class="mui-col-xs-4 " >'+deptname+'</span>';
+				html +='</div></li>';
+				ul.innerHTML += html;
+				
+			});
+			
+			//获取index值
+			var getIndex = function(){
+				var index = 0;
+				var freeCon = document.getElementById("freeContent");
+				var ul = freeCon.getElementsByTagName("ul")[0];
+				var li = ul.getElementsByTagName("li");
+				var i = li.length-1;
+				if(i >= 0){
+					index = parseInt(li[i].getElementsByTagName("span")[0].innerText);
+				}
+				return index+1;
+			}
+			
+			//重置 index值
+			var resetIndex = function(){
+				var freeCon = document.getElementById("freeContent");
+				var ul = freeCon.getElementsByTagName("ul")[0];
+				var li = ul.getElementsByTagName("li");
+				mui.each(li,function(i,obj){
+					var span = obj.getElementsByTagName("span")[0];
+					span.innerText = i+1;
+				});
+			}
+		</script>
+	</body>
+</html>

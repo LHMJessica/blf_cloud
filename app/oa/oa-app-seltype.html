@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+    <title></title>
+    <link rel="stylesheet" href="../../mui/css/mui.min.css"/>
+    <link rel="stylesheet" href="../../jxm/css/jxm.css">
+    <style type="text/css">
+    	.mui-bar {
+			-webkit-box-shadow: none;
+			box-shadow: none;
+		}
+		
+	</style>
+</head>
+<body>
+	<header class="mui-bar mui-bar-nav mui-bar-primary">
+		<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+		<h1 class="mui-title">选择申请类型</h1>
+	</header>
+	
+	<div class="mui-content">
+		<ul class="mui-table-view" id="ul-content" >
+			<li class="mui-table-view-cell" id="noneFun"> 没有授权的功能 </li>
+			<script id='msg-template' type="text/template">
+				<% for(var i in record){
+					var item=record[i];
+				%>
+				<li class="mui-table-view-cell" >
+					<a class="mui-navigate-right"  src=<%= item.page_url %>><%= item.fun_name %></a>
+				</li>
+				<% } %>
+			</script>
+			<!--<li class="mui-table-view-cell" type="qj">
+				<a class="mui-navigate-right" >请假</a>
+			</li>
+			<li class="mui-table-view-cell" type="cc">
+				<a class="mui-navigate-right" >出差</a>
+			</li>
+			<li class="mui-table-view-cell" type="bx">
+				<a class="mui-navigate-right" >报销</a>
+			</li>
+			<li class="mui-table-view-cell" type="sx">
+				<a class="mui-navigate-right" >事项</a>
+			</li>-->
+		</ul>
+		
+	</div>
+	
+	<script src="../../mui/js/mui.min.js"></script>
+	<script src="../../jxm/js/jxm.js"></script>
+	<script type="text/javascript" src="../../mui/js/arttmpl.js" ></script>
+	<script type="text/javascript" charset="UTF-8">
+	  	mui.init();
+      	//点击申请类型弹出对应的流程选择界面
+      	/*mui('.mui-table-view').on('tap', 'li', function(){
+      		if (this.type == 'qj') {
+      			href = 'oa-appqj.html';
+      			jxm.open(href,{});
+      			
+      		} else if (this.type == 'cc') {
+      			href = 'oa-appcc.html';
+      			jxm.open(href,{});
+      		} else if (this.type == 'bx') {
+      			href = 'oa-appbx.html';
+      			jxm.open(href,{});
+      		}else if (this.type == 'sx') {
+      			href = 'oa-appsx.html';
+      			jxm.open(href,{});
+      		}
+      		
+      	});*/
+      	mui.plusReady(function(){
+      		var self = plus.webview.currentWebview();
+      		var code = self.code;
+      		var record = localStorage.getItem("cur_user_fun2_"+code);
+      		if(record && record.length >0){
+      			document.getElementById("noneFun").classList.add("mui-hidden");
+      		}
+      		record = JSON.parse(record);
+      		var html = template('msg-template', {
+							"record": record
+						});
+      		
+      		document.getElementById("ul-content").innerHTML = html;
+      	});
+      	
+      	mui(".mui-table-view").on('tap','li',function(e){
+	      		var src = this.getElementsByTagName('a')[0].getAttribute('src');
+	      		jxm.open(src);
+	      	});
+    </script>
+</body>
+</html>

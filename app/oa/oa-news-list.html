@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+    <title>公告</title>
+    <link rel="stylesheet" href="../../mui/css/mui.min.css"/>
+    <link href="../../mui/css/mui.indexedlist.css" rel="stylesheet" />
+    <link rel="stylesheet" href="../../jxm/css/jxm.css">
+    <style type="text/css">
+    	.mui-bar {
+			-webkit-box-shadow: none;
+			box-shadow: none;
+		}
+		.iconfont, .mui-icon-search{
+			font-size:24px;
+		}
+		.mui-table-view:before {
+			height: 0;
+		}
+		.mui-search,
+		.mui-search .mui-icon-clear,
+		.mui-search .mui-placeholder {
+			padding-top: 5px;
+			padding-bottom: 5px;
+		}
+		.mui-table-view .mui-table-view-cell.mui-media-icon .mui-media-body:after {
+			left: 70px;
+			background-color:#D8D8D8;
+		}
+		.mui-indexed-list {
+			height: 100%;
+		}
+		.mui-indexed-list-item {
+			padding-right: 10px;
+			line-height: 50px;
+		}
+		
+    </style>
+    
+</head>
+<body>
+	<header class="mui-bar mui-bar-nav mui-bar-primary">
+		<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+		<h1 class="mui-title">公告</h1>
+		<span id="reload" class="mui-pull-right mui-icon">
+			<i class="iconfont icon-baofei1"></i>
+		</span>
+	</header>
+	
+	<div class="mui-content">
+		<div id='main-list' class="mui-indexed-list">
+			<div class="mui-indexed-list-search mui-input-row mui-search">
+				<input type="search" id="searchkeyword" class="mui-input-clear mui-indexed-list-search-input" placeholder="搜索标题">
+			</div>
+			<div class="mui-indexed-list-alert"></div>
+			<div class="mui-indexed-list-inner">
+				<div class="mui-indexed-list-empty-alert" style="margin-top: 100px;">没有数据</div>
+				<ul id="data_list" class="mui-table-view noline">
+				</ul>
+			</div>
+		</div>
+		<div class="mui-loader">加载中...</div>
+		
+	</div>
+	
+	<script src="../../mui/js/mui.min.js"></script>
+	<script src="../../jxm/js/jxm.js"></script>
+	<script src="../util/jxm-util.js"></script>
+	<script src="../util/combo-data.js"></script>
+	<script type="text/javascript" charset="UTF-8">
+      	mui.init();
+      	
+      	//查询数据与需要的数据格式转换
+		var dataConvert = function(item){
+			var data = {
+					news_id:item['oa_news__news_id'],
+					news_title:item['oa_news__news_title'],
+					edit_date:item['oa_news__edit_date'],
+					readed:item['oa_news__readed']
+				};
+			return data;
+		};
+      	
+  		//加载单据列表
+  		var loadDataList = function(keyword){
+  			var html = '';
+  			var hdcall = function(data) {
+  				var mainlist = document.getElementById('data_list');
+  				if (!data || data.length == 0) {
+  					jxm.loadhint(mainlist, false);
+  					return;
+  				}
+  				var checknum = 0;
+  				//遍历公告记录
+  				mui.each(data, function(i, obj){
+					var record = obj;
+					html += '<li class="mui-table-view-cell" data-id="'+ record.news_id +'">';
+				  	html += '<div class="mui-table">';
+				    html += '<div class="mui-table-cell mui-col-xs-10 mui-ellipsis">';
+				    html += record.news_title;
+				    html += '<p>'+jxm.shortTime(record.edit_date)+'</p>';
+				    html += '</div>';
+				    html += '<div class="mui-table-cell mui-col-xs-2 mui-text-right">';
+				    html += '<span class="mui-badge mui-badge-danger">未阅</span>';
+				    html += '</div>';
+				    html += '</div>';
+				    html += '</li>';
+  				});
+  				document.getElementById('data_list').innerHTML = html;
+  				jxm.loadhint(mainlist, (html.length > 0));
+  				
+  				//更新标记数量
+  				setTimeout(function(){
+  					if (plus) {
+  						var imwin = plus.webview.getWebviewById("im-main");
+						mui.fire(imwin, 'updateNum1', {checknum:checknum});
+  					}
+  				}, 200);
+  			};
+  			//发送请求
+			params = 'funid=oa_news&eventcode=qrynew&shownum=70000&pagetype=grid&conttype=1,2,3';
+			if(keyword&&keyword !=null&&keyword.length!=0){
+				var cur_user = localStorage.getItem('cur_user');
+				var userid ='';
+				if (cur_user && cur_user.length > 0) {
+					var data = JSON.parse(cur_user);
+					if (params.indexOf("&user_id=") < 0) {
+						userid= data.user_id;
+					}
+				}
+				params += '&titlekey='+encodeURIComponent("%"+keyword+"%");
+			}
+			jxm.post(params, hdcall);
+  		};
+  		
+  		//加载数据
+  		mui.ready(function(){
+  			loadDataList();
+  			var update = function(){
+  				var params = "funid=oa_news&eventcode=allread";
+				jxm.post(params, loadDataList, {hasmask:false});
+  			};
+  			document.getElementById("reload").addEventListener("tap", function(){
+				plus.ui.confirm('确定全部标记已阅读吗？', function(event) {
+					if (0 == event.index) update();
+				}, '提示', ["确定", "取消"]);
+			});
+  		});
+  		
+  		
+  		//回车后查询
+  		document.getElementById('searchkeyword').addEventListener('keydown', function(event){
+  			if (event.keyCode == 13) { 
+	  			//阻止默认回车键事件
+				event.preventDefault();
+				var filename = document.getElementById('searchkeyword').value;
+				loadDataList(filename);
+  			} 
+  			return false;
+  		});
+  		
+  		//点击数据列表查看单据信息
+  		mui('#data_list').on('tap', 'li', function(){
+  			//更新标记
+  			var mb = this.querySelector('.mui-badge');
+  			mb.classList.remove('mui-badge-danger');
+  			mb.innerHTML = '已阅';
+  			//更新标记数量
+  			var items = document.getElementById('data_list').querySelectorAll('.mui-badge-danger');
+			var imwin = plus.webview.getWebviewById("im-main");
+			mui.fire(imwin, 'updateNum1', {checknum:items.length});
+			
+			//打开公告界面
+  			var keyid = this.getAttribute('data-id');
+  			jxm.open('oa-news-info.html', {extras:{news_id:keyid}});
+  		});
+  		
+		
+  		window.addEventListener('load-data', function(event){
+  			var data = event.detail;
+			loadDataList();
+		});
+	  		
+    </script>
+</body>
+</html>

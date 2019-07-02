@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+    <title></title>
+    <link rel="stylesheet" href="../../mui/css/mui.min.css"/>
+    <link rel="stylesheet" href="../../jxm/css/jxm.css">
+    <style type="text/css">
+    	.mui-bar {
+			-webkit-box-shadow: none;
+			box-shadow: none;
+		}
+		.head-search {
+			padding-top: 1px;
+			height: 50px !important; 
+		}
+		.head-search button {
+			height: 48px; 
+			width: 18%;
+			border: none;
+			border-radius: 0 !important;
+			background-color:#f7f7f7;
+		}
+		.head-search input {
+			width:62%; 
+			height: 50px; 
+			border: none;
+			font-size: 14px;
+		}
+		.iconfont, .mui-icon-search{
+			font-size:24px;
+		}
+		.mui-table-view:before {
+			height: 0;
+		}
+    </style>
+    
+</head>
+<body>
+	<header class="mui-bar mui-bar-nav mui-bar-primary">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<h1 class="mui-title">任务</h1>
+			<a class="mui-icon mui-pull-right icon-header" id="add">
+				<i class="iconfont icon-xinjian1"></i>
+			</a>
+			<a class="mui-icon mui-pull-right icon-header" style="margin-right: 5px;" id="filter">
+				<i class="iconfont icon-shaixuan"></i>
+			</a>
+	</header>
+	
+	<div class="mui-content">
+		
+		<div id='main-list' class="mui-indexed-list mui-hidden">
+			<!--数据列表-->
+			<ul id="data_list" class="mui-table-view mui-table-view-striped mui-table-view-condensed"></ul>
+		</div>
+		<div class="mui-loader">加载中...</div>
+		
+	</div>
+	
+	<script src="../../mui/js/mui.min.js"></script>
+	<script src="../../jxm/js/jxm.js"></script>
+	<script src="../util/jxm-util.js"></script>
+	<script src="../util/combo-data.js"></script>
+	<script type="text/javascript" charset="UTF-8">
+      	mui.init();
+      	
+  		//加载单据列表
+  		var loadDataList = function(){
+  			
+  			var html = '';
+  			var hdcall = function(data) {
+  				var mainlist = document.getElementById('main-list');
+  				if (!data || data.length == 0) {
+  					jxm.loadhint(mainlist, false);
+  					return;
+  				}
+  				
+  				var audit = ComboData.audit; //工单状态
+  				//遍历公告记录
+  				mui.each(data, function(i, obj){
+					var record = obj;
+					
+					html += '<li class="mui-table-view-cell" id="'+ record.task_id +'">';
+				    html +=    '<div class="mui-table">';
+				    html +=    '<div class="mui-table-cell mui-col-xs-10">';
+				    html +=    '	'+ record.task_title;
+				    html +=    '    <p>'+record.edit_date+'</p>';
+				    html +=    '</div>';
+				    html +=    ' <div class="mui-table-cell mui-col-xs-2 mui-text-right">';
+				    
+				    var stateText = jxm.getComboText(audit, record.state);
+				    var stateColor = '';
+				    if (stateText == '已退回') {
+				    	stateColor = 'mui-badge-warning';
+				    } else if (stateText == '提交' || stateText == '已审批') {
+				    	stateColor = 'mui-badge-primary';
+				    } else if (stateText == '审批中') {
+				    	stateColor = 'mui-badge-success';
+				    }
+				    
+				    html +=    '     <span class="mui-badge '+ stateColor +'">'+ stateText +'</span>';
+				    html +=    '  </div>';
+				    html +=    '</div>';
+				    html +=    ' </li>';
+				    
+				    
+  				});
+  				document.getElementById('data_list').innerHTML = html;
+  				jxm.loadhint(mainlist, (html.length > 0));
+  				
+  			};
+  			
+  			//发送请求
+  			var params = '';
+  			var e = encodeURIComponent;
+			params = 'funid=oa_task&eventcode=tasklist';
+			jxm.post(params, hdcall);
+  		};
+  		
+  		//加载数据
+  		mui.ready(function(){
+  			//loadDataList();
+  		});
+  		
+  		
+  		//打开新建公告页面
+  		document.getElementById('add').addEventListener('tap', function(){
+  			jxm.open('oa-task.html');
+  		});
+  		
+  		
+  		//点击数据列表查看单据信息
+  		mui('#data_list').on('tap', 'li', function(){
+  			var keyid = this.getAttribute('id');
+  			jxm.open('oa-task-info.html', {extras:{task_id:keyid}});
+  		});
+  		
+		
+  		window.addEventListener('load-data', function(event){
+  			var data = event.detail;
+			loadDataList();
+		});
+	  		
+    </script>
+</body>
+</html>

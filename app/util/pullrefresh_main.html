@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1,user-scalable=no">
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black">
+
+	   <link rel="stylesheet" href="../../mui/css/mui.min.css"/>
+	   <link rel="stylesheet" href="../../jxm/css/jxm.css">
+	   <style type="text/css">
+    	.mui-bar {
+			-webkit-box-shadow: none;
+			box-shadow: none;
+		}
+		
+		
+		.iconfont, .mui-icon-search{
+			font-size:24px;
+		}
+		.mui-table-view:before {
+			height: 0;
+		}
+    </style>
+	   
+	   
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav mui-bar-primary">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<h1 class="mui-title"></h1>
+			<a class="mui-icon mui-pull-right icon-header mui-hidden" id="add">
+				<i class="iconfont icon-xinjian1"></i>
+			</a>
+		</header>
+		<div class="mui-content"></div>
+	</body>
+	<script src="../../mui/js/mui.min.js"></script>
+	<script src="../../jxm/js/jxm.js"></script>
+	<script type="text/javascript">
+		
+		mui.plusReady(function(){
+			var self = plus.webview.currentWebview();
+			var url = self.url;
+			var addUrl = self.addUrl;
+			var id = url.substring(url.lastIndexOf("/")+1);
+			var backUrlId = self.backUrlId;
+			var data = self.data;
+			if(!addUrl){
+				document.getElementById("add").classList.add('mui-hidden')
+			}else{
+				document.getElementById("add").classList.remove('mui-hidden');
+				//打开新建页面
+		  		document.getElementById('add').addEventListener('tap', function(){
+		  			jxm.open(addUrl);
+		  		});
+			}
+			
+			if(backUrlId){
+				//返回
+				mui.back = function(){
+			  		jxm.backHome(backUrlId);
+			  		var target = plus.webview.getWebviewById(id);
+			  		if(target){
+			  			target.close();
+			  		}
+			  		self.close();
+			  	}
+			}
+			
+			document.body.querySelector(".mui-title").innerHTML = self.title;
+			
+			mui.init({
+				gestureConfig:{
+					doubletap:true
+				},
+				subpages:[{
+					url:url,
+					id:id,
+					styles:{
+						top: '45px',
+						bottom: '0px',
+					},
+					extras:{
+						data:data
+					}
+				}]
+			});
+		});
+		
+		
+	
+		var contentWebview = null;
+		document.querySelector('header').addEventListener('doubletap',function () {
+			if(contentWebview==null){
+				contentWebview = plus.webview.currentWebview().children()[0];
+			}
+			contentWebview.evalJS("mui('#pullrefresh').pullRefresh().scrollTo(0,0,100)");
+		});
+	</script>
+
+</html>

@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+    <title>消息-含及时消息</title>
+    <link rel="stylesheet" href="../../mui/css/mui.min.css"/>
+    <link rel="stylesheet" href="../../jxm/css/jxm.css">
+    <style>
+		.icon-left {
+			padding-top: 12px !important;
+		}
+		.mui-title {/*挡住了左上角的图标*/
+			left: 50px !important;
+		}
+		
+		input[type=search] {
+			height: 38px;
+			font-size: 15px;
+			line-height: 30px !important;
+			padding-top: 10px;
+			padding-left: 40px !important;
+			margin:5px 0 !important;
+			background-color:#efeff4;
+			border-radius: 0;
+		}
+		input[type=search]:focus {
+			background-color:#fff;
+		}
+		.mui-search.mui-active:before {
+			padding-left: 5px;
+			padding-top: 8px;
+		}
+		.mui-search .mui-icon-clear {
+			margin-top: 8px;
+		}
+		.mui-search .mui-placeholder {
+			top:8px;
+		}
+		
+		.mui-table-view:after {
+			height: 0;
+		}/*解决最后一条消息不出现两条线*/
+		.mui-table-view-cell.msg-item:last-child {
+			height: 69px;
+		}
+		.mui-media-object .iconfont {
+			color: #fff;
+			font-size: 28px;
+		}
+		.mui-media-object .mui-icon {
+			color: #fff;
+		}
+		.mui-media-object {
+			margin: 0 !important;
+			margin-right: 10px !important;
+			height:48px !important;
+			line-height:48px !important;
+			width:48px !important;
+			max-width:48px !important;
+		}
+		.mui-media-green {
+			background-color:limegreen;
+		}
+		.mui-media-blue {
+			background-color:darkturquoise;
+		}
+		.mui-media-grey {
+			background-color:lavender;
+		}
+		.mui-media-warn {
+			background-color:orange;
+		}
+		.mui-media-grey .mui-icon {
+			padding: 10px;
+		}
+		.mui-table-view .mui-table-view-cell.mui-media-icon .mui-media-body:after {
+			left: 0px;
+			background-color:#D8D8D8;
+		}
+		.mui-media-title {
+			padding: 12px 0;
+		}
+		.mui-media-msg {
+			padding: 2px 0;
+		}
+		
+		.mui-media-object .mui-badge {
+			position: absolute;
+			top: 6px;
+			left: 48px;
+			vertical-align: top;
+		}
+		.face {
+			width: 50px !important;
+			height: 50px !important;
+			line-height: 50px !important;
+		    max-width: 50px !important;
+		}
+		
+		.fast-plus {
+			position: fixed;
+			bottom: 15px;
+			right: 15px;
+			width: 60px;
+			height: 60px;
+			z-index: 20;
+			padding: 5px 4px;
+			border-radius: 30px;
+			background-color:gold;/*coral*/
+		}
+		.fast-plus .mui-icon {
+			color: #fff;
+			font-weight: bold;
+			font-size: 50px;
+		}
+		
+		.daiban {
+			padding: 2px 4px;
+		}
+		.gonggao {
+			padding: 5px 10px;
+		}
+		.tongzhi {
+			padding: 5px 10px;
+		}
+	</style>
+</head>
+<body>
+	<header class="mui-bar mui-bar-nav1 mui-bar-primary mui-hidden">
+		<a class="mui-icon mui-pull-left icon-left"><i class="iconfont icon-saoma1"></i></a>
+		<h1 id="title" class="mui-title">消息</h1>
+		<span id="im-chat.html" class="mui-icon mui-pull-right">
+			<i class="iconfont icon-xiaoxi1"></i>
+		</span>
+	</header>
+	<div class="mui-content">
+
+		<ul class="mui-table-view">
+			<li class="mui-table-view-cell mui-media mui-media-icon msg-menu" id="im-check">
+				<a class="mui-navigate-right">
+					<div class="mui-media-object mui-media-green mui-pull-left daiban">
+						<span class="mui-icon"><i class="iconfont icon-daiban"></i></span>
+					</div>
+					<span class="mui-badge mui-badge-danger mui-hidden">0</span>
+					<div class="mui-media-body mui-media-title">
+						待办
+					</div>
+				</a>
+			</li>
+			<li class="mui-table-view-cell mui-media mui-media-icon msg-menu" id="im-news">
+				<a class="mui-navigate-right">
+					<div class="mui-media-object mui-media-blue mui-pull-left gonggao">
+						<span class="mui-icon"><i class="iconfont icon-gonggao"></i></span>
+					</div>
+					<span class="mui-badge mui-badge-danger mui-hidden">0</span>
+					<div class="mui-media-body mui-media-title">
+						公告
+					</div>
+				</a>
+			</li>
+			<li class="mui-table-view-cell mui-media mui-media-icon msg-menu" id="im-notify">
+				<a class="mui-navigate-right">
+					<div class="mui-media-object mui-media-warn mui-pull-left tongzhi">
+						<span class="mui-icon"><i class="iconfont icon-tongzhi"></i></span>
+					</div>
+					<span class="mui-badge mui-badge-danger mui-hidden">0</span>
+					<div class="mui-media-body mui-media-title">
+						通知
+					</div>
+				</a>
+			</li>
+		</ul>
+		<script id='msg-template' type="text/template">
+			<% for(var key in pools){ 
+				var item = pools[key]; 
+				item.face = faceurl(key);
+			%>
+				<li class="mui-table-view-cell mui-slider-handle mui-media mui-media-icon msg-item" msg-sender="<%=(key)%>" msg-name="<%=(item.nickname)%>">
+					<div class="mui-media-object mui-pull-left mui-media-grey">
+					<% if(item.face) { %>
+						<img class="face" src="<%=(item.face)%>">
+					<% } else { %>
+						<span class="mui-icon"><i class="iconfont icon-wo-k"></i></span>
+					<% } %>
+					<% if(item.num > 0) { %>
+						<span class="mui-badge mui-badge-danger"><%=(item.num)%></span>
+					<% } %>
+					</div>
+					<p class="mui-pull-right"><%=(time(item.last.date))%></p>
+					<div class="mui-media-body mui-media-msg">
+						<%=(item.nickname)%>
+						<p class='mui-ellipsis'>
+						<% if(item.last.type=='text') { %>
+							<%=( item.last.content|| '&nbsp;&nbsp;') %>
+						<% } else if(item.last.type=='image' ) { %>
+							[图片]
+						<% } else if(item.last.type=='sound' ) { %>
+							[语音]
+						<% } else if(item.last.type=='file' ) { %>
+							[文件]
+						<% } %>
+						</p>
+					</div>
+				</li>
+			<% } %>
+		</script>
+		<ul id='msg-list' class="mui-table-view">
+			<div class="mui-inloader">加载消息...</div>
+		</ul>
+		
+		<div class="mui-input-row mui-search mui-hidden">
+			<input type="search" class="mui-input-clear" placeholder="搜索">
+		</div>
+		<div class="fast-plus mui-hidden">
+			<span class="mui-icon mui-icon-plusempty"></span>
+		</div>
+	</div>
+	
+	<!-- mui -->
+	<script src="../../mui/js/mui.min.js"></script>
+	<script src="../../mui/js/arttmpl.js"></script>
+    <!-- ytx sdk -->
+	<script src="../../lib/ytx/MD5.min.js"></script>
+	<script src="../../lib/ytx/base64.min.js"></script>
+    <script src="../../lib/ytx/ytx-web-im-min-new.js"></script>
+    <!-- jxm -->
+   	<script src="../../jxm/js/jxm.js"></script>
+	<script src="../../jxm/js/jxm-im.js"></script>
+	    
+	<script type="text/javascript" charset="UTF-8">
+		
+		mui.init({
+			gestureConfig: {
+				longtap: true //默认为false
+			}
+		});
+		
+		var chatwin;
+		mui.plusReady(function() {
+			console.log('............im.mui.plusready');
+			//避免白屏时间太长
+			setTimeout(function(){
+				//var t1 = (new Date()).getTime();
+				//预加载实时消息对话框
+				var chatid = "im-chat.html";
+				//直接创建比预载快2倍；但直接创建界面返回时不流畅
+				chatwin = mui.preload({id:chatid,url:chatid,styles:{popGesture:'hide'}});
+				
+				chatwin.addEventListener('hide',function(){
+					var cs = IM.chatSender;
+					console.log('chatwin.hide sender='+cs);
+					
+					//清除标记当前通信人标记
+					IM.chatSender = '';
+					
+					//清除新消息标记、修改最后一条消息内容
+					var obj = IM.pools[cs];
+					if (obj) updateItem(obj.last);
+				});
+				//var t2 = (new Date()).getTime();
+				//console.log("..............im login use time:" + (t2-t1));
+				//登录消息服务器
+				IM.init();
+				IM.login();
+			}, 100);
+			
+			 //后台查询消息数量
+	        var querynum = function(){
+	        	var hdcall = function(data){
+	        		if (!data) return;
+	        		updateNum('im-check', data.checknum);
+					updateNum('im-news', data.newsnum);
+	        	};
+	        	var params = "funid=wf_assign&eventcode=checknum";
+	        	jxm.post(params,hdcall,{hasmask:false});
+	        };
+	        querynum();
+	        
+		});
+		
+		//打开实时消息对话框
+		var showing = false;
+		var showChat = function(param){
+			if (showing) return;
+			showing = true;//避免重复点击
+			
+			//标记当前通信人
+			IM.chatSender = param.receiver;
+			
+			//获取消息数据
+			var obj = IM.pools[param.receiver];
+			if (obj) param.data = obj.data;
+			
+			//加载历史消息后，自动显示窗口
+			mui.fire(chatwin, 'startChat', param);
+			
+			setTimeout(function(){
+				showing = false; if (obj) obj.num = 0;
+			}, 500);
+		};
+		
+		var binding = false;
+		var msgList = document.getElementById("msg-list");
+		//把消息显示列表中，在IM监听方法中调用
+		jxm.bindList = function(pools) {
+			if (binding) return;
+			binding = true;//避免重复绑定
+			
+			var fn = function(st){return jxm.shortTime(st);};
+			var fn1 = function(userId){return jxm.getPhotoURL(userId);};
+			msgList.innerHTML = template('msg-template', {
+				"time": fn,
+				"faceurl": fn1,
+				"pools": pools
+			});
+			if (msgList.innerHTML.length == 0) {
+	        	msgList.innerHTML = '<div class="mui-inloader">没有消息</div>';
+	        }
+			
+			var msgItems = msgList.querySelectorAll('li.msg-item');
+			mui.each(msgItems,function(index,item){
+				item.addEventListener('tap', function(event) {
+					var name = item.getAttribute('msg-name');//发送人昵称
+					var sender = item.getAttribute('msg-sender');//发送人账号
+					
+					showChat({receiver:sender, nickname:name});
+				});
+				item.addEventListener('longtap', function(event) {
+					var sender = item.getAttribute('msg-sender');//发送人账号
+					
+					var btnArray = ['确认', '取消'];
+					var elem = this;
+					//如果用window.confirm方法会造成新的消息列表tap事件不响应的问题
+					mui.confirm('确认删除该消息？', '确认', btnArray, function(e) {
+						if (e.index == 0) {
+							elem.parentNode.removeChild(elem);
+							delete IM.pools[sender];
+						} else {
+							setTimeout(function() {
+								mui.swipeoutClose(elem);
+							}, 0);
+						}
+					});
+				
+				});
+			});
+			msgList.scrollTop = msgList.scrollHeight + msgList.offsetHeight;
+			
+			binding = false;
+		};
+		
+		//把消息显示到实时通信窗口
+		jxm.bindChat = function(msg) {
+			//获取当前通信人，判断是否有打开实时通信窗口
+			var cs = IM.chatSender;
+			if (cs.length == 0 || cs != msg.sender) return;
+			
+			if (chatwin.isVisible()) {
+				mui.fire(chatwin, 'chat', msg);
+			}
+		};
+			
+		//更新当前实时对话的消息列表状态
+		var updateItem = function(msg) {
+			var sender = msg.receiver;
+			if (sender == 'self') {
+				sender = msg.sender;
+			}
+			
+			var css = '.msg-item[msg-sender="'+sender+'"] div';
+			var items = msgList.querySelectorAll(css);
+			if (items.length == 2) {//一个是头像、一个昵称
+				//清除数量标记
+				var num = items[0].querySelector('.mui-badge');
+				if (num) items[0].removeChild(num);
+				//修改最近一条消息
+				var txt = items[1].querySelector('.mui-ellipsis');
+				if(msg.type=='text') {
+					txt.innerHTML = msg.content;
+				} else if(msg.type=='image' ) {
+					txt.innerHTML = '[图片]';
+				} else if(msg.type=='sound' ) {
+					txt.innerHTML = '[语音]';
+				} else if(msg.type=='file' ) {
+					txt.innerHTML = '[文件]';
+				}
+			} else {
+				//消息列表中没有此消息时要刷一次
+				jxm.bindList(IM.pools);
+			}
+		};
+		
+		//选择用户的界面发起消息
+		window.addEventListener('startChat', function(event){
+			var obj = event.detail;
+			showChat({receiver:obj.dataext, nickname:obj.dataname});
+		});
+		
+		//实时发送消息，im-chat.html中触发此事件
+		window.addEventListener('send', function(event){
+			var msg = event.detail;
+			//发送消息到服务器
+			IM.sendMsg(msg);
+			//更新列表中的状态
+			updateItem(msg);
+		});
+		
+		//更新语音消息是否阅读的标记
+		window.addEventListener('delnew', function(event){
+			var url = event.detail.content;
+			var user = event.detail.sender;
+			var rs = IM.pools[user];
+			
+			if (!rs) return;
+			[].forEach.call(rs.data, function(item, index) {
+				if (item.type == 'sound' && item.content == url) {
+					item.isnew = '';
+				}
+			});
+		});
+		
+		//发送消息进度
+		jxm.sending = function(msg){
+			mui.fire(chatwin,'sending',msg);
+		}
+		
+		//发送消息成功反馈
+		jxm.sendSucc = function(msg){
+			mui.fire(chatwin,'sendSucc',msg);
+		}
+		
+		//发送消息失败反馈
+		jxm.sendError = function(msg){
+			mui.fire(chatwin,'sendError',msg);
+		}
+		
+		//窗口关闭时保存消息池到本地库中；在IM登录后取出这份数据；当登录用户退出时清除消息
+		window.addEventListener('closeIM', function(event){
+			console.log('imwin.closeIM......');
+			localStorage.setItem("im-pools", JSON.stringify(IM.pools));
+			
+			//退出IM，避免离线消息获取版本不对的问题
+			IM.EV_logout();
+		});
+		//更新消息数量
+		window.addEventListener('updateNum', function(event){
+			var num = event.detail.checknum;
+			updateNum('im-check', num);
+		});
+		//更新公告数量
+		window.addEventListener('updateNum1', function(event){
+			var num = event.detail.checknum;
+			updateNum('im-news', num);
+		});
+		//更新通知数量
+		window.addEventListener('updateNum2', function(event){
+			var num = event.detail.checknum;
+			updateNum('im-notify', num);
+		});
+		//加载页面后从本地库中取出消息池数据
+        var pools = localStorage.getItem("im-pools");
+        if (pools) {
+        	IM.pools = mui.parseJSON(pools);
+        	jxm.bindList(IM.pools);
+        } else {
+        	msgList.innerHTML = '<div class="mui-inloader">没有企业消息</div>';
+        }
+        
+        //查看待办提醒、公告
+        var imcheck = document.getElementById("im-check");
+        imcheck.addEventListener("tap", function(){
+        	var id = "check-msg.html";
+        	jxm.open(id);
+        });
+        var imnews = document.getElementById("im-news");
+        imnews.addEventListener("tap", function(){
+        	jxm.open("../oa/oa-news-list.html");
+        });
+        //查看通知
+        document.getElementById("im-notify").addEventListener("tap", function(){
+        	jxm.open("notify-list.html");
+        });
+        
+        //更新消息数量
+        var updateNum = function(name, num) {
+        	if (typeof(num) == "undefined") return;
+			var check = document.getElementById(name).querySelector('.mui-badge');
+			check.innerHTML = num;
+			if (num && num > 0) {
+				check.classList.remove('mui-hidden');
+			} else {
+				check.classList.add('mui-hidden');
+			}
+        };
+        
+    </script>
+</body>
+</html>

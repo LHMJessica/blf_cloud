@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<title>休息申请</title>
+		<link rel="stylesheet" href="../../../mui/css/mui.min.css" />
+		<link rel="stylesheet" href="../../../jxm/css/jxm.css">
+		<link rel="stylesheet" type="text/css" href="../../../mui/css/main.css" />
+		<style type="text/css">
+			.mui-bar {
+				-webkit-box-shadow: none;
+				box-shadow: none;
+			}
+			
+			.head-search {
+				padding-top: 1px;
+				height: 50px !important;
+			}
+			
+			.head-search button {
+				height: 48px;
+				width: 18%;
+				border: none;
+				border-radius: 0 !important;
+				background-color: #f7f7f7;
+			}
+			
+			.head-search input {
+				width: 62%;
+				height: 50px;
+				border: none;
+			}
+			
+			.label-red {
+				padding-left: 5px;
+				color: red !important;
+			}
+			
+			.text-disabled {
+				background-color: #EEEEEE;
+			}
+			
+			.iconfont {
+				font-size: 24px;
+			}
+			
+			h5 {
+				font-size: 14px;
+				padding: 8px 5px 6px;
+				background-color: #efeff4;
+			}
+			
+			ul {
+				margin-block-start: 0em;
+				margin-block-end: 0em;
+				margin-inline-start: 0px;
+				margin-inline-end: 0px;
+			}
+			
+			.mspan {
+				margin-top: 2%;
+				overflow-x: scroll;
+				white-space: nowrap;
+				display: inline-block;
+				width: 9em;
+				overflow-y: hidden;
+				text-overflow: ellipsis;
+			}
+			
+			#check_user tr {
+				height: 60px;
+				border: 1px solid dodgerblue;
+			}
+			
+			td,
+			th {
+				text-align: center;
+			}
+			
+			.mui-table-view-cell {
+				padding: 3.8px 5px;
+				text-align: center;
+			}
+			
+			#check_user .mui-table-view-cell {
+				padding: 11px 15px;
+			}
+			
+			.input-row {
+				padding: 11px 15px;
+				vertical-align: middle;
+			}
+			
+			input,
+			select,
+			textarea {
+				border: 1px solid gainsboro !important;
+			}
+		</style>
+
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav mui-bar-primary">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<h1 class="mui-title" id="title">休息申请</h1>
+			<a class="mui-icon mui-pull-right icon-header" id="print_setting">
+				<i class="iconfont icon-icon-test"></i>
+			</a>
+		</header>
+		<nav class="mui-bar mui-bar-footer">
+			<center>
+				<button type="button" id="btnback" onclick="mui.back();" class="mui-btn mui-btn-primary mui-pull-left" style="width:30%;">返回</button>
+				<button type="button" id="btncommit" class="mui-btn mui-btn-primary mui-pull-right" style="width:30%;">提交</button>
+			</center>
+		</nav>
+		<div class="mui-content">
+			<div class="mui-input-group">
+				<h5>基本信息</h5>
+				<!--
+				<div class="mui-input-row">
+					<label style="width: 40%;">申请人：</label>
+					<input style="width: 60%;" type="text" id="user_name" readonly="readonly"></input>
+				</div>
+				<div class="mui-input-row">
+					<label style="width: 40%;">申请部门：</label>
+					<input style="width: 60%;" type="text" id="dept_name" readonly="readonly"></input>
+				</div>-->
+				<div class="input-row">
+					<label style="width: 35%;">申请日期</label>
+					<input style="width: 82%;" type="date" id="apply_date" required="required"></input>
+				</div>
+				<div class="input-row">
+					<label style="width: 35%;">申请工时</label>
+					<select style="width: 36%;" id="hour">
+						<option value="0">0</option>
+						<option value="1">1</option>
+						<option value="2">2</option>
+						<option value="3">3</option>
+						<option value="4">4</option>
+						<option value="5">5</option>
+						<option value="6">6</option>
+						<option value="7">7</option>
+						<option value="8">8</option>
+						<option value="9">9</option>
+						<option value="10">10</option>
+						<option value="11">11</option>
+						<option value="12">12</option>
+					</select><span>时</span>
+					<select style="width: 36%;" id="minuts">
+						<option value="0">0</option>
+						<option value="0.5">30</option>
+					</select><span>分</span>
+				</div>
+				<div class="input-row" style="height: auto;">
+					<label style="width: 35%;">申请原因</label>
+					<textarea style="width: 82%;vertical-align:top;height: 100px;" id="apply_desc" required="required"></textarea>
+				</div>
+				<h5 style="margin-bottom: 0px;">员工列表</h5>
+				<div class="data-table" style="overflow: auto;">
+					<div class="t_r" style="margin-left: 0px;">
+						<div class="t_r_t">
+							<table id="tableOne" style="width: 100%;">
+								<tbody>
+									<tr id="tableOneTh">
+										<th><span class='mspan'>姓名<span style="font-size: 12px;" id="counts"></span></span>
+										</th>
+										<th style="background-color: green;width: 25%;" id="select_user"><span class='mspan'>
+													<a style="color: #FFFFFF;"><span class="mui-icon mui-icon-personadd-filled"></span>添加员工</a>
+											</span>
+										</th>
+									</tr>
+								</tbody>
+							</table>
+						</div>
+						<ul id="check_user" style="width: 100%;" class="mui-table-view">
+						</ul>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<script src="../../../mui/js/mui.min.js"></script>
+		<script src="../../../jxm/js/jxm.js"></script>
+		<script src="../../../jxm/js/JxDao.js"></script>
+		<script src="../../../jxm/js/jxm-image-input.js"></script>
+		<script src="../../util/jxm-util.js"></script>
+		<script src="../../../Resources/js/jquery-3.3.1.min.js"></script>
+		<script src="../../../Resources/js/juicer-min.js"></script>
+		<script src="../../../Resources/js/juicerUtil.js"></script>
+		<script type="text/javascript" charset="UTF-8">
+			mui.init({
+				swipeBack: false //关闭-右滑关闭功能
+			});
+
+			//页面初始化完成加载此方法
+			mui.plusReady(function() {
+				dateFormat(jxm.getTimeStamp());
+			});
+			/**
+			 * 格式化日期  参数格式 YYYYMMddHHmmss
+			 * @param {Object} date
+			 */
+			var dateFormat = function(date) {
+				var year = date.substr(0, 4);
+				var month = date.substr(4, 2);
+				var day = date.substr(6, 2);
+				var hh = date.substr(8, 2);
+				var mm = date.substr(10, 2);
+				var str = year + "-" + month + "-" + day;
+				$("#apply_date").val(str);
+			}
+			//选择用户
+			var select_user = "select_user";
+			$("#select_user").click(function() {
+				var href = "../util/select-user1.html";
+				var param = {
+					callbackWinId: mui.currentWebview.id,
+					callbackEvent: select_user,
+					dept_id: jxm.getDeptId()
+				};
+				jxm.open(href, {
+					extras: {
+						selectParams: param
+					}
+				});
+
+			});
+			window.addEventListener(select_user, function(e) {
+				var obj = e.detail.selectdata;
+				var str = "";
+				$.each(obj, function(i, rs) {
+					var data = rs;
+					str += "<li class='mui-table-view-cell'>" +
+						"<div class='mui-slider-right mui-disabled'>" +
+						"<a class='mui-btn mui-btn-red'>删除</a>" +
+						"</div>" +
+						"<div class='mui-slider-handle' style='text-align:center' id='" + data.dataid + "'>" +
+						data.dataname +
+						"</div>" +
+						"</li>"
+				});
+				$("#check_user").html(str);
+				if($("#check_user .mui-table-view-cell").length >= 0) {
+					$('#counts').html("&nbsp;(" + $("#check_user .mui-table-view-cell").length + "人)");
+				}
+			});
+
+			var btnArray = ['确认', '取消'];
+			$('#check_user').on('tap', '.mui-btn', function(event) {
+				var elem = this;
+				var li = elem.parentNode.parentNode;
+				mui.confirm('确认删除该角色？', '提示', btnArray, function(e) {
+					if(e.index == 0) {
+						li.parentNode.removeChild(li);
+						if($("#check_user .mui-table-view-cell").length >= 0) {
+							$('#counts').html("&nbsp;(" + $("#check_user .mui-table-view-cell").length + "人)");
+						}
+					} else {
+						setTimeout(function() {
+							$.swipeoutClose(li);
+						}, 0);
+					}
+				});
+
+			});
+
+			//上报按钮
+			$('#btncommit').on('click', function(e) {
+				var user_name = jxm.getUserName();
+				var user_id = jxm.getUserId();
+				var dept_name = jxm.getDeptName();
+				var dept_id = jxm.getDeptId();
+				var apply_desc = $('#apply_desc').val();
+				var hour = $('#hour').val();
+				var minuts = $('#minuts').val();
+				var apply_date = $('#apply_date').val();
+
+				var users = $("#check_user").find(".mui-slider-handle");
+				var user_ids = new Array();
+				for(var i = 0; i < users.length; i++) {
+					var userId = users.eq(i).attr("id");
+					user_ids.push(userId)
+				}
+				var user_names = new Array();
+				for(var i = 0; i < users.length; i++) {
+					var userName = users.eq(i).html();
+					user_names.push(userName)
+				}
+				if(user_ids.length == 0) {
+					mui.toast("您还未选择用户");
+					return;
+				} else if(apply_desc == '') {
+					mui.toast("申请原因必填");
+					return;
+				} else if(hour == "0" && minuts == "0") {
+					mui.toast("申请工时必填");
+					return;
+				}
+				var params = "funid=app_full&eventcode=restApply&user_name=" + user_name + "&user_id=" + user_id + "&dept_name=" + dept_name + "&dept_id=" + dept_id;
+				params += "&apply_desc=" + apply_desc + "&work_hours=" + (parseInt(hour) + parseFloat(minuts)) + "&apply_date=" + apply_date + "&user_ids=" + user_ids + "&user_names=" + user_names;
+				console.log(params);
+				jxm.post(params, function(data) {
+					console.log(JSON.stringify(data));
+					mui.toast('提交成功');
+					pageClear();
+				});
+			});
+			//清空当前页面控件值
+			var pageClear = function() {
+				$('#apply_desc').val('');
+				$('#hour').val('0');
+				$("#minuts").val('0');
+				$('#check_user').html("");
+				$('#counts').html("");
+			}
+		</script>
+	</body>
+
+</html>

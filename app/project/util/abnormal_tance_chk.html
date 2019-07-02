@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+    <title>异常信息</title>
+    <link rel="stylesheet" href="../../../mui/css/mui.min.css" />
+		<link rel="stylesheet" href="../../../jxm/css/jxm.css">
+		<link rel="stylesheet" href="../../../ddcg/css/ddcgIcon.css">
+		<style type="text/css">
+			.mui-bar {
+				-webkit-box-shadow: none;
+				box-shadow: none;
+			}
+			
+			.head-search {
+				padding-top: 1px;
+				height: 50px !important;
+			}
+			
+			.head-search button {
+				height: 48px;
+				width: 18%;
+				border: none;
+				border-radius: 0 !important;
+				background-color: #f7f7f7;
+			}
+			
+			.head-search input {
+				width: 62%;
+				height: 50px;
+				border: none;
+			}
+			
+			.label-red {
+				padding-left: 5px;
+				color: red !important;
+			}
+			
+			.text-disabled {
+				background-color: #EEEEEE;
+			}
+			
+			.iconfont {
+				font-size: 24px;
+			}
+			
+			h5 {
+				font-size: 14px;
+				padding: 8px 5px 6px;
+				background-color: #efeff4;
+			}
+			
+			.d {
+				height: 32px;
+				width: 100%;
+				margin-top: 2%;
+			}
+			
+			.d5 {
+				margin-left: 5%;
+			}
+			
+			.d10 {
+				margin-left: 10%;
+			}
+			
+			.d11 {
+				margin-left: 12%;
+			}
+			
+			#addPopover {
+				position: fixed;
+				top: 0;
+				right: 0;
+				bottom: 0;
+				left: 0%;
+				z-index: 998;
+				background-color: rgba(0, 0, 0, .4);
+			}
+			
+			.listtip {
+				padding-top: 20px;
+				text-align: center;
+				background-color: white;
+				height: 140px;
+				color: #CCCCCC;
+			}
+			
+			.mui-input-row .mui-btn {
+				border: none !important;
+			}
+			
+			.mui-input-row {
+				height: auto !important;
+			}
+			
+			.addContent {
+				position: absolute;
+				left: 0;
+				top: 20px;
+			}
+		</style>
+
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav mui-bar-primary">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<h1 class="mui-title" id="title">异常信息</h1>
+			<a class="mui-icon mui-pull-right icon-header" id="print_setting">
+				<i class="iconfont icon-icon-test"></i>
+			</a>
+		</header>
+
+		<nav class="mui-bar mui-bar-footer">
+			<center>
+				<button type="button" id="btnback" onclick="mui.back();" class="mui-btn mui-btn-primary mui-pull-left" style="width:30%;">返回</button>
+			</center>
+		</nav>
+		<div class="mui-content">
+			<form class="mui-input-group">
+				<h5>工单信息</h5>
+				<div class="mui-input-row">
+					<label style="width: 40%;">工单号：</label>
+					<input style="width: 60%;" type="text" id="div_code" readonly="readonly"></input>
+				</div>
+				<div class="mui-input-row">
+					<label style="width: 40%;">款号：</label>
+					<input style="width: 60%;" type="text" id="sp_code" readonly="readonly"></input>
+				</div>
+				<div class="mui-input-row">
+					<label style="width: 40%;">品名：</label>
+					<input style="width: 60%;" type="text" id="sp_name" readonly="readonly"></input>
+				</div>
+				<div class="mui-input-row">
+					<label style="width: 40%;">工单数量：</label>
+					<input style="width: 60%;" type="text" id="div_num" readonly="readonly"></input>
+				</div>
+				<h5>异常信息</h5>
+				<div class="mui-input-row">
+					<label style="width: 40%;">上报时间：</label>
+					<input style="width: 60%;" type="text" id="report_date" readonly="readonly"></input>
+				</div>
+				<div class="mui-input-row">
+					<label style="width: 40%;">上报人：</label>
+					<input style="width: 60%;" type="text" id="report_user" readonly="readonly"></input>
+				</div>
+				<div class="mui-input-row">
+					<label style="width: 40%;">异常类型：</label>
+					<input style="width: 60%;" type="text" id="excep_name" readonly="readonly"></input>
+				</div>
+				<div class="mui-input-row">
+					<label style="width: 40%;">异常描述：</label>
+					<textarea style="width: 60%;height: 50px;" type="text" id="excep_desc" readonly="readonly"></textarea>
+				</div>
+				<div class="mui-input-row">
+					<label style="width: 40%;">责任人：</label>
+					<input style="width: 60%;" type="text" id="repair_user" readonly="readonly"></input>
+				</div>
+				<div class="mui-input-row">
+					<label style="width: 40%;">处理建议：</label>
+					<textarea style="width: 60%;height: 50px;" type="text" id="repair_memo" readonly="readonly"></textarea>
+				</div>
+				<div class="mui-input-row">
+					<label style="width: 40%;">要求完成时间：</label>
+					<input style="width: 60%;" type="text" id="req_time" readonly="readonly"></input>
+				</div>
+				<h5>图片信息</h5>
+				<div class="jxm-image-input">
+					<div id='image-list' class="image-list">
+					</div>
+				</div>
+			</form>
+		</div>
+		
+	<script src="../../../mui/js/mui.min.js"></script>
+	<script src="../../../jxm/js/jxm.js"></script>
+	<script src="../../../jxm/js/JxDao.js"></script>
+	<script src="../../../jxm/js/json2.js"></script>
+	<script src="../../util/jxm-util.js"></script>
+	<script src="../../../Resources/js/jquery-3.3.1.min.js"></script>
+	<script src="../../../Resources/js/juicer-min.js"></script>
+	<script src="../../../Resources/js/juicerUtil.js"></script>
+	<script type="text/javascript" charset="UTF-8">
+      	mui.init({
+      		swipeBack:false //关闭-右滑关闭功能
+      	});
+      	var except_id = null;
+      	//页面初始化完成加载此方法
+      	mui.plusReady(function(){
+      		except_id = mui.currentWebview.selectParams.cache;
+      		loadPage();
+	    });
+	    //页面加载执行方法
+  		var loadPage = function(){
+  		    var params = "funid=app_full&eventcode=qryExcepMes&report_id="+except_id;
+  		    jxm.post(params,function (data) {
+  		    	console.log(JSON.stringify(data))
+  		    	$("#div_code").val(data.div_code);
+  		    	$("#div_num").val(data.div_num);
+  		    	$("#sp_code").val(data.sp_code);
+  		    	$("#sp_name").val(data.sp_name);
+  		    	$("#report_date").val(data.report_date);
+  		    	$("#report_user").val(data.report_user);
+  		    	$("#excep_name").val(data.excep_name);
+  		    	$("#excep_desc").val(data.excep_desc);
+  		    	$("#repair_user").val(data.repair_user);
+  		    	$("#repair_memo").val(data.repair_memo);
+  		    	$("#req_time").val(data.req_time);
+  		    });
+  		};
+  		
+    </script>
+</body>
+</html>

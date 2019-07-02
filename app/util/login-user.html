@@ -1,0 +1,158 @@
+<!DOCTYPE html> 
+<html class="ui-page-login">
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+	<title>Jxm 登录</title>
+	<link href="../../mui/css/mui.min.css" rel="stylesheet"/>
+	<link href="../../jxm/css/jxm.css" rel="stylesheet"/>
+	<style>
+		.mui-input-group {
+			margin-top: 10px;
+		}
+		.mui-input-group:first-child {
+			margin-top: 20px;
+		}
+		.spliter {
+			color: #bbb;
+			padding: 0px 8px;
+		}
+		.link-area {
+			display: block;
+			margin-top: 25px;
+			text-align: center;
+		}
+	</style>
+
+</head>
+
+<body>
+	<header id="login_header" class="mui-bar mui-bar-nav mui-bar-primary mui-hidden">
+		<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+		<h1 class="mui-title">登录</h1>
+	</header>
+	
+	<div id="login_content" class="mui-content mui-hidden">
+		<div class="mui-content-padded">
+			<form class="mui-input-group">
+				<div class="mui-input-row">
+					<label>账号</label>
+					<input id='user_code' type="text" class="mui-input-clear mui-input" placeholder="账号/手机号/邮箱">
+				</div>
+				<div class="mui-input-row mui-password">
+					<label>密码</label>
+					<input id='user_pwd' type="password" class="mui-input-clear mui-input" placeholder="请输入密码">
+				</div>
+			</form>
+		</div>
+		<div class="mui-margin20">
+			<button id="login_btn" type="button" class="mui-btn mui-btn-block mui-btn-primary" style="margin-left: 5%;">登录</button>
+		</div>
+	</div>
+	
+	<script src="../../mui/js/mui.min.js"></script>
+	<script src="../../jxm/js/jxm.js"></script>
+	<script src="../../lib/ytx/base64.min.js"></script>
+	<script>
+		var sw;
+		//登录信息
+		var appid = 'jxm';
+		var appinfo = '';
+		var timestamp = jxm.getTimeStamp();
+			
+		mui.init();
+		
+		mui.plusReady(function() {
+			//取推送信息
+			var os = plus.os.name.toLowerCase();
+			var cid = plus.push.getClientInfo().clientid;
+			appinfo = '{"os_name"="'+os+'","push_cid"="'+cid+'"}';
+		
+		});
+		
+		//判断加载登录页面，还是加载主页
+		mui.ready(function(){
+			//处理登录页面
+			doLogin();
+		});
+		
+		//加载登录页面并绑定事件
+		var doLogin = function(){
+			//显示登录页面
+			document.getElementById("login_header").classList.remove('mui-hidden');
+			document.getElementById("login_content").classList.remove('mui-hidden');
+			
+			//处理登录事件绑定
+			var loginBtn = document.getElementById("login_btn");
+			//登录方法
+			var login = function(){
+				if (window.plus) sw = plus.nativeUI.showWaiting();
+				
+				var user_code = document.getElementById("user_code").value;
+				var user_pwd = document.getElementById("user_pwd").value;
+				var is_keep = false;//取自动登录
+				//密码加密传输
+				user_pwd = Base64.encode(user_pwd);
+				
+				var hdcall=function(data){
+					if (sw) sw.close();
+					
+					if(data.success == true || data.success == 'true' ){
+						var info = data.data.info;
+						var isone = data.data.isone;
+						if (isone) {
+							info.is_keep = is_keep;
+							var json = JSON.stringify(info);
+							//保存登录会话信息
+							localStorage.setItem('cur_user', json);
+							
+							//打开主界面
+							window.location.href = "../../home.html";
+						} else {
+							if (info.length > 1) {
+								var json = JSON.stringify(info);
+								localStorage.setItem('is_keep', is_keep);
+								localStorage.setItem('select_tenants', json);
+								localStorage.setItem('user_and_pwd', user_code+";"+user_pwd);
+								
+								window.location.href = "login-tenant.html";
+							} else {
+								mui.toast("登录返回信息格式错误！");
+							}
+						}
+					} else {
+						mui.toast(data.message);
+					}
+				};
+			
+			    var params = "not_verify=1&eventcode=cloud_login&funid=login_event&appinfo="+appinfo+
+			    			 "&appid="+ appid +"&timestamp="+ timestamp +
+			    			 "&user_code="+ user_code +"&user_pwd="+ user_pwd;
+				mui.ajax(jxm.getURL(true), {
+					data:params,
+					dataType:'json',//服务器返回json格式数据
+					type:'post',//HTTP请求类型
+					timeout:10000,//超时时间设置为10秒；
+					success:hdcall,
+					error:function(xhr,type,errorThrown){
+						if (sw) sw.close();
+						console.log(jxm.getURL());
+						console.log(type);
+						mui.toast('连接服务器失败！');
+					}
+				});
+			};
+			
+			//给登录按钮绑定登录事件
+			loginBtn.addEventListener("tap", login);
+		};
+		
+		mui.back = function() {
+			jxm.confirm('确认退出？', function(){
+				if (window.plus) plus.runtime.quit();
+			});
+		};
+	</script>
+</body>
+
+</html>

@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+    <title>待办</title>
+    <link rel="stylesheet" href="../../mui/css/mui.min.css"/>
+    <link rel="stylesheet" href="../../jxm/css/jxm.css">
+    <style>
+		.mui-table-view-cell.msg-item a {
+			padding-top: 15px;
+			padding-bottom: 15px;
+		}
+		.mui-content>.mui-table-view:first-child {
+			margin-top: 0;
+		}
+		.mui-table-view .mui-table-view-cell:after {
+			left: 0px;
+			background-color:#D8D8D8;
+		}
+		.msg-title {
+			font-size: 14px;
+	    	padding: 12px 5px 8px;
+		}
+		.mui-ellipsis-2 {
+			padding-right: 15px;
+		}
+	</style>
+</head>
+<body>
+	<header class="mui-bar mui-bar-nav mui-bar-primary">
+		<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+		<h1 id="title" class="mui-title">待办</h1>
+		<span id="reload" class="mui-pull-right mui-icon mui-icon-reload"></span>
+	</header>
+	<div class="mui-content">
+		<ul id='msg-list' class="mui-table-view mui-hidden"></ul>
+		<div class="mui-loader">加载中...</div>
+	</div>
+	
+	<script src="../../mui/js/mui.min.js"></script>
+   	<script src="../../jxm/js/jxm.js"></script>
+	<script type="text/javascript" charset="UTF-8">
+		mui.init();
+		
+		var msgList = document.getElementById("msg-list");
+		var loadMsg = function() {
+			var params = 'funid=wf_assign&eventcode=checkmsg';
+			jxm.post(params, function(data){
+				if (!data) {
+					jxm.loadhint(msgList, false);
+					return;
+				}
+				
+				var datas = data.checkmsg.concat(data.replymsg);
+				//添加外部系统审批消息
+				var others = data.otherserver;
+				if (others) {
+					for(var k in others) {
+						var kms = data[k];//取外部审批消息
+						datas = datas.concat(kms);
+					}
+				}
+				//加载待办消息
+				var str = '', cnum = 0;
+				mui.each(datas, function(i, obj){
+					var record = obj;
+					
+					str += '<li class="mui-table-view-divider msg-title">'+ record.title +'</li>';
+					var msgs = record.data;
+					cnum += msgs.length;
+					mui.each(msgs, function(n, msg) {
+						var title = msg.edituser || record.title;
+						var st = jxm.shortTime(msg.editdate||'');
+						
+						str += 
+							'<li class="mui-table-view-cell msg-item" skey="'+ record.skey +
+								'" msgtype="'+ record.msgtype +
+								'" funid="'+ record.funid +'" dataid="'+ msg.dataid +
+								'" taskid="'+ msg.taskid +'" apppage="'+ record.apppage +'">'+
+								'<a class="mui-navigate-right" >'+ 
+									'<p class="mui-pull-right">'+st+'</p>'+
+									title +
+									'<p class="mui-ellipsis-2">'+msg.theme+'</p>'+
+								'</a>'+
+							'</li>';
+					});
+				});
+				msgList.innerHTML = str;
+				jxm.loadhint(msgList, (str.length>0));
+				//更新标记数量
+				var imwin = plus.webview.getWebviewById("im-main");
+				mui.fire(imwin, 'updateNum', {checknum:cnum});
+								
+				var msgItems = msgList.querySelectorAll('li.msg-item');
+				mui.each(msgItems, function(index, item){
+					item.addEventListener('tap', function(event) {
+						var msgtype = item.getAttribute('msgtype');
+						var sinfo = null, skey = item.getAttribute('skey');
+						if (others && skey && skey.length > 0) {
+							sinfo = others[skey];//外部系统信息格式如：{ds:'', url:''}
+						}
+							
+						var obj = {
+							server:sinfo,
+							funid:item.getAttribute('funid'),
+							dataid:item.getAttribute('dataid'),
+							taskid:item.getAttribute('taskid'),
+							theme:item.querySelector('a>p').innerHTML
+						};
+						
+						if (msgtype == "check") {
+							var id = "check-work.html";
+							mui.openWindow({
+			      				url:id,
+			      				id:id,
+			      				extras:obj
+			      			});
+						} else if (msgtype == "reply") {
+							var workpage = item.getAttribute('apppage');
+							if (!workpage || workpage.length == 0) {
+								mui.toast('没有找到页面文件！');
+							} else {
+								jxm.open(workpage, {extras:{dataid:obj.dataid}});
+							}
+						}
+					});
+				});
+			});
+		};
+		
+		mui.ready(function(){
+			loadMsg();
+			
+			window.addEventListener('reload', function(){
+				loadMsg();
+			});
+			document.getElementById("reload").addEventListener("tap", function(){
+				loadMsg();
+			});
+		});
+		
+    </script>
+</body>
+</html>

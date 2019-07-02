@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+    <title>反馈历史列表</title>
+    <link rel="stylesheet" href="../../mui/css/mui.min.css"/>
+    <link rel="stylesheet" href="../../jxm/css/jxm.css">
+    <style type="text/css">
+    	.mui-bar {
+			-webkit-box-shadow: none;
+			box-shadow: none;
+		}
+		.head-search {
+			padding-top: 1px;
+			height: 50px !important; 
+		}
+		.head-search button {
+			height: 48px; 
+			width: 18%;
+			border: none;
+			border-radius: 0 !important;
+			background-color:#f7f7f7;
+		}
+		.head-search input {
+			width:62%; 
+			height: 50px; 
+			border: none;
+			font-size: 14px;
+		}
+		.iconfont, .mui-icon-search{
+			font-size:24px;
+		}
+		.mui-table-view:before {
+			height: 0;
+		}
+    </style>
+    
+</head>
+<body>
+	<header class="mui-bar mui-bar-nav mui-bar-primary">
+		<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+		<h1 class="mui-title">意见反馈</h1>
+		<a class="mui-icon mui-pull-right icon-header" id="add">
+			<i class="iconfont icon-xinjian1"></i>
+		</a>
+		<a class="mui-icon mui-pull-right icon-header mui-hidden"  id="filter">
+			<i class="iconfont icon-shaixuan"></i>
+		</a>
+	</header>
+	
+	<div class="mui-content">
+		<div id='main-list' class="mui-indexed-list mui-hidden">
+			<!--数据列表-->
+			<ul  class="mui-table-view mui-table-view-striped mui-table-view-condensed"></ul>
+		</div>
+		<div class="mui-loader">加载中...</div>
+		
+	</div>
+	
+	<script src="../../mui/js/mui.min.js"></script>
+	<script src="../../jxm/js/jxm.js"></script>
+	<script src="../util/jxm-util.js"></script>
+	<script src="../util/combo-data.js"></script>
+	<script type="text/javascript" charset="UTF-8">
+      	mui.init();
+      	
+      	mui.plusReady(function(){
+      		var self = plus.webview.currentWebview();
+      		loadList();
+	    });
+	    
+		var loadtype = '0'; //加载数据方式，0默认加载，1筛选条件
+		var loadparams = null;//
+		
+  		//加载
+  		var loadList = function(keyword){
+  			var html = '';
+  			var hdcall = function(data) {
+  				var mainlist = document.getElementById('main-list');
+  				if (!data.root || data.root.length == 0) {
+  					jxm.loadhint(mainlist, false);
+  					return;
+  				}
+  				mui.each(data.root, function(i, obj){
+					var record = obj;
+					
+					html += '<li class="mui-table-view-cell" data-id="'+ record.sys_question__que_id +'" >';
+				    html +=    '<div class="mui-table">';
+				    html +=    '<div class="mui-table-cell mui-col-xs-10 mui-ellipsis">';
+				    html +=    record.sys_question__que_desc;
+				    html +=    '<p>'+jxm.shortTime(record.sys_question__report_date)+'</p>';
+				    html +=    '</div>';
+				    html +=    ' <div class="mui-table-cell mui-col-xs-2 mui-text-right">';
+				   var stateText = jxm.getComboText(ComboData.questatus, record.sys_question__que_status);
+				    var stateColor = '';
+				    if (stateText == '已否决') {
+				    	stateColor = 'mui-badge-warning';
+				    } else if (stateText == '已上报' || stateText == '已完成') {
+				    	stateColor = 'mui-badge-primary';
+				    } else if (stateText == '处理中') {
+				    	stateColor = 'mui-badge-success';
+				    }
+				    html +=  '<span class="mui-badge '+ stateColor +'">'+ stateText +'</span>';
+				    html +=  '  </div>';
+				    html +=  '</div>';
+				    html +=  ' </li>';
+  				});
+  				mui('.mui-indexed-list ul')[0].innerHTML = html;
+  				jxm.loadhint(mainlist, (html.length > 0));
+  				
+  			};
+  			var session = jxm.getSession();
+      		var userid = session.user_id;
+  			//发送请求
+  			var params = 'funid=queryevent&eventcode=query_data&query_funid=que_report&limit=50&start=0';
+			params += '&where_sql=sys_question.report_userid = ?';
+			params += '&where_type=string';
+			params += '&where_value='+userid;
+			jxm.post(params, hdcall);
+  		};
+  		
+  		//加载数据
+  		mui.ready(function(){
+  		});
+  		
+  		
+		//打开新建页面
+  		document.getElementById('add').addEventListener('tap', function(){
+  			jxm.open('feedback.html');
+  		});
+  		
+  		
+  		window.addEventListener('load-data', function(event){
+  			var data = event.detail;
+  			loadparams = data;
+  			if (!mui.isEmptyObject(loadparams)) {
+  				loadtype = '1';
+  			} else {
+  				loadtype = '0';
+  			}
+			loadList();
+		});
+	  	
+	  	//点击请假列表查看审批信息
+  		mui('.mui-indexed-list ul').on('tap', 'li', function(){
+  			var appid = this.getAttribute("data-id");
+  			jxm.open('feedback-info.html',{extras:{dataid:appid, funid:'que_done'}});
+  		});
+	  	
+	  	
+	  	mui.back = function(){
+	  		jxm.backHome('set');
+	  	}
+    </script>
+</body>
+</html>

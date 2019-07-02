@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+    <title>内部文件</title>
+    
+	<link href="../../mui/css/mui.min.css" rel="stylesheet" />
+	<link href="../../mui/css/mui.indexedlist.css" rel="stylesheet" />
+	<link href="../../jxm/css/jxm.css" rel="stylesheet" />
+	<style>
+		.mui-bar {
+			-webkit-box-shadow: none;
+			box-shadow: none;
+		}
+		.mui-media-object {
+			margin: 0 !important;
+			margin-right: 10px !important;
+			height:48px !important;
+			line-height:48px !important;
+			width:48px !important;
+			max-width:48px !important;
+		}
+		.mui-table-view .mui-table-view-cell.mui-media-icon .mui-media-body:after {
+			left: 70px;
+			background-color:#D8D8D8;
+		}
+		.mui-indexed-list {
+			height: 100%;
+		}
+		.mui-indexed-list-item {
+			padding-right: 10px;
+			line-height: 50px;
+		}
+		.folder {
+			width: 50px !important;
+			height: 50px !important;
+			line-height: 50px !important;
+		    max-width: 50px !important;
+		}
+	</style>
+</head>
+<body>
+	<header class="mui-bar mui-bar-nav mui-bar-primary">
+		<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+		<h1 class="mui-title">内部文件</h1>
+	</header>
+	<footer class="mui-bar mui-bar-footer mui-hidden">
+		<center>
+		<button type="button" id="btn-select" class="mui-btn mui-btn-primary" style="width: 60%;">确定</button>
+		</center>
+	</footer>
+	<div class="mui-content">
+		<div id='main-list' class="mui-indexed-list">
+			<div class="mui-indexed-list-alert"></div>
+			<div class="mui-indexed-list-inner">
+				<div class="mui-indexed-list-empty-alert">没有数据</div>
+				<ul id="data-list" class="mui-table-view noline" data-index="0">
+					<li data-system="fs1" data-name="_www" data-isdir=true class="mui-table-view-cell mui-indexed-list-item mui-media mui-media-icon">
+				   		<div onclick="clickFile(this);" class="mui-navigate-right">
+				   			<div class="mui-media-object mui-pull-left">
+								<img class="folder" src="../../jxm/img/file_type/folder.jpg" />
+							</div>
+							<div class="mui-media-body">_www</div>
+						</div>
+					</li>
+					<li data-system="fs2" data-id="2" data-name="_doc" data-isdir=true class="mui-table-view-cell mui-indexed-list-item mui-media mui-media-icon">
+				   		<div onclick="clickFile(this);" class="mui-navigate-right">
+				   			<div class="mui-media-object mui-pull-left">
+								<img class="folder" src="../../jxm/img/file_type/folder.jpg" />
+							</div>
+							<div class="mui-media-body">_doc</div>
+						</div>
+					</li>
+					<li data-system="fs3" data-id="3" data-name="_documents" data-isdir=true class="mui-table-view-cell mui-indexed-list-item mui-media mui-media-icon">
+				   		<div onclick="clickFile(this);" class="mui-navigate-right">
+				   			<div class="mui-media-object mui-pull-left">
+								<img class="folder" src="../../jxm/img/file_type/folder.jpg" />
+							</div>
+							<div class="mui-media-body">_documents</div>
+						</div>
+					</li>
+					<li data-system="fs4" data-id="4" data-name="_downloads" data-isdir=true class="mui-table-view-cell mui-indexed-list-item mui-media mui-media-icon">
+				   		<div onclick="clickFile(this);" class="mui-navigate-right">
+				   			<div class="mui-media-object mui-pull-left">
+								<img class="folder" src="../../jxm/img/file_type/folder.jpg" />
+							</div>
+							<div class="mui-media-body">_downloads</div>
+						</div>
+					</li>
+				</ul>
+			</div>
+		</div>
+		
+		<div class="mui-loader">加载中...</div>
+	</div>
+	
+    <script src="../../mui/js/mui.min.js"></script>
+	<script src="../../jxm/js/jxm.js"></script>
+	<script type="text/javascript" charset="utf-8">
+		mui.init();
+		mui.plusReady(function(){
+			var fspath = [];//存储文件夹实体对象
+			var dirtitle = [];//存储当前的标题路径
+			var page_back = mui.back;
+			var firststr = document.getElementById("data-list").innerHTML;
+			
+			var showDocsData = function(fsname, parentname) {
+				var mainList = document.getElementById('main-list');
+				var dataList = document.getElementById("data-list");
+				
+				//显示文件列表：[{name:xx, isdir:xx},...]
+				var showFiles = function(data){
+	  				var str = "";
+					[].forEach.call(data, function(item){
+						var img = jxm.fileTypeImg('txt');
+						str += '<li data-system="'+fsname+'" data-name="'+item.name+'" data-isdir='+item.isdir
+									+' class="mui-table-view-cell mui-media '
+									+(item.isdir ? 'mui-indexed-list-item  mui-media-icon':'')+'">'+
+							   		'<div class="mui-slider-right mui-disabled">'+
+							   			'<a onclick="deleteAll(this);" class="mui-btn mui-btn-yellow">全部删除</a>'+
+										'<a onclick="deleteItem(this);" class="mui-btn mui-btn-red">删除</a>'+
+									'</div>'+
+							   		'<div onclick="clickFile(this);" class="mui-slider-handle">'+
+										(item.isdir ? '<img class="folder mui-media-object mui-pull-left" src="../../jxm/img/file_type/folder.jpg" />' :
+											'<img class="folder mui-media-object mui-pull-left" src="'+img+'" />') +
+										'<div class="mui-media-body">'+
+											item.name+
+											(!item.isdir ? '<p class="mui-ellipsis">'+item.name+'</p>' : '') +
+										'</div>'+
+									'</div>'+
+								'</li>';
+					});
+					dataList.innerHTML = str;
+					jxm.loadhint(mainList, (str.length > 0));
+					//用于返回上一级参数
+					document.querySelector('.mui-title').innerHTML = parentname;
+	  			};
+				
+				//读取指定文件夹
+				var readPath = function(entry) {
+					var dirReader = entry.createReader();
+						dirReader.readEntries( function( entries ){
+							var i, f, datas = [];
+							//构建文件夹内容
+							for( i=0; i < entries.length; i++ ) {
+								f = entries[i];
+								datas[i] = {name:f.name, isdir:f.isDirectory};
+							}
+							showFiles(datas);
+						}, function ( e ) {
+							mui.toast(e.message);
+						} );
+				};
+				
+				if (fspath.length == 0) {
+					//读取根目录中的文件
+					var v = parseInt(fsname.charAt(2));
+					plus.io.requestFileSystem( v, function(vfs){
+						fspath.push(vfs.root);
+						readPath(vfs.root);
+					} );
+				} else {
+					//读指定文件夹中的文件
+					var entry = fspath[fspath.length-1];
+					var dirReader = entry.createReader();
+						dirReader.readEntries( function( entries ){
+							var i, f, datas = [];
+							//查找指定的文件夹
+							for( i=0; i < entries.length; i++ ) {
+								f = entries[i];
+								if (f.name == parentname && f.isDirectory) {
+									readPath(f);
+									fspath.push(f);
+								}
+							}
+						}, function ( e ) {
+							mui.toast(e.message);
+						} );
+					
+				}
+				
+			};
+			
+			//传递父节点点击执行的方法
+			mui.back = function(){
+			 	var dataList = document.getElementById("data-list");
+			 	var mainList = document.getElementById("main-list");
+			 	
+				var fsname = dataList.getAttribute('data-system');
+				var index = dataList.getAttribute('data-index');
+				index = parseInt(index);
+				
+				if (index == 0) {
+					page_back();
+				} else if(index == 1){
+					fspath = [];
+					dirtitle = [];
+					dataList.setAttribute('data-index', 0);
+					dataList.innerHTML = firststr;
+					jxm.loadhint(mainList, true);
+					document.querySelector('.mui-title').innerHTML = "内部文件";
+				}else{
+					var num =  index-1;
+					dataList.setAttribute('data-index', num);
+					//移除对象
+					dirtitle.pop();
+					fspath.pop();
+					if (fspath.length > 0) fspath.pop();
+					var pname = dirtitle[num-1];
+					showDocsData(fsname, pname);
+				}
+			};
+			
+			//打开一个文件
+			var _openFile = function(pname) {
+				var path = '';
+				for (var i = 0; i < dirtitle.length; i++) {
+					path += dirtitle[i]+'/';
+				}
+				path += pname;
+				console.log('_openFile path='+path);
+				
+				var wait = plus.nativeUI.showWaiting("正在打开文件...");
+				plus.runtime.openFile(path, {}, function(e){
+	                wait.close();
+	                mui.alert( "无法打开此文件","我的软件" );
+	            });
+	            wait.close();
+			};
+			//删除一个文件
+			var _delFile = function(pname, hd) {
+				var path = '';
+				for (var i = 0; i < dirtitle.length; i++) {
+					path += dirtitle[i]+'/';
+				}
+				path += pname;
+				console.log('_delFile path='+path);
+				
+				plus.io.resolveLocalFileSystemURL( path, function( entry ) {
+					entry.remove( function(file){
+						hd();
+					} );
+				}, function ( e ) {
+					mui.toast(e.message );
+				} );
+			};
+			//删除当前目录中的全部文件
+			var _delAllFile = function() {
+				var entry = fspath[fspath.length-1];
+				var dirReader = entry.createReader();
+				dirReader.readEntries( function( entries ){
+					for( var i=0; i < entries.length; i++ ) {
+						var f = entries[i];
+						if (!f.isDirectory) {
+							f.remove();
+							console.log('_delAllFile filename='+f.name);
+						}
+					}
+					mui.back();
+				}, function ( e ) {
+					mui.toast(e.message);
+				} );
+			};
+						
+			window.clickFile = function(elem){
+				var dataList = document.getElementById("data-list");
+	  			var index = dataList.getAttribute('data-index');
+	  			index = parseInt(index);
+	  			
+	  			var li = elem.parentNode;
+	  			var isdir = li.getAttribute("data-isdir");//是否文件夹
+	  			var pname = li.getAttribute("data-name");//文件名称
+	  			var fsname = li.getAttribute("data-system");//哪个文件系统
+	  			
+	  			if (isdir === false || isdir == 'false') {
+	  				_openFile(pname);
+	  				return;
+	  			}
+	  			
+	  			dataList.setAttribute('data-system', fsname);
+	  			dataList.setAttribute('data-index', index+1);
+	  			
+	  			if(index == 0) dirtitle = [];
+	  			dirtitle[index] = pname;
+	  			
+	  			//console.log('clickFile fsname='+fsname+'; pname='+pname+'; index='+index);
+	  			showDocsData(fsname, pname);
+			};
+			
+			window.deleteItem = function(elem){
+				var li = elem.parentNode.parentNode;
+				var btnArray = ['确认', '取消'];
+				mui.confirm('确认删除该条记录？', '内部文件', btnArray, function(e) {
+					if (e.index == 0) {
+						var pname = li.getAttribute("data-name");//文件名称
+						_delFile(pname, function(){
+							li.parentNode.removeChild(li);
+						});
+					} else {
+						setTimeout(function() {
+							mui.swipeoutClose(li);
+						}, 0);
+					}
+				});
+			};
+			
+			window.deleteAll = function(elem){
+				var li = elem.parentNode.parentNode;
+				var btnArray = ['确认', '取消'];
+				mui.confirm('确认删除当前目录中的全部文件？', '内部文件', btnArray, function(e) {
+					if (e.index == 0) {
+						_delAllFile();
+					} else {
+						setTimeout(function() {
+							mui.swipeoutClose(li);
+						}, 0);
+					}
+				});
+			};
+		});
+	</script>
+</body>
+</html>

@@ -1,0 +1,135 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title>报工退回</title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link rel="stylesheet" href="../../../mui/css/mui.min.css" />
+		<link rel="stylesheet" href="../../../jxm/css/jxm.css">
+		<link rel="stylesheet" type="text/css" href="../../../mui/css/icons-extra.css" />
+		<style>
+			.mui-table h4,
+			.mui-table h5,
+			.mui-table .mui-h5,
+			.mui-table .mui-h6,
+			.mui-table p {
+				margin-top: 0;
+			}
+			
+			.mui-table h4 {
+				line-height: 21px;
+				font-weight: 500;
+			}
+			
+			.mui-table .oa-icon {
+				position: absolute;
+				right: 0;
+				bottom: 0;
+			}
+			
+			.mui-table .oa-icon-star-filled {
+				color: #f14e41;
+			}
+		</style>
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav mui-bar-primary">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<h1 class="mui-title" id="title">报工退回</h1>
+		</header>
+		<!--<nav class="mui-bar mui-bar-footer">
+			<center>
+				<button type="button" id="btnback" class="mui-btn mui-btn-primary mui-pull-left" style="width:30%;">重新上报</button>
+				<button type="button" id="btncommit" class="mui-btn mui-btn-primary mui-pull-right" style="width:30%;">取消上报</button>
+			</center>
+		</nav>-->
+		<div class="mui-content">
+			<ul class="mui-table-view mui-table-view-striped mui-table-view-condensed" id="datas">
+				<li class="mui-table-view-cell">
+					<div class="mui-table">
+						<div class="mui-table-cell mui-col-xs-12">
+							<h4 class="mui-ellipsis">工单编号：PC190026-A</h4>
+							<div class="mui-table">
+								<p class="mui-h5 mui-ellipsis mui-table-cell mui-col-xs-6">退回人：李四</p>
+								<p class="mui-h5 mui-ellipsis mui-table-cell mui-col-xs-6">退回时间：2019-06-25</p>
+							</div>
+							<div class="mui-table">
+								<p class="mui-h5 mui-ellipsis mui-table-cell mui-col-xs-6">产品：P1197</p>
+								<p class="mui-h5 mui-ellipsis mui-table-cell mui-col-xs-6">工序：穿孔打结</p>
+							</div class="mui-table">
+							<div class="mui-table">
+								<p class="mui-h5 mui-ellipsis mui-table-cell mui-col-xs-6">数量：500</p>
+								<p class="mui-h5 mui-ellipsis mui-table-cell mui-col-xs-6">上报时间：2019-06-24</p>
+							</div>
+						</div>
+					</div>
+				</li>
+			</ul>
+		</div>
+		<script src="../../../mui/js/mui.min.js"></script>
+		<script src="../../../jxm/js/jxm.js"></script>
+		<script src="../../../jxm/js/jxm-image-input.js"></script>
+		<script src="../../util/jxm-util.js"></script>
+		<script src="../../../Resources/js/jquery-3.3.1.min.js"></script>
+		<script src="../../../Resources/js/juicer-min.js"></script>
+		<script src="../../../Resources/js/juicerUtil.js"></script>
+		<script type="text/javascript">
+			mui.init()
+			mui.plusReady(function () {
+				appendData();
+			})
+			mui("#datas").on("tap","li",function () {
+				var det_id=$(this).attr("dataid");
+				var href = "../util/processes_rework.html";
+				var param = {
+					callbackWinId: mui.currentWebview.id,
+					callbackEvent:"view_item",
+					det_id: det_id
+				};
+				jxm.open(href, {
+					extras: {
+						selectParams: param
+					}
+				});
+			});
+			/**
+			 * 行选择事件回调函数
+			 */
+			window.addEventListener("view_item", function(e) {
+				
+			});
+			var appendData = function() {
+				var params = "funid=app_full&eventcode=qryReturnWorkList&user_id=" + jxm.getUserId();
+				$("#datas").children().remove();
+				jxm.post(params, function(data) {
+					$.each(data, function(i,rs) {
+						var html = '<li class="mui-table-view-cell" dataid="'+rs.det_id+'">' +
+						'<div class="mui-table">' +
+						'<div class="mui-table-cell mui-col-xs-12">' +
+						'<h4 class="mui-ellipsis">工单编号：'+rs.div_code +'</h4>' +
+						'<div class="mui-table">' +
+						'<p class="mui-h5 mui-ellipsis mui-table-cell mui-col-xs-6">退回人：'+rs.check_user+'</p>' +
+						'<p class="mui-h5 mui-ellipsis mui-table-cell mui-col-xs-6">退回时间：'+rs.return_date+'</p>' +
+						'</div>' +
+						'<div class="mui-table">' +
+						'<p class="mui-h5 mui-ellipsis mui-table-cell mui-col-xs-6">产品：'+rs.sp_name+'</p>' +
+						'<p class="mui-h5 mui-ellipsis mui-table-cell mui-col-xs-6">工序：'+rs.process_name+'</p>' +
+						'</div class="mui-table">' +
+						'<div class="mui-table">' +
+						'<p class="mui-h5 mui-ellipsis mui-table-cell mui-col-xs-6">数量：'+rs.work_num+'</p>' +
+						'<p class="mui-h5 mui-ellipsis mui-table-cell mui-col-xs-6">上报时间：'+rs.work_date+'</p>' +
+						'</div>' +
+						'</div>' +
+						'</div>' +
+						'</li>';
+						$("#datas").append(html);
+					});
+				})
+			}
+		</script>
+
+	</body>
+
+</html>

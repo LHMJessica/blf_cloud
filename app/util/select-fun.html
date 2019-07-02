@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html>
+	<meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+    <link rel="stylesheet" href="../../mui/css/mui.min.css"/>
+    <link rel="stylesheet" href="../../jxm/css/jxm.css">
+    <style>
+		.icon-left {
+			padding-top: 12px !important;
+		}
+		/* app line */
+		.mui-media-object {
+			margin: 0 !important;
+			margin-right: 12px !important;
+		}
+		.mui-media-object .iconfont {
+			color: #00AAEF;
+			font-size: 26px;
+		}
+	</style>
+	<body>
+		<header class="mui-bar mui-bar-nav mui-bar-primary">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<h1 class="mui-title">功能设置</h1>
+		</header>
+		<div class="mui-content">
+			<script id='oa-all-done' type="text/template">
+				<ul class="mui-table-view noline">
+					<% for(var i in record){
+						var funs = record[i].funs;
+						if(funs.length < 1) continue;
+						if(record.length != 1){
+							%><h5 style="padding: 5px 10px 5px;background-color: #efeff4;"><%= record[i].pack_name %></h5><%
+						}
+						for(var j in funs){
+							var item  = funs[j];
+						
+					%>
+						<li class="mui-table-view-cell mui-media mui-media-icon" pack-index="<%= i%>" fun-index="<%= j %>">
+				            <div class="mui-media-object mui-pull-left">
+								<i class="<%= item.fun_icon %>"></i>
+							</div>
+				            <% if(j < funs.length -1){ %>
+				           		 <div class="mui-media-body "><%= item.fun_name %></div>
+				            <% }else {%>
+				           	 	<div class="mui-media-body noline"><%= item.fun_name %></div>
+				            <% }%>
+					        <% if(!item.is_show || item.is_show =='1'){ %>   
+					        	<div class="mui-switch mui-active">
+									<div class="mui-switch-handle"></div>
+								</div>
+							<% }else { %>
+								<div class="mui-switch">
+									<div class="mui-switch-handle"></div>
+								</div>
+							<% }%>
+				        </li>
+						
+					<% } } %>
+				</ul>
+			</script>
+		</div>
+		<script src="../../mui/js/mui.min.js"></script>
+		<script src="../../mui/js/arttmpl.js"></script>
+		<script src="../../jxm/js/jxm.js"></script>
+	    <script type="text/javascript" charset="UTF-8">
+	      	mui.init();
+	      	
+	      	mui.plusReady(function(){
+	      		var self = plus.webview.currentWebview();
+	      		var type = self.type;
+	      		loadPage(type);
+	      		var backpage = mui.back;
+	      		
+	      		mui.back = function(){
+	      			var target = plus.webview.getWebviewById(type+'-main');
+	      			mui.fire(target,'refresh');
+	      			backpage();
+	      		}
+		    });
+		    
+		    
+		    
+		    var loadPage = function(type){
+		    	var str = localStorage.getItem('cur_user_menu_'+type);
+      			var data = JSON.parse(str);
+  				var allHtml = template('oa-all-done', {
+						"record": data.packs
+					});
+				document.body.querySelector('.mui-content').innerHTML = allHtml;
+				var h5 = document.getElementsByTagName("h5");
+				if(h5.length == 1){
+					h5[0].innerHTML ="";
+				}
+      			//圆角列表开关处理
+				mui('ul').on('tap','li>.mui-switch',function (e) {
+					var target = e.target;
+					var liNode = this.parentElement; 
+					var packIndex = liNode.getAttribute('pack-index');
+					var funIndex = liNode.getAttribute('fun-index');
+					if(target.classList.contains('mui-active')){
+						target.classList.remove('mui-active');
+						data.packs[packIndex].funs[funIndex].is_show = '0';
+						localStorage.setItem('cur_user_menu_'+type,JSON.stringify(data));
+					}else{
+						target.classList.add('mui-active');
+						data.packs[packIndex].funs[funIndex].is_show = '1';
+						localStorage.setItem('cur_user_menu_'+type,JSON.stringify(data));
+					}
+				});
+		    }
+		    
+	    </script>
+	</body>
+</html>

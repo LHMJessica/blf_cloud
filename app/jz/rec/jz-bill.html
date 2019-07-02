@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+    <title>发票登记</title>
+	<link rel="stylesheet" href="../../../mui/css/mui.min.css"/>
+    <link rel="stylesheet" href="../../../jxm/css/jxm.css">
+    <style type="text/css">
+   		.mui-bar {
+			-webkit-box-shadow: none;
+			box-shadow: none;
+		}
+		.head-search {
+			padding-top: 1px;
+			height: 50px !important; 
+		}
+		.head-search button {
+			height: 48px; 
+			width: 18%;
+			border: none;
+			border-radius: 0 !important;
+			background-color:#f7f7f7;
+		}
+		.head-search input {
+			width:62%; 
+			height: 50px; 
+			border: none;
+		}
+		.label-red {
+			padding-left: 5px;
+			color:red !important;
+		}
+		.iconfont{
+			font-size:24px;
+		}
+		h5 {
+	    	font-size: 14px;
+	    	padding: 8px 5px 6px;
+	    	background-color: #efeff4;
+	    }
+	    
+    </style>
+    
+</head>
+<body>
+	<header class="mui-bar mui-bar-nav mui-bar-primary">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<h1 class="mui-title">发票登记</h1>
+	</header>
+	
+	<nav class="mui-bar mui-bar-footer">
+		<button type="button" id="btnquery" class="mui-btn mui-btn-primary mui-btn-outlined mui-pull-left" style="width: 30%;" >查询</button>
+		<button type="button" id="btncommit" class="mui-btn mui-btn-primary mui-pull-right" style="width: 30%;">提交</button>
+	</nav>
+	
+	<div class="mui-content">
+		<form>
+			
+			<h5>基本信息</h5>
+			<div class="mui-input-group">
+				<div class="mui-input-row">
+					<label>项目名称<span class="label-red">*</span></label>
+					<input id='project_name' type="text" class="mui-input-clear" readonly="readonly" placeholder="请选择项目">
+					<input type="hidden" name="project_id" id="project_id" value="" />
+				</div>
+				<div class="mui-input-row">
+					<label>发票金额<span class="label-red">*</span></label>
+					<input id='bill_money' name="bill_money" type="number" class="mui-input" value="">
+				</div>
+				<div class="mui-input-row " style="height: 100px;">
+					<label>发票说明<span class="label-red">*</span></label>
+					<textarea name="bill_memo" id="bill_memo" rows="3" placeholder="请输入发票用途"></textarea>
+				</div>
+			</div>
+			
+			<h5>上传图片</h5>
+			<div class="jxm-image-input">
+				<div id='image-list' class="image-list"></div>
+			</div>
+			
+			<h5>其它信息</h5>
+			<div class="mui-input-group">
+				<div class="mui-input-row mui-hidden">
+					<label>状态</label>
+					<input type="number" name="auditing" id='auditing' class="mui-input" value="1">
+				</div>
+				<div class="mui-input-row" >
+					<label>日期</label>
+					<input id='edit_date' type="datetime-local" class="mui-input-clear" placeholder=""/>
+				</div>
+				<div class="mui-input-row">
+					<label>登记人</label>
+					<input type="text" name="edit_user" id='edit_user' class="mui-input" disabled="true" value="">
+					<input type="hidden" name="edit_userid" id="edit_userid" value="" />
+					<input type="hidden" name="bill_code" id="bill_code" value="" />
+					<input type="hidden" name="bill_id" id="bill_id" value="" />
+				</div>
+			</div>
+			
+		</form>
+	</div>
+	
+	<script src="../../../mui/js/mui.min.js"></script>
+	<script src="../../../jxm/js/jxm.js"></script>
+	<script src="../../../jxm/js/jxm-image-input.js"></script>
+	<script src="../../../app/util/jxm-util.js"></script>
+	<script type="text/javascript" charset="UTF-8">
+      	mui.init();
+      	
+      	mui.plusReady(function(){
+      		var self = plus.webview.currentWebview();
+      		var keyid = self.keyid;
+      		if (!keyid || keyid.length == 0) {
+      			newData();
+      		} else {
+      			showData(keyid);
+      		}
+      	});
+      	
+  		var newData = function(){
+  			//清除数据
+  			var mf = document.getElementsByTagName('form')[0];
+  			var inputs = mf.querySelectorAll('input,textarea');
+  			[].forEach.call(inputs, function(item) {
+  				if (item.id && item.id.length > 0) {
+  					item.value = '';
+  				}
+  			});
+			//清除图片
+			jxm.imgUI.newImageDiv();
+			//显示缺省值
+			document.getElementById('edit_user').value = jxm.getSession().user_name;
+			document.getElementById('edit_userid').value = jxm.getSession().user_id;
+			document.getElementById('edit_date').value = jxm.getTodayTime().replace(" ","T");
+			document.getElementById('bill_code').value = "xx";
+			document.getElementById('auditing').value = "1";
+  		};
+  		
+  		//载入数据
+  		var showData = function(keyid){
+  			if (!keyid || keyid.length == 0) return;
+  			
+  			var params ="eventcode=query_data&funid=queryevent&pagetype=grid&query_funid=jz_bill&limit=10&start=0";
+			params +="&where_sql=jz_bill.bill_id=?";
+			params +="&where_type=string";
+			params +="&where_value="+keyid;
+			jxm.post(params,function(data){
+				if(data&&data.root.length>0){
+					var obj = data.root[0];
+					var mf = document.getElementsByTagName('form')[0];
+		  			var inputs = mf.querySelectorAll('input,textarea');
+		  			[].forEach.call(inputs, function(item) {
+		  				if (item.id == 'edit_date') {
+		  					var ts = obj['jz_bill__edit_date'].replace(" ","T");
+		  					document.getElementById('edit_date').value = ts;
+		  				} else {
+		  					item.value = obj['jz_bill__'+item.id];
+		  				}
+		  			});
+				}
+			});
+			
+			//加载工单的图片
+			jxm.imgUI.downImages({dataid:keyid, tablename:'jz_bill', isedit:true, callback:function(){
+				jxm.imgUI.newImageDiv();
+			}});
+  		};
+      	window.addEventListener('load-data', function(event){
+  			var data = event.detail;
+  			var keyid = data.keyid;
+  			showData(keyid);
+		});
+  		
+  		//提交数据、保存、提交
+  		var commitData = function() {
+  			plus.nativeUI.showWaiting("正在提交,请耐心等候。。");
+  			
+  			var money = document.getElementById('bill_money').value;
+  			var bill_memo = document.getElementById('bill_memo').value;
+  			var project_name = document.getElementById('project_name').value;
+  			
+  			
+  			if (project_name.length == 0 || money.length == 0 || bill_memo.length == 0) {
+  				plus.nativeUI.closeWaiting();
+  				mui.alert('带*星号的信息必须填写！');
+  				return false;
+  			}
+  			
+  			var items = jxm.imgUI.imageList.querySelectorAll('div.image-item>img');
+			if (items.length == 0) {
+				plus.nativeUI.closeWaiting();
+  				mui.alert('必须要有拍照发票上传图片！');
+  				return false;
+			}
+  			
+  			var params = '';
+  			var e = encodeURIComponent;
+  			var mf = document.getElementsByTagName('form')[0];
+  			var inputs = mf.querySelectorAll('input,textarea');
+  			[].forEach.call(inputs, function(item) {
+  				if (item.id && item.id.length > 0) {
+  					var v = e(item.value);
+  					if (item.id == 'edit_date') {
+		  				v = jxm.dealDateTime(item.value);
+		  			}
+  					params += '&jz_bill__'+item.id+'='+v;
+  				}
+			});
+  			console.log('params='+params);
+  			
+  			var data_id = document.getElementById('bill_id').value;
+  			//回调函数：保存附件
+  			var hdcall = function(data) {
+  				console.log('hdcall data='+JSON.stringify(data));
+  				if (data_id.length > 0 && data.length == 0) {
+  					data = [{"keyid":data_id}];
+  				}
+				var params = {
+					dataid:data[0].keyid,
+					datafunid:'jz_bill',
+					callback:function(){
+						//清空原工单信息
+  						newData();
+  						jxm.imgUI.clearImage();
+  						
+  						setTimeout(function(){
+  							plus.nativeUI.closeWaiting();
+  							mui.toast('提交成功！');
+  						}, 500);
+					}
+				};
+				jxm.imgUI.uploadImages(params);
+  			};
+  			
+  			//发送请求
+			params = 'funid=jz_bill&keyid='+data_id+'&eventcode=save_eg'+params;
+			jxm.post(params, hdcall);
+  		};
+  		
+  		//打开数据查询页面
+  		var queryData = function(){
+  			var targetWin = plus.webview.getWebviewById('jz-bill-list.html');
+			if (targetWin) mui.fire(targetWin, 'load-data', {});
+  			jxm.open('../../util/pullrefresh_main.html',{extras:{title:'发票登记',url:'../jz/rec/jz-bill-list.html',backUrlId:'bus',addUrl:'../jz/rec/jz-bill.html'}});
+  		};
+  		
+  		//选择项目
+  		jxm.selectData('select-project', "../util/select-project.html", 'project_name', 'project_id');
+		
+		//提交记录
+		document.getElementById('btncommit').addEventListener('tap', commitData);
+		//查询记录
+		document.getElementById('btnquery').addEventListener('tap', queryData);
+		
+    </script>	
+</body>
+</html>

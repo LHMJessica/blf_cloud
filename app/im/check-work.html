@@ -1,0 +1,578 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+    <title>移动审批</title>
+    <link rel="stylesheet" href="../../mui/css/mui.min.css"/>
+    <link rel="stylesheet" href="../../jxm/css/jxm.css">
+    <style>
+	    .mui-content {
+	    	padding-bottom: 59px !important;
+	    }
+
+		.order-det {
+			width: 100%;
+			background-color: #FFFFFF;
+		}
+		.order-det tr th {
+			color: #929292;
+			font-weight: normal;
+			text-align: left;
+			padding: 6px 15px;
+			line-height: 30px;
+			/*background-color:#f7f7f7 !important;*/
+		}
+		.order-det tr td  {
+			padding: 8px;
+			font-size: 15px;
+			line-height: 30px;
+		}
+		.order-det tr td:first-child  {
+			padding-left: 15px;
+		}
+		.order-det tr:nth-of-type(even) {
+			background-color:#f7f7f7;
+		}
+	   	
+	    h5 {
+	    	font-size: 14px;
+	    	padding: 8px 5px 6px;
+	    	background-color: #efeff4;
+	    }
+	    
+	    .mui-bar-footer {
+	    	height: 60px;
+	    }
+	    .mui-bar-footer .mui-btn {
+	    	height: 46px;
+	    	padding-top: 8px;
+	    }
+	    
+	    .mui-media-object {
+			margin: 0 !important;
+			margin-right: 10px !important;
+			height:48px !important;
+			line-height:48px !important;
+			width:48px !important;
+			max-width:48px !important;
+		}
+		.mui-media-body {
+			padding-top: 12px;
+		}
+		.mui-table-view .mui-table-view-cell:after {
+			left: 0px;
+			background-color:#D8D8D8;
+		}
+		.check-time {
+			padding-top: 10px;
+		}
+		.check-time:before {
+			  content: ''; 
+			  position: absolute; 
+			  top: -15px;
+			  right: 40px; 
+			  height: 150%; 
+			  width: 2px; 
+			  background-color:#D8D8D8; 
+		}
+		.check-time:after {
+			  content: ''; 
+			  position: absolute; 
+			  top: 11px; 
+			  right: 32px;
+			  height: 14px; 
+			  width: 14px; 
+			  border-radius: 10px;
+			  border: 2px solid #D8D8D8;
+			  background-color:#FFF; 
+		}
+		#hischeckList.mui-table-view .mui-table-view-cell:after {
+			left: 120px;
+			background-color:#D8D8D8;
+		}
+		
+		.check-footer {
+			position: fixed;
+			bottom: 0;
+		    right: 0;
+		    left: 0;
+			padding: 8px;
+			background-color: #f7f7f7;
+		    -webkit-box-shadow: 0 0 1px rgba(0,0,0,.5);
+		    box-shadow: 0 0 1px rgba(0,0,0,.5);
+		}
+		.check-desc {
+			border-radius: 0; 
+			border-width: 1px 0 0 0; 
+			margin: 0;
+		}
+		.check-btnuser {
+			width: 150px; 
+			margin-right: 5px;
+		}
+		.check-btnok {
+			width: 50%;
+		}
+	</style>
+</head>
+<body>
+	<header class="mui-bar mui-bar-nav mui-bar-primary">
+		<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+		<h1 class="mui-title"><span id="type_title">审批</span> <span id="pageTitle"></span></h1>
+		<input type="hidden" id="type_value" value="Y">
+	</header>
+	<footer class="mui-bar mui-bar-footer">
+		<button id="btn-ok" class="mui-btn mui-btn-green mui-btn-outlined" style="width: 32%;">同意</button>
+		<button id="btn-back" class="mui-btn mui-btn-danger mui-btn-outlined" style="width: 32%;">不同意</button>
+		<button id="btn-tran" class="mui-btn mui-btn-warning mui-btn-outlined" style="width: 32%;">转发</button>
+	</footer>
+	
+	<div class="mui-content mui-hidden">
+	
+		<div id="item1" class="mui-control-content">
+					
+			<h5 id="ordertheme"><!--DB201604000001 公司行政部  资产调拨--></h5>
+			<textarea id="checkdesc" class="check-desc" placeholder="请输入审批意见"></textarea>
+			
+			<div class="check-footer">
+				<center>
+				<div id="nextuser" class="mui-pull-left">
+					<button type="button" id="select-user" class="mui-btn mui-btn-white check-btnuser"><span class="label-red">*</span>请选择接收人...</button>
+					<input type="hidden" name="next_user" id="next_user" value="">
+					<input type="hidden" name="next_userid" id="next_userid" value="" />
+				</div>
+				
+				<button type="button" id="btnaudit" class="mui-btn mui-btn-primary check-btnok">确定</button>
+				</center>
+			</div>
+		</div>
+				
+		<div id="item2" class="mui-control-content mui-active">
+			<div id="orderContent">
+				<h5 id="orderTitle"><!--资产调拨信息--></h5>
+					
+				<ul id="orderGrid" class="mui-table-view jxm-form">
+					<!--
+					<li class="mui-table-view-cell"><label>调拨单号：</label><span>DB201604000001</span></li>
+					<li class="mui-table-view-cell"><label>调出部门：</label><span>公司行政部</span></li>
+					<li class="mui-table-view-cell"><label>调入部门：</label><span>公司销售部</span></li>
+					<li class="mui-table-view-cell"><label>制单日期：</label><span>2016-04-14</span></li>
+					<li class="mui-table-view-cell"><label>调拨原因：</label><span>使用部门变更。</span></li>
+					-->
+				</ul>
+			</div>
+				
+			<div id="orderDetail">
+				<!--
+				<h5 id="orderDetTitle">调拨资产明细</h5>
+				<table id="orderDetGrid" class="order-det">
+					<tr>
+						<th width="40%">设备信息</th>
+						<th width="30%">原使用部门</th> 
+						<th width="30%">新使用部门</th>
+					</tr>
+					<tr>
+						<td>ZC201211000003 液压输油泵</td>
+						<td>公司研发部</td>
+						<td>公司研发部</td>
+					</tr>
+					<tr>
+						<td>ZC201211000003 液压输油泵</td>
+						<td>公司研发部</td>
+						<td>公司研发部</td>
+					</tr>
+					<tr>
+						<td>ZC201211000003 液压输油泵</td>
+						<td>公司研发部</td>
+						<td>公司研发部</td>
+					</tr>
+				</table>
+				-->
+			</div>
+				
+			<h5>相关附件 [<span id='attach-num'>0</span>]</h5>
+			<ul id="fileDetail" class="mui-table-view">
+		        <!--
+		        <li class="mui-table-view-cell mui-media mui-col-xs-4">
+		            <a href="#" title="调拨单.doc">
+		                <img class="mui-media-object" src="../images/file_type/docx.png">
+		                <div class="mui-media-body">调拨单.doc</div></a></li>
+		        <li class="mui-table-view-cell mui-media mui-col-xs-4">
+		            <a href="#" title="调拨设备明细.xls">
+		                <img class="mui-media-object" src="../images/file_type/xlsx.png">
+		                <div class="mui-media-body">调拨设备明细.xls</div></a></li>
+		        <li class="mui-table-view-cell mui-media mui-col-xs-4">
+		            <a href="#" title="马达.jpg">
+		                <img class="mui-media-object" src="http://localhost:8080/jd/fileAction.do?funid=sys_attach&pagetype=editgrid&eventcode=fdown&attach_field=sp_image&dataid=2&table_name=sp_catalog&datafunid=sp_catalog&dataType=byte&&nousercheck=1&dc=1461729868687">
+		                <div class="mui-media-body">马达.jpg</div></a></li>
+		        -->
+		    </ul>	
+		    
+			<h5>审批意见 [<span id='check-num'>0</span>]</h5>
+			<ul id="hischeckList" class="mui-table-view"></ul>
+		</div>
+	</div><!--//end mui-content-->
+	<div class="mui-loader">加载中...</div>
+	
+	<script src="../../mui/js/mui.min.js"></script>
+	<script src="../../jxm/js/jxm.js"></script>
+	<script type="text/javascript" charset="UTF-8">
+	  	mui.init();
+		
+		var winHeight = 600;//窗体高度
+		var mainlist = document.querySelector('.mui-content');
+		
+		mui.ready(function(){
+			var page_back = mui.back;
+			
+			var item1 = document.getElementById("item1");
+			var item2 = document.getElementById("item2");
+			var footer = document.querySelector("footer");
+			var typeTitle = document.getElementById("type_title");
+			var typeValue = document.getElementById("type_value");
+			
+			var item_back = function() {
+				footer.hidden = false;
+				item1.classList.remove("mui-active");
+				item2.classList.add("mui-active");
+				typeTitle.innerHTML = '审批';
+				clearUser();
+				
+				mui.back = page_back;
+			};
+			var item_check = function(type) {
+				footer.hidden = true;
+				item2.classList.remove("mui-active");
+				item1.classList.add("mui-active");
+				
+				mui.back = item_back;
+				typeValue.value = type;
+				
+				var desc = document.getElementById('checkdesc');
+				var nextuser = document.getElementById('nextuser');
+				if (type == 'Y') {
+					typeTitle.innerHTML = '同意';
+					desc.value = '同意';
+					nextuser.classList.add('mui-hidden');
+				} else if (type == 'E') {
+					typeTitle.innerHTML = '不同意';
+					desc.value = '不同意，退回给提交人';
+					nextuser.classList.add('mui-hidden');
+				} else if (type == 'F') {
+					typeTitle.innerHTML = '转发';
+					desc.value = '转发给你审核';
+					nextuser.classList.remove('mui-hidden');
+				}
+				setTimeout(function(){
+					desc.focus();
+					jxm.openKeyboard();
+				}, 100);
+					
+				//计算文本区域的高度
+				var height = winHeight - 83 - //避免出现滚动条
+				document.getElementById('ordertheme').offsetHeight -
+				document.querySelector('.check-footer').offsetHeight;
+				desc.style.height = height+'px';
+			};
+			
+			document.getElementById("btn-ok").addEventListener("tap", function(){
+				item_check('Y');
+			});
+			document.getElementById("btn-back").addEventListener("tap", function(){
+				item_check('E');
+			});
+			document.getElementById("btn-tran").addEventListener("tap", function(){
+				item_check('F');
+			});
+			
+			//选择转发人
+			var cbe = 'select-user';
+			document.getElementById("select-user").addEventListener('tap', function(){
+				var href = "../../app/util/select-user.html";
+				var param = {callbackWinId:mui.currentWebview.id, callbackEvent:cbe};
+				jxm.open(href,{extras:{selectParams:param}});
+			});
+			window.addEventListener(cbe, function(event){
+				var obj = event.detail;
+				document.getElementById('next_user').value = obj.dataname;
+				document.getElementById('next_userid').value = obj.dataid;
+				document.getElementById('select-user').innerHTML = '接收人: '+obj.dataname;
+			});
+			var clearUser = function(){
+				document.getElementById('next_user').value = '';
+				document.getElementById('next_userid').value = '';
+				document.getElementById('select-user').innerHTML = '<span class="label-red">*</span>请选择接收人...';
+			};
+		});
+
+	  	mui.plusReady(function(){
+	  		var self = plus.webview.currentWebview();
+	  		winHeight = plus.screen.resolutionHeight;
+	  		
+	  		//从审批消息页面获取参数
+	  		var server = self.server;	//外部系统信息:{ds:'', url:''}
+			var funid = self.funid;  	//功能ID
+			var dataid = self.dataid; 	//记录主键
+			var taskid = self.taskid;	//任务ID
+			var theme = self.theme; 	//消息标题
+			console.log("funid="+funid+";dataid="+dataid+";theme="+theme);
+			
+			/*var funid = 'asset_change';  	//功能ID
+			var dataid = 'jxstar13452'; 	//记录主键
+			var taskid = '1';	//任务ID
+			var theme = '调拨单';*/
+			
+			if (funid == null || dataid == null || taskid == null) {
+				//mui.alert('缺少参数！');
+				mui.back();
+				return;
+			}
+			
+			//点击确定按钮提交审批
+			document.getElementById("btnaudit").addEventListener("tap", function(){
+				var checktype = document.getElementById("type_value").value; //审批类型
+				var checkdesc = document.getElementById('checkdesc').value; //审批意见
+				var next_user = document.getElementById('next_user').value; //接收人
+				var next_userid = document.getElementById('next_userid').value; //接收人ID
+				var e = encodeURIComponent;
+				
+				var params = 'funid=wf_assign&eventcode=execheck&pagetype=chkgrid';
+				if (checktype == 'F') {
+					if (next_user.length == 0 || next_userid.length == 0) {
+						mui.alert('请选择接收人！');
+						return;
+					}
+					checktype = 'Y';
+					params += '&next_user='+e(next_user)+'&next_userid='+next_userid;
+				}
+				//checktype会修改，放在后面
+				params += '&check_type='+checktype+'&check_desc='+e(checkdesc)+'&taskid='+taskid;
+				//支持外部系统审批，直接发送请求到外部系统
+				var opts = null;
+				if (server) {
+					params += '&nousercheck=1';
+					opts = {serverurl:server.url+'/fileAction.do'};
+				}
+				
+				jxm.post(
+					params,
+					function(data){
+						mui.toast('提交成功！');
+						var w = plus.webview.getWebviewById('check-msg.html');
+						mui.fire(w, 'reload');
+						mui.currentWebview.close('auto');
+					},
+					opts
+				);
+			});
+			
+			
+			//加载审批意见
+			document.getElementById('hischeckList').innerHTML = ''; //去除原有审批意见
+			document.getElementById('ordertheme').innerHTML = '单据摘要：' + theme;
+			
+			//支持外部系统审批，指定外部系统数据源
+			var dsname = server ? server.ds : '';
+			var loadHisCheckHtml = function() {
+				jxm.post(
+					'funid=wf_assign&eventcode=hischeck&chk_funid='+funid+'&chk_dataid='+dataid+'&chk_dsname='+dsname,  
+					function(data){
+						//返回数据格式：
+						//{check_user, check_date, check_desc, node_title}
+						
+						var html = '';
+						if (data != null && data.length > 0) {
+							mui.each(data, function(i, obj){
+								var record = obj;
+								html += '<li class="mui-table-view-cell">'+
+								            '<div class="mui-table">'+
+								            	'<div class="mui-table-cell mui-col-xs-4 check-time">'+
+								                    '<span>'+ jxm.shortTime(record.check_date, true) +'</span>'+
+								                '</div>'+
+								                '<div class="mui-table-cell mui-col-xs-8">'+
+								                    record.check_user +'-'+ record.node_title +
+								                    '<p>'+ record.check_desc +'</p>'+
+								                '</div>'+
+								            '</div>'+
+								        '</li>';
+							});
+							
+							
+							document.getElementById('hischeckList').innerHTML = html;
+							document.getElementById('check-num').innerHTML = data.length;
+						} else {
+							document.getElementById('check-num').innerHTML = '0';
+						}
+						
+					}, {hasmask:false}
+				);
+			};
+			loadHisCheckHtml();
+			
+			//加载单据信息
+			document.getElementById('orderTitle').innerHTML = '';
+			document.getElementById('orderGrid').innerHTML = '';
+			document.getElementById('orderDetail').innerHTML = '';
+			document.getElementById('fileDetail').innerHTML = '';
+			var loadOrderInfoHtml = function() {
+				//支持外部系统审批，指定外部系统数据源
+				var dsname = server ? server.ds : '';
+				jxm.post(
+					'funid=wf_assign&eventcode=orderinfo&chk_funid='+funid+'&chk_dataid='+dataid+'&chk_dsname='+dsname,
+					function(data){
+						if (!data) {
+							jxm.loadhint(mainlist, false);
+							return;
+						}
+						//alert(JSON.stringify(data));
+						//加载单据主表内容
+						var order_title = data.order_content.title;
+						document.getElementById('pageTitle').innerHTML = order_title;
+						document.getElementById('orderTitle').innerHTML = order_title;
+						
+						//单据呈现扩展脚本
+						var incs = data.order_content.orderinc, inc = null;
+						if (incs.length > 0) {
+							inc = window.eval("("+incs+")");
+						}
+						
+						var order_content = data.order_content.data;
+						var orderhtml = '';
+						if (order_content != null) {
+							mui.each(order_content, function(n, obj){
+								var record = obj;
+								//是否有指定字段呈现方法
+								var rn = record.name, fn = null;
+								if (inc && inc[rn]) fn = inc[rn];
+								if (fn) {
+									if (typeof fn == "string") fn = window.eval("("+fn+")");
+									orderhtml += fn(record);
+								} else {
+								//标准字段呈现方法
+									var hiddent = record.hidden ? ' mui-hidden' : '';
+									orderhtml += '<li class="mui-table-view-cell'+ hiddent +'" name="'+ record.name +'">';
+									orderhtml += '<label>'+ record.title +'</label>';
+									orderhtml += '<span>'+ record.value +'</span></li>';
+								}
+							});
+							document.getElementById('orderGrid').innerHTML = orderhtml;
+							document.getElementById('item2').classList.remove('mui-hidden');
+						} else {
+							document.getElementById('item2').classList.add('mui-hidden');
+							return;
+						}
+						
+						//加载单据明细内容
+						var orderdethtml = '';
+						mui.each(data.order_detail, function(n, obj) {
+							var detGrid = obj;
+							
+							var detFunId = detGrid.funid;
+							orderdethtml += '<div>'; //明细功能
+							
+							var orderdet_title = detGrid.title;
+							//$('#orderDetTitle').html(orderdet_title); 
+							orderdethtml += '	<h5>'+orderdet_title+'</h5>';
+							
+							orderdethtml += '		<table class="order-det  mui-table-view">';
+							
+							//构建明细表格列
+							var colinfo = detGrid.colinfo;
+							orderdethtml += '<tr>';
+							mui.each(colinfo, function(n, obj){
+								var record = obj;
+								orderdethtml += '<th width="'+ record.width +'" name="'+ record.name +'">'+ record.title +'</th>';
+							});
+							orderdethtml += '</tr>';
+							
+							//构建明细合计：只有第2列或第3列才支持显示统计数据
+							var ci = colinfo, s2 = ci[1] && ci[1].stat, s3 = ci[2] && ci[2].stat;
+							var v2 = 0, v3 = 0;
+							
+							//加载明细表格数据
+							var order_detail = detGrid.data;
+							if (order_detail != null) {
+								if (order_detail.length > 0) {
+									mui.each(order_detail, function(i, obj){
+										var record = obj;
+										orderdethtml += '<tr>';
+										if (record.col1 != null) {
+											orderdethtml += '<td>'+ record.col1 +'</td>';
+										}
+										if (record.col2 != null) {
+											orderdethtml += '<td>'+ record.col2 +'</td>';
+											if (s2) v2 += parseFloat(record.col2);
+										}
+										if (record.col3 != null) {
+											orderdethtml += '<td>'+ record.col3 +'</td>';
+											if (s3) v3 += parseFloat(record.col3);
+										}
+										orderdethtml += '</tr>';
+									});
+								} else {
+									orderdethtml += '<tr><td colspan="'+ colinfo.length +'">无数据！</td></tr>';
+								}
+								//添加合计数据行
+								if (order_detail.length > 0 && (s2 || s3)) {
+									var r = order_detail[0];
+									orderdethtml += '<tr style="font-weight: bold;">';
+									orderdethtml += '<td>小计</td>';
+									if (r.col2) {
+										orderdethtml += '<td>'+ ((!s2 || isNaN(v2))?'':v2) +'</td>';
+									}
+									if (r.col3) {
+										orderdethtml += '<td>'+ ((!s3 || isNaN(v3))?'':v3) +'</td>';
+									}
+									orderdethtml += '</tr>';
+								}
+								orderdethtml += '</table></div>';
+							}
+						});
+						document.getElementById('orderDetail').innerHTML = orderdethtml;
+						
+						//加载单据附件内容
+						var file_detail = data.file_detail;
+						var filehtml = '';
+						if (file_detail != null) {
+							mui.each(file_detail, function(i, obj){
+								var record = obj;
+								var filetype = record.type;
+								//支持直接从外部系统下载附件
+								var surl = server ? server.url+'/fileAction.do' : jxm.getURL();
+								var fileurl = surl + '?nousercheck=1&' +record.url +'&user_code=jxstar';
+								
+								var imgPath = jxm.fileTypeImg(filetype);
+								filehtml += '<li class="mui-table-view-cell mui-media filedet">';
+							    filehtml += '<a dataurl="'+ fileurl +'" title="'+ record.title +'">';
+							    filehtml += '<img class="mui-media-object mui-pull-left" src="'+ imgPath +'">';
+							    filehtml += '<div class="mui-media-body">'+ record.title +'</div></a></li>';
+							});
+							
+							document.getElementById('fileDetail').innerHTML = filehtml;
+							document.getElementById('attach-num').innerHTML = file_detail.length;
+							//绑定附件点击事件
+							mui("#fileDetail").on('tap','li',function(e){
+								var ax = this.getElementsByTagName('a')[0];
+					      		var url = ax.getAttribute('dataurl');
+					      		jxm.openRemoteFile(url);
+					      	});
+						} else {
+							document.getElementById('attach-num').innerHTML = '0';
+						}
+						jxm.loadhint(mainlist, true);
+					    //显示当前页面
+					    //mui.currentWebview.show("pop-in", 100);
+					}, {hasmask:false, errorcall:function(e){
+						mui.alert(e.message);
+						//一定要返回，否则没办法继续打开
+						mui.back();
+					}}
+				);
+			};
+			loadOrderInfoHtml();
+			
+	  	});
+	</script>
+</body>
+</html>

@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<title>查看二维码</title>
+		<link rel="stylesheet" href="../../../mui/css/mui.min.css" />
+		<style>
+			.mui-bar {
+				-webkit-box-shadow: none;
+				box-shadow: none;
+			}
+		</style>
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav mui-bar-primary">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<h1 class="mui-title" id="title">查看二维码</h1>
+		</header>
+		<div class="mui-content">
+			<div id="qrcode" style="width:300px; height:300px; margin:15px auto 5px auto;"></div>
+		</div>
+		<script src="../../../Resources/js/jquery-3.3.1.min.js"></script>
+		<script src="../../../Resources/js/qrcode.min.js"></script>
+		<script src="../../../mui/js/mui.min.js"></script>
+		<script src="../../../jxm/js/jxm.js"></script>
+		<script type="text/javascript">
+			mui.init({
+				swipeBack: false //关闭-右滑关闭功能
+			});
+			var qrcode = new QRCode(document.getElementById("qrcode"), {
+				width: 300,
+				height: 300
+			});
+			//页面初始化完成加载此方法
+			mui.plusReady(function() {
+				var opts = mui.currentWebview.selectParams;
+				console.log(opts.process_id + "：：：" + opts.pro_code);
+				if(opts.process_id != "" && opts.pro_code != "") {
+					qrcode.makeCode(opts.pro_code+","+opts.process_id);
+				}
+			});
+		</script>
+	</body>
+
+</html>

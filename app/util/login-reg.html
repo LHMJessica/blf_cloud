@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+    <title>注册账号</title>
+    <link rel="stylesheet" href="../../mui/css/mui.min.css" />
+    <style>
+		
+	</style>
+</head>
+<body>
+	<header class="mui-bar mui-bar-nav mui-bar-primary">
+		<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+		<h1 class="mui-title">注册账号</h1>
+	</header>
+	
+	<div class="mui-content" id="page1">
+		<div>
+			<h5 class="mui-label-h5">第一步：输入用户登录账号</h5>
+			<div class="mui-input-row">
+				<input id='user_code' type="text" class="mui-input" autofocus placeholder="请输入手机号码用于登录">
+				<button id="repeat_btn" type="button" class="mui-btn mui-btn-success mui-input-chk">获取验证码</button>
+			</div>
+		</div>
+		<div>
+			<h5 class="mui-label-h5">第二步：输入用户校验验证码&nbsp;<span id="check_tip"></span></h5>
+			<div class="mui-input-row">
+				<input id='check_code' type="text" class="mui-input-clear mui-input" placeholder="请输入您收到的验证码">
+			</div>
+		</div>
+		<form class="mui-input-group">
+			<ul class="mui-table-view">
+				<li class="mui-table-view-cell">
+					<h5>同意接受&nbsp;<a href="#">《智维云使用条款》</a></h5>
+					<div id="user_agree" class="mui-switch mui-active">
+						<div class="mui-switch-handle"></div>
+					</div>
+				</li>
+			</ul>
+		</form>
+		<div class="mui-margin20"> 
+			<button id="btn_check" type="button" class="mui-btn mui-btn-block mui-btn-primary" style="margin-left: 5%;">验证</button>
+		</div>
+	</div>
+	
+	<div class="mui-content mui-hidden" id="page2">
+		<div class="mui-content mui-hidden" id="div_tenant1">
+			<h5 class="mui-label-h5" id="tenant_ret_h5"></h5>
+			<div class="mui-input-row">
+				<input id='tenant_name_ret' type="text" class="mui-input-clear mui-input" placeholder="请输入新公司名称">
+			</div>
+		</div>
+		<div class="mui-content mui-hidden" id="div_tenant2">
+			<h5 class="mui-label-h5">第三步：输入注册信息</h5>
+			<div class="mui-content-padded">
+				<div class="mui-input-row">
+					<input id='tenant_name' type="text" class="mui-input-clear mui-input" placeholder="请输入公司名称">
+				</div>
+				<div class="mui-input-row">
+					<input id='user_name' type="text" class="mui-input-clear mui-input" placeholder="请输入姓名">
+				</div>
+				<div class="mui-input-row">
+					<input id='user_email' type="text" class="mui-input-clear mui-input" placeholder="请输入电子邮箱地址">
+				</div>
+				<div class="mui-input-row">
+					<input id='mob_code' type="text" class="mui-input-clear mui-input" disabled placeholder="请输入手机号码">
+				</div>
+				<div class="mui-input-row">
+					<input id='user_pwd' type="password" class="mui-input-clear mui-input" placeholder="请输入密码，至少4位">
+				</div>
+				<div class="mui-input-row">
+					<input id='user_repwd' type="password" class="mui-input-clear mui-input" placeholder="请重复输入密码">
+				</div>
+			</div>
+		</div>
+		
+		<div class="mui-margin20"> 
+			<button id="btn_commit" type="button" class="mui-btn mui-btn-block mui-btn-primary" style="margin-left: 5%;">提交</button>
+		</div>
+	</div>
+	
+	<script src="../../lib/ytx/MD5.min.js"></script>
+    <script src="../../mui/js/mui.min.js"></script>
+    <script src="../../jxm/js/jxm.js"></script>
+    <script type="text/javascript" charset="UTF-8">
+      	mui.ready(function(){
+      		var page1 = document.getElementById("page1");
+      		var page2 = document.getElementById("page2");
+      		
+      		var user_code = document.getElementById("user_code");
+      		var check_code = document.getElementById("check_code");
+      		var repeat_btn = document.getElementById("repeat_btn");
+      		
+      		var user_pwd = document.getElementById("user_pwd");
+			var user_repwd = document.getElementById("user_repwd");
+			var mob_code = document.getElementById("mob_code");
+			var user_email = document.getElementById("user_email");
+			
+			var div_tenant1 = document.getElementById("div_tenant1");
+			var div_tenant2 = document.getElementById("div_tenant2");
+      		//是否新的注册用户，平台支持一个账号多账套
+      		var hasten = "0";
+			//不需要用户验证；成功不需要提示；不需要遮挡层
+            var opts = {nousercheck:true, hashint:false, hasmask:true};
+			//重新获取验证码的60秒判断
+			var c = 60;
+			var timeout = function(a){
+				if (c == 0) {
+					repeat_btn.innerHTML = "重新获取验证码";
+					repeat_btn.classList.remove("mui-disabled");
+					return;//结束递归
+				} else {
+					c--;
+					document.getElementById("time_out").innerHTML = c;
+				}
+				setTimeout(timeout, 1000);
+			};
+			
+			//统一会话ID
+			var jsessionid = hex_md5("jxm"+jxm.getTimeStamp());
+      		
+			//重新获取验证码事件注册
+			repeat_btn.addEventListener("tap", function(){
+				var usercode = user_code.value;
+				if (!usercode || usercode.length == 0) {
+	  				mui.toast('请输入登录账号！');
+	  				return false;
+	  			}
+				if (usercode.length != 11 || parseInt(usercode) < 12000000000) {
+					mui.toast('手机号格式不正确！');
+					result = false;
+				}
+				var params = 'jsessionid='+jsessionid+'&funid=login_event&eventcode=reg_repeat&user_code='+user_code.value;
+				jxm.post(params, function(data){
+					repeat_btn.innerHTML = '<span id="time_out" class="red">60</span>秒后可重新获取';
+					repeat_btn.classList.add("mui-disabled");
+					check_code.focus();
+					c = 60;
+					timeout();
+					mui.toast('已向'+usercode+'发送了验证码！');
+				}, opts);
+			});
+			
+			//从后台取租户信息
+            var qryten = function(json){
+                if (json.length > 0) {
+                	hasten = "1";
+                    div_tenant1.classList.remove("mui-hidden");
+                    
+                    var names = '';
+                    mui.each(json, function(i,obj){
+                    	names += obj.tenant_name+',';
+                    });
+                    if (names.length > 0) {
+                    	names = names.substr(0, names.length-1);
+                    }
+                                        
+                    var hts = document.getElementById("tenant_ret_h5");
+                    hts.innerHTML = '存在公司信息：<h5 class="red">'+names+'</h5>可返回直接登录，也可以输入新公司名称注册：';
+                } else {
+                    hasten = "0";
+                    div_tenant2.classList.remove("mui-hidden");
+                }
+                
+                mob_code.value = user_code.value;
+            };
+			
+			//第一步
+			var btn_check = document.getElementById("btn_check");
+			btn_check.addEventListener("tap", function(){
+				var user_agree = document.getElementById("user_agree").classList.contains("mui-active");
+				if (!user_agree) {
+					mui.toast('必须同意接受智维云使用条款才能注册！');
+	  				return false;
+				}
+				
+				var usercode = user_code.value;
+				var checkcode = check_code.value;
+				if (!usercode || usercode.length == 0) {
+	  				mui.toast('请输入登录账号！');
+	  				return false;
+	  			}
+				if (!checkcode || checkcode.length == 0) {
+	  				mui.toast('请输入验证码！');
+	  				return false;
+	  			}
+				
+				var params = 'jsessionid='+jsessionid+'&funid=login_event&eventcode=reg_second&user_code='+usercode+'&check_code='+checkcode;
+				jxm.post(params, function(data){
+					page1.classList.add("mui-hidden");
+					page2.classList.remove("mui-hidden");
+					
+					qryten(data);
+				}, opts);
+			});
+			//第二步
+			var btn_commit = document.getElementById("btn_commit");
+			btn_commit.addEventListener("tap", function(){
+				var userpwd = user_pwd.value;
+				var userrepwd = user_repwd.value;
+				if (hasten == "0") {
+					if (userpwd.length == 0 || userrepwd.length == 0) {
+		  				mui.toast('请输入密码，长度至少4位！');
+		  				return false;
+		  			}
+					if (userpwd != userrepwd) {
+		  				mui.toast('重复输入的密码必须与第一次相同！');
+		  				return false;
+		  			}
+				}
+				
+				var usercode = user_code.value;
+				var mobcode = mob_code.value;
+				var useremail = user_email.value;
+				var username = document.getElementById("user_name").value;
+				var tenantname = document.getElementById("tenant_name").value;
+				var tenantname_ret = document.getElementById("tenant_name_ret").value;
+				
+				if (hasten == "0") {
+					if (username.length == 0 || tenantname.length == 0) {
+		  				mui.toast('公司名称与用户名必须填写！');
+		  				return false;
+		  			}
+				} else {
+					if (tenantname_ret.length == 0 || tenantname_ret.length == 0) {
+		  				mui.toast('新公司名称必须填写！');
+		  				return false;
+		  			}
+					tenantname = tenantname_ret;
+				}
+				
+				var isnew = (hasten == "1") ? "0" : "1";
+				var e = encodeURIComponent;
+                var params = 'jsessionid='+jsessionid+'&funid=login_event&eventcode=reg_three&isnew='+isnew+
+					'&user_code='+e(usercode)+'&tenant_name='+e(tenantname)+'&user_name='+e(username)+'&mob_code='+e(mobcode)+
+					'&user_email='+e(useremail)+'&user_pwd='+userpwd+'&user_repwd='+userrepwd;
+                jxm.post(params, function(data){
+                	localStorage.setItem('cur_user_code', usercode);
+					mui.alert("用户注册成功，将登录系统！");
+					mui.back();
+				}, opts);
+			});
+      	});
+			
+    </script>
+</body>
+</html>

@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+    <title>重置密码</title>
+    <link rel="stylesheet" href="../../mui/css/mui.min.css" />
+    <style>
+		
+	</style>
+</head>
+<body>
+	<header class="mui-bar mui-bar-nav mui-bar-primary">
+		<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+		<h1 class="mui-title">重置密码</h1>
+	</header>
+	
+	<div class="mui-content" id="page1">
+		<div>
+			<h5 class="mui-label-h5">第一步：获取验证码</h5>
+			<div class="mui-input-row">
+				<input id='user_code' type="text" class="mui-input" autofocus placeholder="请输入手机号码">
+				<button id="repeat_btn" type="button" class="mui-btn mui-btn-success mui-input-chk">获取验证码</button>
+			</div>
+		</div>
+		<div>
+			<h5 class="mui-label-h5">第二步：校验验证码</h5>
+			<div class="mui-input-row">
+				<input id='check_code' type="text" class="mui-input-clear mui-input" placeholder="请输入您收到的验证码">
+			</div>
+		</div>
+		<div class="mui-margin20"> 
+			<button id="btn_check" type="button" class="mui-btn mui-btn-block mui-btn-primary" style="margin-left: 5%;">验证身份</button>
+		</div>
+	</div>
+	
+	<div class="mui-content mui-hidden" id="page2">
+		<h5 class="mui-label-h5">第三步：设置新密码</h5>
+		<div class="mui-input-row">
+			<input id='user_pwd' type="password" class="mui-input-clear mui-input" placeholder="请输入新的密码，至少4位">
+		</div>
+		<div class="mui-input-row">
+			<input id='user_repwd' type="password" class="mui-input-clear mui-input" placeholder="请再次输入新密码">
+		</div>
+		
+		<div class="mui-margin20"> 
+			<button id="btn_commit" type="button" class="mui-btn mui-btn-block mui-btn-primary" style="margin-left: 5%;">提交</button>
+		</div>
+	</div>
+	
+	<script src="../../lib/ytx/MD5.min.js"></script>
+    <script src="../../mui/js/mui.min.js"></script>
+    <script src="../../jxm/js/jxm.js"></script>
+    <script type="text/javascript" charset="UTF-8">
+  		var page1 = document.getElementById("page1");
+  		var page2 = document.getElementById("page2");
+  		
+  		var user_code = document.getElementById("user_code");
+  		var check_code = document.getElementById("check_code");
+  		var repeat_btn = document.getElementById("repeat_btn");
+		//不需要用户验证；成功不需要提示；不需要遮挡层
+        var opts = {nousercheck:true, hashint:false, hasmask:true};
+		//重新获取验证码的60秒判断
+		var c = 60;
+		var timeout = function(a){
+			if (c == 0) {
+				repeat_btn.innerHTML = "重新获取验证码";
+				repeat_btn.classList.remove("mui-disabled");
+				return;//结束递归
+			} else {
+				c--;
+				document.getElementById("time_out").innerHTML = c;
+			}
+			setTimeout(timeout, 1000);
+		};
+		
+		//统一会话ID
+		var jsessionid = hex_md5("jxm"+jxm.getTimeStamp());
+  		
+		//重新获取验证码事件注册
+		repeat_btn.addEventListener("tap", function(){
+			var usercode = user_code.value;
+			if (!usercode || usercode.length == 0) {
+  				mui.toast('请输入登录账号！');
+  				return false;
+  			}
+			
+			var params = 'jsessionid='+jsessionid+'&funid=login_event&eventcode=sendsms&user_code='+user_code.value;
+			jxm.post(params, function(data){
+				repeat_btn.innerHTML = '<span id="time_out" class="red">60</span>秒后可重新获取';
+				repeat_btn.classList.add("mui-disabled");
+				check_code.focus();
+				c = 60;
+				timeout();
+				mui.toast('已向'+usercode+'发送了验证码！');
+			}, opts);
+		});
+		
+		//找回密码第一步
+		var btn_check = document.getElementById("btn_check");
+		btn_check.addEventListener("tap", function(){
+			var usercode = user_code.value;
+			var checkcode = check_code.value;
+			if (!usercode || usercode.length == 0) {
+  				mui.toast('请输入登录账号！');
+  				return;
+  			}
+			if (!checkcode || checkcode.length == 0) {
+  				mui.toast('请输入验证码！');
+  				return;
+  			}
+			
+			var params = 'jsessionid='+jsessionid+'&funid=login_event&eventcode=findpwd&user_code='+usercode+'&check_code='+checkcode;
+			jxm.post(params, function(data){
+				//显示设置密码界面
+				page1.classList.add("mui-hidden");
+				page2.classList.remove("mui-hidden");
+			}, opts);
+		});
+		//找回密码第二步
+		var btn_commit = document.getElementById("btn_commit");
+		btn_commit.addEventListener("tap", function(){
+			var userpwd = document.getElementById("user_pwd").value;
+			var userrepwd = document.getElementById("user_repwd").value;
+			if (userpwd.length == 0 || userrepwd.length == 0) {
+  				mui.toast('请输入新的密码！');
+  				return false;
+  			}
+			if (userpwd != userrepwd) {
+  				mui.toast('重复输入的密码必须与第一次相同！');
+  				return false;
+  			}
+			var usercode = user_code.value;
+			
+			var params = 'jsessionid='+jsessionid+'&funid=login_event&eventcode=savepwd&user_code='+usercode+'&user_pwd='+userpwd+'&user_repwd='+userrepwd;
+			jxm.post(params, function(data){
+				localStorage.setItem('cur_user_code', usercode);
+				mui.alert("密码修改成功，请重新登录！");
+				mui.back();
+			}, opts);
+		});
+      	
+			
+    </script>
+</body>
+</html>

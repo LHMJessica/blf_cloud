@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<title>计时报工申请</title>
+		<link rel="stylesheet" href="../../../mui/css/mui.min.css" />
+		<link rel="stylesheet" href="../../../jxm/css/jxm.css">
+		<link rel="stylesheet" href="../../../ddcg/css/ddcgIcon.css">
+		<style type="text/css">
+			.mui-bar {
+				-webkit-box-shadow: none;
+				box-shadow: none;
+			}
+			
+			.head-search {
+				padding-top: 1px;
+				height: 50px !important;
+			}
+			
+			.head-search button {
+				height: 48px;
+				width: 18%;
+				border: none;
+				border-radius: 0 !important;
+				background-color: #f7f7f7;
+			}
+			
+			.head-search input {
+				width: 62%;
+				height: 50px;
+				border: none;
+			}
+			
+			.label-red {
+				padding-left: 5px;
+				color: red !important;
+			}
+			
+			.text-disabled {
+				background-color: #EEEEEE;
+			}
+			
+			.iconfont {
+				font-size: 24px;
+			}
+			
+			h5 {
+				font-size: 14px;
+				padding: 8px 5px 6px;
+				background-color: #efeff4;
+			}
+			
+			.mspan {
+				margin-top: 2%;
+				overflow-x: scroll;
+				white-space: nowrap;
+				display: inline-block;
+				width: 9em;
+				overflow-y: hidden;
+				text-overflow: ellipsis;
+			}
+			
+			#users tr {
+				height: 60px;
+				border: 1px solid dodgerblue;
+			}
+			.input-row{padding: 11px 15px;vertical-align: middle;}
+			input,select,textarea{border: 1px solid gainsboro !important;}
+			td,
+			th {
+				text-align: center;
+			}
+		</style>
+
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav mui-bar-primary">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<h1 class="mui-title" id="title">计时报工申请</h1>
+			<a class="mui-icon mui-pull-right icon-header" id="print_setting">
+				<i class="iconfont icon-icon-test"></i>
+			</a>
+		</header>
+		<nav class="mui-bar mui-bar-footer">
+			<center>
+				<button type="button" id="btnback" onclick="mui.back();" class="mui-btn mui-btn-primary mui-pull-left" style="width:30%;">返回</button>
+				<button type="button" id="btncommit" class="mui-btn mui-btn-primary mui-pull-right" style="width:30%;">提交</button>
+			</center>
+		</nav>
+		<div class="mui-content">
+			<div class="mui-input-group">
+				<h5>基本信息</h5>
+				<!--<div class="input-row">
+					<label style="width: 35%;">申请人：</label>
+					<input style="width: 65%;" type="text" id="user_name" readonly="readonly"></input>
+				</div>
+				<div class="input-row">
+					<label style="width: 35%;">申请部门：</label>
+					<input style="width: 60%;" type="text" id="dept_name" readonly="readonly"></input>
+				</div>-->
+				<div class="input-row">
+					<label style="width: 35%;">申请日期</label>
+					<input style="width: 79%;" type="date" id="apply_date" required="required"></input>
+				</div>
+				<div class="input-row">
+					<label style="width: 35%;">申请工时</label>
+					<select style="width: 32%;" id="hour">
+						<option value="0">0</option>
+						<option value="1">1</option>
+						<option value="2">2</option>
+						<option value="3">3</option>
+						<option value="4">4</option>
+						<option value="5">5</option>
+						<option value="6">6</option>
+						<option value="7">7</option>
+						<option value="8">8</option>
+						<option value="9">9</option>
+						<option value="10">10</option>
+						<option value="11">11</option>
+						<option value="12">12</option>
+					</select><span>时</span>
+					<select style="width: 32%;" id="minuts">
+						<option value="0">0</option>
+						<option value="0.5">30</option>
+					</select><span>分</span>
+				</div>
+				<div class="input-row" style="height: auto;">
+					<label style="width: 35%;">申请原因</label>
+					<textarea style="width:79%;height: 100px;vertical-align: top;" id="apply_desc" required="required"></textarea>
+				</div>
+			</div>
+		</div>
+
+		<script src="../../../mui/js/mui.min.js"></script>
+		<script src="../../../jxm/js/jxm.js"></script>
+		<script src="../../../jxm/js/JxDao.js"></script>
+		<script src="../../../jxm/js/json2.js"></script>
+		<script src="../../../jxm/js/jxm-image-input.js"></script>
+		<script src="../../util/jxm-util.js"></script>
+		<script src="../../../Resources/js/jquery-3.3.1.min.js"></script>
+		<script src="../../../Resources/js/juicer-min.js"></script>
+		<script src="../../../Resources/js/juicerUtil.js"></script>
+		<script type="text/javascript" charset="UTF-8">
+			mui.init({
+				swipeBack: false //关闭-右滑关闭功能
+			});
+			//页面初始化完成加载此方法
+			mui.plusReady(function() {
+				/*$("#user_name").val(jxm.getUserName());
+				$("#dept_name").val(jxm.getDeptName());*/
+				dateFormat(jxm.getTimeStamp());
+			});
+			/**
+			 * 格式化日期  参数格式 YYYYMMddHHmmss
+			 * @param {Object} date
+			 */
+			var dateFormat = function(date) {
+				var year = date.substr(0, 4);
+				var month = date.substr(4, 2);
+				var day = date.substr(6, 2);
+				var hh = date.substr(8, 2);
+				var mm = date.substr(10, 2);
+				var str = year + "-" + month + "-" + day;
+				$("#apply_date").val(str);
+			}
+			//上报按钮
+			$('#btncommit').on('click', function(e) {
+				var user_name = jxm.getUserName();
+				var user_id = jxm.getUserId();
+				var dept_name = jxm.getDeptName();
+				var dept_id = jxm.getDeptId();
+				var apply_desc = $('#apply_desc').val();
+				var hour = $('#hour').val();
+				var minuts = $('#minuts').val();
+				var apply_date = $('#apply_date').val();
+				if(apply_desc ==''){
+					mui.toast("申请原因必填");
+					return;
+				}else if(hour=="0"&&minuts=="0"){
+					mui.toast("申请工时必填");
+					return;
+				}				
+				var params = "funid=app_full&eventcode=timingApply&user_name=" + user_name + "&user_id=" + user_id + "&dept_name=" + dept_name + "&dept_id=" + dept_id;
+				params += "&apply_desc=" + apply_desc + "&work_hours=" + (parseInt(hour)+parseFloat(minuts)) + "&apply_date=" + apply_date;
+				jxm.post(params, function(data) {
+						console.log("提交申请返回的参数"+data);
+						mui.toast("提交完成");
+						pageClear();
+				});
+			});
+			//清空当前页面控件值
+			var pageClear = function() {
+				$('#apply_desc').val('');
+				$('#hour').val('0');
+				$("#minuts").html('0');
+			}
+		</script>
+	</body>
+
+</html>

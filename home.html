@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<title>Home</title>
+		<link rel="stylesheet" href="mui/css/mui.min.css">
+		<link rel="stylesheet" href="jxm/css/jxm.css">
+		<style>
+			.tongxu {
+				padding-top: 12px !important;
+			}
+			
+			.mui-title {
+				/*挡住了左上角的图标*/
+				left: 50px !important;
+			}
+			
+			.mui-bar-white,
+			.mui-bar-white .mui-tab-item {
+				color: #888888;
+				background-color: #FFFFFF;
+			}
+			
+			.mui-bar-tab .mui-tab-label {
+				font-size: 13px !important;
+			}
+			
+			.mui-bar-tab .iconfont {
+				font-size: 28px;
+			}
+			
+			.mui-bar-tab:before {
+				height: 1px;
+				background-color: #D8D8D8;
+			}
+			
+			.mui-tab-item.mui-active {
+				background-color: #FFFFFF;
+				/*E6E6FA*/
+			}
+			
+			.mui-bar-tab .mui-tab-item {
+				height: 60px;
+			}
+			
+			.tab-badge {
+				position: absolute;
+				top: 0;
+				right: -10px;
+				line-height: 1;
+				display: inline-block;
+				padding: 4px;
+				border-radius: 100px;
+				background-color: red;
+			}
+			
+			.block {
+				display: none;
+			}
+			
+			.mui-active .block {
+				display: inline-block;
+			}
+			
+			.mui-active .hidden {
+				display: none;
+			}
+			
+			.btnqrcode {
+				width: 100%;
+			}
+		</style>
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav mui-bar-primary">
+			<a class="mui-icon mui-pull-left icon-header mui-hidden"><i class="iconfont icon-saoma1"></i></a>
+			<h1 id="home-title" class="mui-title">消息</h1>
+			<span id="right-icon" class="mui-pull-right mui-hidden" fun-type="im" href="app/util/select-user.html">
+		<span class="mui-icon"><i class="iconfont icon-xiaoxi1"></i></span>
+			</span>
+
+		</header>
+		<nav class="mui-bar mui-bar-tab mui-bar-white" style="touch-action: none;">
+			<a class="mui-tab-item mui-active" data-id="im">
+				<span class="mui-icon">
+				<i class="iconfont icon-xiaoxi hidden"></i>
+				<i class="iconfont icon-xiaoxi-k block"></i>
+				<span class="tab-badge mui-hidden"></span>
+				</span>
+				<span class="mui-tab-label">消息</span>
+			</a>
+			<a class="mui-tab-item" data-id="bus">
+				<span class="mui-icon">
+				<i class="iconfont icon-yingyong hidden"></i>
+				<i class="iconfont icon-yingyong-k block"></i>
+			</span>
+				<span class="mui-tab-label">业务</span>
+			</a>
+			<a class="mui-tab-item" data-id="set">
+				<span class="mui-icon">
+				<i class="iconfont icon-wo hidden"></i>
+				<i class="iconfont icon-wo-k block"></i>
+			</span>
+				<span class="mui-tab-label">我</span>
+			</a>
+		</nav>
+		<div class="mui-loader">加载中...</div>
+
+		<script src="mui/js/mui.min.js"></script>
+		<script src="jxm/js/jxm.js"></script>
+		<script src="jxm/js/jxm-update.js"></script>
+		<script src="Resources/js/jquery-3.3.1.min.js" type="text/javascript" charset="utf-8"></script>
+		<script type="text/javascript" charset="utf-8">
+			mui.init();
+			var imurl = 'im.html';
+			var use_im = jxm.getSession().app_useim;
+			if(use_im == '1') imurl = 'im-all.html';
+			var subpages = {
+				im: {
+					href: 'app/im/' + imurl,
+					showed: true,
+					win: null
+				},
+				bus: {
+					href: 'bar-index.html',
+					showed: false,
+					win: null
+				},
+				set: {
+					href: 'app/set/set.html',
+					showed: false,
+					win: null
+				}
+			};
+
+			var subpage_style = {
+				top: '54px',
+				bottom: '61px',
+				scrollIndicator: 'none'
+			};
+
+			//创建子页面，首个选项卡页面显示，其它均隐藏；
+			mui.plusReady(function() {
+				//orient();
+				//仅支持竖屏显示
+				plus.screen.lockOrientation("portrait-primary");
+				//console.log('home window id='+mui.currentWebview.id);
+				//直接加载home.html时需要关闭
+				plus.navigator.closeSplashscreen();
+
+				plus.runtime.setBadgeNumber(0);
+				//显示第一个页面
+				var self = plus.webview.currentWebview();
+				var sub = plus.webview.create(subpages.im.href, "im-main", subpage_style);
+				subpages.im.win = sub;
+				subpages.im.showed = true;
+				//避免白屏等待
+				setTimeout(function() {
+					self.append(sub);
+					jxm.loadhint(null, true);
+				}, 100);
+
+				//延时加载后面的页面，提高首页显示速度
+				setTimeout(function() {
+					for(var key in subpages) {
+						if(key == 'im') continue;
+						var sub = plus.webview.create(subpages[key].href, key + "-main", subpage_style);
+						subpages[key].win = sub;
+						sub.hide();
+						self.append(sub);
+					}
+
+					//取最新的后台授权功能列表，并重新加载业务与办公模块的功能列表
+					//setTimeout(jxm.updateRoleFun, 200);
+				}, 200);
+
+				//网络状态判断
+				/*document.addEventListener("netchange", function() {
+					var network = plus.networkinfo.getCurrentType();
+					if(network < 2) {
+						mui.toast('网络未连接！');
+					}
+				});*/
+
+				//保存设备信息，后台推送消息需要用到
+				//setTimeout(jxm.saveDevInfo, 1000);
+				setTimeout(function() {
+					jxm.checkVersion(true);
+				}, 1000);
+
+				//开启推送消息监听
+				setTimeout(jxm.pushListener, 2000);
+			});
+
+			//绑定了右上角的图标
+			var right = document.getElementById("right-icon");
+			if(use_im == "1") {
+				right.classList.remove("mui-hidden");
+			} else {
+				right.classList.add("mui-hidden");
+			}
+			right.addEventListener('tap', function(e) {
+				var href = right.getAttribute("href");
+				var type = right.getAttribute("fun-type");
+
+				//选择用户后打开聊天窗口
+				if(type == 'im') {
+					var param = {
+						callbackWinId: 'im-main',
+						callbackEvent: 'startChat',
+						notback: true,
+						mutilsel: false
+					};
+					jxm.open(href, {
+						extras: {
+							selectParams: param
+						}
+					});
+				} else
+				if(type == 'bus') {
+					var page = plus.webview.getWebviewById(href);
+					if(page) page.close();
+					jxm.open(href, {
+						extras: {
+							type: type
+						}
+					});
+				}
+			});
+			var updateTitle = function(title, target) {
+				right.setAttribute("fun-type", target);
+				var td = document.getElementById("home-title");
+
+				//更换标题
+				td.innerHTML = title;
+
+				//右上角的图标
+				if(target == 'im') {
+					right.setAttribute("href", "app/util/select-user.html");
+					right.innerHTML = '<span class="mui-icon"><i class="iconfont icon-xiaoxi1"></i></span>';
+				} else
+				if(target == 'bus') {
+					right.setAttribute("href", "app/util/select-fun.html");
+					right.innerHTML = '<span class="mui-icon mui-icon-gear"></span>';
+				} else {
+					right.innerHTML = '';
+				}
+			};
+
+			//当前激活选项
+			var activeTab = 'im';
+			//选项卡点击事件
+			mui('.mui-bar-tab').on('tap', 'a', function(e) {
+				var targetTab = this.getAttribute('data-id');
+				if(targetTab == activeTab) return;
+
+				//更新标题
+				var label = this.querySelector('.mui-tab-label').innerHTML;
+				updateTitle(label, targetTab);
+
+				var tab = subpages[targetTab];
+				//显示目标选项卡
+				if(mui.os.ios || tab.showed) {
+					tab.win.show();
+					//隐藏当前;
+					subpages[activeTab].win.hide();
+					//更改当前活跃的选项卡
+					activeTab = targetTab;
+				} else {
+					//加延时执行目的是让mui-active尽快生效，而不用等到show后再生效
+					setTimeout(function() {
+						tab.showed = true;
+						//隐藏当前;
+						subpages[activeTab].win.hide();
+
+						tab.win.show("fade-in", 200);
+						//更改当前活跃的选项卡
+						activeTab = targetTab;
+					}, 100);
+				}
+			});
+
+			//显示指定的tab；im-chat.html中触发此事件
+			window.addEventListener('showTab', function(event) {
+				var targetTab = event.detail.tabid;
+				if(targetTab == activeTab) return;
+
+				//标签样式处理
+				var t = document.querySelector('.mui-tab-item[data-id=' + targetTab + ']');
+				if(!t) return;
+				t.className = t.className + ' mui-active';
+				var b = document.querySelector('.mui-tab-item[data-id=' + activeTab + ']');
+				b.className = b.className.replace(' mui-active', '');
+
+				//更新标题
+				var label = t.querySelector('.mui-tab-label').innerHTML;
+				updateTitle(label, targetTab);
+
+				subpages[targetTab].win.show();
+				//隐藏当前;
+				subpages[activeTab].win.hide();
+				//更改当前活跃的选项卡
+				activeTab = targetTab;
+			});
+
+			mui.back = function() {
+				jxm.confirm('确认退出？', function() {
+					if(use_im == '1') {
+						var imwin = subpages.im.win;
+						mui.fire(imwin, "closeIM");
+					}
+					var url = localStorage.getItem("server_url");
+					//清除所有本地数据
+					localStorage.clear();
+					//只保留服务器地址信息
+					if(url && url.length > 0) {
+						localStorage.setItem("server_url", url);
+					}
+					plus.runtime.quit(); //退出
+				});
+			};
+
+			/*function orient() {
+				if(window.orientation == 90 || window.orientation == -90) {
+					//ipad、iphone竖屏；Andriod横屏
+					$("body").attr("class", "landscape");
+					orientation = 'landscape';
+					return false;
+				} else if(window.orientation == 0 || window.orientation == 180) {
+					//ipad、iphone横屏；Andriod竖屏
+					$("body").attr("class", "portrait");
+					orientation = 'portrait';
+					return false;
+				}
+			}
+			$(window).bind('orientationchange', function(e) {
+				orient();
+			});*/
+		</script>
+	</body>
+
+</html>

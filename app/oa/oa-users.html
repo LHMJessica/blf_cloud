@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+    <title>通讯录</title>
+    
+	<link href="../../mui/css/mui.min.css" rel="stylesheet" />
+	<link href="../../mui/css/mui.indexedlist.css" rel="stylesheet" />
+	<link href="../../jxm/css/jxm.css" rel="stylesheet" />
+	<style>
+		html,
+		body {
+			height: 100%;
+			overflow: hidden;
+		}
+		.mui-bar {
+			-webkit-box-shadow: none;
+			box-shadow: none;
+		}
+		/* 因为indexlist控件有个bug，隐藏的list不能选择，所以把外部list改为overflow:auto
+		 * 外部search、index-bar都要改为fixed模式
+		 * */
+		/*.mui-indexed-list-bar {
+			top: 90px;
+			position: fixed;
+		}
+		.mui-indexed-list {
+			top: 45px;
+			overflow-y: auto;
+			overflow-x: hidden;
+		}
+		.mui-search {
+			position: fixed;
+			left: 0;
+			right: 0;
+			background-color:#fafafa;
+		}
+		.mui-checkbox .mui-media-body:after {
+			left: 0px !important;
+		}*/
+		.mui-search,
+		.mui-search .mui-icon-clear,
+		.mui-search .mui-placeholder {
+			padding-top: 5px;
+			padding-bottom: 5px;
+		}
+		/****************/
+		.mui-media-object {
+			margin: 0 !important;
+			margin-right: 10px !important;
+			height:48px !important;
+			line-height:48px !important;
+			width:48px !important;
+			max-width:48px !important;
+		}
+		.mui-table-view .mui-table-view-cell.mui-media-icon .mui-media-body:after {
+			left: 70px;
+			background-color:#D8D8D8;
+		}
+		.mui-media-grey {
+			background-color:lavender;
+		}
+		.mui-media-grey .mui-icon {
+			padding: 10px;
+		}
+		.mui-media-grey .iconfont {
+			color: #fff;
+			font-size: 28px;
+		}
+		
+		.face {
+			width: 50px !important;
+			height: 50px !important;
+			line-height: 50px !important;
+		    max-width: 50px !important;
+		}
+	</style>
+</head>
+<body>
+	<header class="mui-bar mui-bar-nav mui-bar-primary">
+		<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+		<h1 class="mui-title">通讯录</h1>
+	</header>
+	<div class="mui-content">
+		<div id='main-list' class="mui-indexed-list mui-hidden">
+			<div class="mui-indexed-list-search mui-input-row mui-search">
+				<input type="search" class="mui-input-clear mui-indexed-list-search-input" placeholder="搜索">
+			</div>
+			<div class="mui-indexed-list-bar">
+				<a>A</a>
+				<a>B</a>
+				<a>C</a>
+				<a>D</a>
+				<a>E</a>
+				<a>F</a>
+				<a>G</a>
+				<a>H</a>
+				<a>I</a>
+				<a>J</a>
+				<a>K</a>
+				<a>L</a>
+				<a>M</a>
+				<a>N</a>
+				<a>O</a>
+				<a>P</a>
+				<a>Q</a>
+				<a>R</a>
+				<a>S</a>
+				<a>T</a>
+				<a>U</a>
+				<a>V</a>
+				<a>W</a>
+				<a>X</a>
+				<a>Y</a>
+				<a>Z</a>
+			</div>
+			<div class="mui-indexed-list-alert"></div>
+			<div class="mui-indexed-list-inner">
+				<div class="mui-indexed-list-empty-alert">没有数据</div>
+				<ul id="data-list" class="mui-table-view"></ul>
+			</div>
+		</div>
+		
+		<div class="mui-loader">加载中...</div>
+	</div>
+	
+    <script src="../../mui/js/mui.min.js"></script>
+	<script src="../../mui/js/mui.indexedlist.js"></script>
+	<script src="../../jxm/js/jxm.js"></script>
+	<script type="text/javascript" charset="utf-8">
+		mui.init();
+		
+		//是否需要多选
+		var ms = false;
+		//传递目标窗口ID、触发事件名称 {callbackWinId:mui.currentWebview.id, callbackEvent:cbe, notback:true}
+		mui.ready(function(){
+			var mainList = document.getElementById('main-list');
+			var dataList = document.getElementById("data-list");
+			//计算数据区域的高度
+			var calheight = function(){
+				var header_h = document.querySelector('header.mui-bar').offsetHeight;
+				//calc hieght
+				mainList.style.height = (document.body.offsetHeight - header_h) + 'px';
+			};
+			//操作事件
+			var usertap = function(event) {
+				var dataid = this.id;
+				var dataext = this.getAttribute("data-ext");
+				var datacode = this.getAttribute("data-code");
+				var dataname = this.getAttribute("data-name");
+				var datadesc = this.querySelector('p').innerHTML;
+				var obj = {dataid:dataid, dataext:dataext, datacode:datacode, dataname:dataname};
+				
+				var a = [{title:"发消息"}];
+				//取用户手机号码
+				var phone = '', dss = datadesc.split('|');
+				if (dss.length >= 2 || dss[1].length > 0) {
+					phone = dss[1];
+					var use_im = jxm.getSession().app_useim;
+					if(use_im == "1"){
+						a = [{title:"发短信"},{title:"打电话"},{title:"发消息"} ];// 
+					}else{
+						a = [{title:"发短信"},{title:"打电话"}];
+					}
+				}
+				
+				if (plus) {
+					plus.nativeUI.actionSheet({
+						cancel: "取消",
+						buttons: a
+					}, function(b) {
+						switch (b.index) {
+						case 0:
+							break;
+						case 1://发短信
+							window.location.href = 'sms:'+phone;
+							break;
+						case 2://打电话
+							window.location.href = 'tel:'+phone;
+							break;
+						case 3://发IM消息
+							var win = plus.webview.getWebviewById('im-chat.html');
+							mui.fire(win, 'startChat', obj);
+							break;
+						default:
+							break
+						}
+					});
+				}
+			};
+			
+			var params = "funid=user_event&eventcode=query_user&deptid=";
+			//从后台加载用户数据
+			jxm.post(params, function(data){
+				var str = "";
+				//如果当前字符与上次不同，则添加一行分组标签
+				var cr = '0';
+				mui.each(data, function(i, item){
+					//取头像
+					item.face = jxm.getPhotoURL(item.im_user_code,item.user_photo_v);
+					var cc = item.user_tag.charAt(0);
+					if (cc != cr) {
+						cr = cc;
+						str += '<li data-group="'+cc+'" class="mui-table-view-divider mui-indexed-list-group">'+cc+'</li>';
+					}
+					str += '<li id="'+item.user_id+'" data-ext="'+item.im_user_code+'" data-code="'+item.user_code+'" data-name="'+item.user_name+'" data-tags="'+cc+'" '+
+								'class="mui-table-view-cell mui-indexed-list-item mui-media mui-media-icon">'+
+								'<div class="mui-media-object mui-pull-left mui-media-grey">'+
+									((item.face) ? 
+									'<img class="face" src="'+item.face+'">' :
+									'<span class="mui-icon"><i class="iconfont icon-wo-k"></i></span>')+
+								'</div>'+
+								'<div class="mui-media-body">'+
+									item.user_name+
+									'<p class="mui-ellipsis">'+item.dept_name+'|'+item.mob_code+'</p>'+
+								'</div>'+
+							'</li>';
+				});
+				dataList.innerHTML = str;
+				jxm.loadhint(mainList, (str.length > 0));
+				
+				//calc hieght
+				calheight();
+				//加载完页面后构建，查询才能生效；如果带index-bar的控件必须用searchFixed:true
+				var wlist = new mui.IndexedList(mainList,{searchFixed:true});
+				//绑定选择事件
+				mui("#data-list").on("tap", ".mui-table-view-cell", usertap);
+			});
+		});
+	</script>
+</body>
+</html>

@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<title>异常处理</title>
+		<link rel="stylesheet" href="../../../mui/css/mui.min.css" />
+		<link rel="stylesheet" href="../../../jxm/css/jxm.css">
+		<link rel="stylesheet" href="../../../mui/css/main.css">
+		<link rel="stylesheet" type="text/css" href="../../../mui/css/mui.picker.min.css" />
+		<style type="text/css">
+			.mui-bar {
+				-webkit-box-shadow: none;
+				box-shadow: none;
+			}
+			
+			.head-search {
+				padding-top: 1px;
+				height: 50px !important;
+			}
+			
+			.head-search button {
+				height: 48px;
+				width: 18%;
+				border: none;
+				border-radius: 0 !important;
+				background-color: #f7f7f7;
+			}
+			
+			.head-search input {
+				width: 62%;
+				height: 50px;
+				border: none;
+			}
+			
+			.label-red {
+				padding-left: 5px;
+				color: red !important;
+			}
+			
+			.text-disabled {
+				background-color: #EEEEEE;
+			}
+			
+			.iconfont {
+				font-size: 24px;
+			}
+			
+			h5 {
+				font-size: 14px;
+				padding: 8px 5px 6px;
+				background-color: #efeff4;
+			}
+			
+			.d {
+				height: 32px;
+				width: 100%;
+				margin-top: 2%;
+			}
+			
+			.d5 {
+				margin-left: 5%;
+			}
+			
+			.d10 {
+				margin-left: 10%;
+			}
+			
+			.d11 {
+				margin-left: 12%;
+			}
+			
+			#addPopover {
+				position: fixed;
+				top: 0;
+				right: 0;
+				bottom: 0;
+				left: 0%;
+				z-index: 998;
+				background-color: rgba(0, 0, 0, .4);
+			}
+			
+			.listtip {
+				padding-top: 20px;
+				text-align: center;
+				background-color: white;
+				height: 140px;
+				color: #CCCCCC;
+			}
+			
+			.addContent {
+				position: absolute;
+				left: 0;
+				top: 20px;
+			}
+			
+			.mspan {
+				margin-top: 2%;
+				overflow-x: scroll;
+				white-space: nowrap;
+				display: inline-block;
+				width: 9em;
+				overflow: hidden;
+				text-overflow: ellipsis;
+			}
+			
+			.mui-input-row {
+				height: auto !important;
+			}
+		</style>
+
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav mui-bar-primary">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<h1 class="mui-title" id="title">异常处理</h1>
+			<a class="mui-icon mui-pull-right icon-header" id="print_setting">
+				<i class="iconfont icon-icon-test"></i>
+			</a>
+		</header>
+
+		<nav class="mui-bar mui-bar-footer">
+			<center>
+				<button type="button" id="btnback" onclick="mui.back();" class="mui-btn mui-btn-primary mui-pull-left" style="width:30%;">返回</button>
+				<button type="button" id="btncommit" class="mui-btn mui-btn-primary mui-pull-right" style="width:30%;">上报</button>
+			</center>
+		</nav>
+		<div class="mui-content">
+			<form class="mui-input-group">
+				<h5>异常处理</h5>
+				<div class="mui-input-row">
+					<label style="width: 40%;">处理开始时间：</label>
+					<input style="width: 60%;" type="text" id="start_time" readonly="readonly"></input>
+				</div>
+				<div class="mui-input-row">
+					<label style="width: 40%;">处理完成时间：</label>
+					<input style="width: 60%;" type="text" id="end_time" readonly="readonly"></input>
+				</div>
+				<div class="mui-input-row">
+					<label style="width: 40%;">处理结果：</label>
+					<select style="width: 60%;" id="repair_result"></select>
+				</div>
+				<div class="mui-input-row">
+					<label style="width: 40%;">处理方法：</label>
+					<textarea style="width: 60%;height: 100px;" id="repair_method"></textarea>
+				</div>
+			</form>
+		</div>
+
+		<script src="../../../mui/js/mui.min.js"></script>
+		<script src="../../../jxm/js/jxm.js"></script>
+		<script src="../../../jxm/js/JxDao.js"></script>
+		<script src="../../../jxm/js/json2.js"></script>
+		<script src="../../../jxm/js/jxm-image-input.js"></script>
+		<script src="../../util/jxm-util.js"></script>
+		<script src="../../../Resources/js/jquery-3.3.1.min.js"></script>
+		<script src="../../../jxm/js/iscroll-probe.min.js"></script>
+		<script src="../../../jxm/js/main.js"></script>
+		<script src="../../../Resources/js/juicer-min.js"></script>
+		<script src="../../../Resources/js/juicerUtil.js"></script>
+		<script src="../../../mui/js/mui.picker.min.js" type="text/javascript" charset="utf-8"></script>
+		<script type="text/javascript" charset="UTF-8">
+			mui.init({
+				swipeBack: false //关闭-右滑关闭功能
+			});
+			var except_id = null;
+			//页面初始化完成加载此方法
+			mui.plusReady(function() {
+				loadPage();
+				except_id = mui.currentWebview.selectParams.except_id;
+			});
+			//页面加载执行方法
+			var loadPage = function() {
+				var params = "funid=queryevent&eventcode=query_data&query_funid=sys_control&limit=150&start=0&where_sql=funall_control.control_code='excp_result'";
+				jxm.post(params, function(data) {
+					var html = '<option value="">--请选择处理结果--</option>';
+					var item = '{@each list as obj, k}' +
+						'<option value="${obj.funall_control__display_data}">${obj.funall_control__display_data}</option>{@/each}';
+					html += juicer(item, {
+						"list": data.root
+					});
+					$('#repair_result').html(html);
+				});
+			};
+			$("#start_time").on("click", function() {
+				var dtPicker = new mui.DtPicker({
+					type: 'datetime'
+				});
+				/*参数：'datetime'-完整日期视图(年月日时分)
+				        'date'--年视图(年月日)
+				        'time' --时间视图(时分)
+				        'month'--月视图(年月)
+				        'hour'--时视图(年月日时)
+				*/
+				dtPicker.show(function(selectItems) {
+					//console.log(JSON.stringify(selectItems));
+					$("#start_time").val(selectItems.value);
+				})
+			});
+			$("#end_time").on("click", function() {
+				var dtPicker = new mui.DtPicker({
+					type: 'datetime'
+				});
+				/*参数：'datetime'-完整日期视图(年月日时分)
+				        'date'--年视图(年月日)
+				        'time' --时间视图(时分)
+				        'month'--月视图(年月)
+				        'hour'--时视图(年月日时)
+				*/
+				dtPicker.show(function(selectItems) {
+					//console.log(JSON.stringify(selectItems));
+					$("#end_time").val(selectItems.value);
+				})
+			});
+			$('#btncommit').on('click', function(e) {
+				var repair_result = $('#repair_result').val(); //处理结果
+				var end_time = $('#end_time').val(); //实际完成时间
+				var start_time = $('#start_time').val(); //实际开始时间
+				var repair_method = $('#repair_method').val(); //处理方法说明
+				if(end_time==""||end_time==undefined||end_time==null) {
+					mui.alert("完成时间不能为空!");
+					return;
+				}
+				if(start_time==""||start_time==undefined||start_time==null) {
+					mui.alert("开始时间不能为空!");
+					return;
+				}
+				if(repair_result==""||repair_result==undefined||repair_result==null) {
+					mui.alert("处理结果不能为空!");
+					return;
+				}
+				//将字符串转换为日期
+				var begin = new Date(start_time.replace(/-/g, "/"));
+				var end = new Date(end_time.replace(/-/g, "/"));
+				//js判断日期
+				if(begin - end > 0) {
+					mui.alert("开始时间要在完成时间之前!");
+					return;
+				}
+				var params = "funid=app_full&eventcode=upExcpManage";
+				params += "&repair_result=" + repair_result + "&end_time=" + (end_time+":00") + "&repair_method=" + repair_method + "&report_id=" + except_id+ "&start_time=" + (start_time+":00");
+				jxm.post(params, function(data) {
+						mui.toast("提交成功");
+						pageClear();
+						//获取当前webviwew
+						var main = plus.webview.currentWebview();
+						var opener = main.opener(); //获取父页面webview
+						//调用父页面js
+						opener.evalJS('appendTable()');
+						mui.back();
+				});
+			});
+			//清空当前页面控件值
+			var pageClear = function() {
+				$('#start_time').val(''); //开始时间
+				$('#end_time').val(''); //完成时间
+				$('#repair_result').val(''); //处理结果
+				$('#repair_method').val(''); //处理方法
+			}
+		</script>
+	</body>
+
+</html>

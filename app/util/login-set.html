@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+    <title>登录设置</title>
+    <link rel="stylesheet" href="../../mui/css/mui.min.css" />
+</head>
+<body>
+	<header class="mui-bar mui-bar-nav mui-bar-primary">
+		<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+		<h1 class="mui-title">登录设置</h1>
+		<i id="cleardata" class="mui-icon mui-icon-close mui-pull-right"></i>
+	</header>
+	
+	<div class="mui-content">
+		<div class="mui-margin20" style="height:50px; margin-left:5%;"> 
+			<div class="mui-input-row mui-pull-left" style="width:50%;">
+				<input id='server_code' type="text" class="mui-input-clear mui-input" 
+					placeholder="输入项目代号" value="">
+			</div>
+			<button id="selectbtn" type="button" class="mui-pull-right mui-btn mui-btn-primary" style="width:50%;height:40px; ">
+				获取服务器路径
+			</button>
+		</div>
+		
+		<div> 
+			<h5 class="mui-label-h5">服务器路径设置：</h5>
+			<div class="mui-input-row">
+				<input id='server_url' type="text" class="mui-input-clear mui-input">
+			</div>
+		</div>
+		<form class="mui-input-group mui-hidden">
+			<ul class="mui-table-view">
+				<li class="mui-table-view-cell">
+					<h5>是否支持离线登录：</h5>
+					<div id="login_off_is" class="mui-switch">
+						<div class="mui-switch-handle"></div>
+					</div>
+				</li>
+			</ul>
+		</form>
+		<div class="mui-margin20"> 
+			<button id="savebtn" type="button" class="mui-btn mui-btn-block mui-btn-primary" style="margin-left: 5%;">确定</button>
+		</div>
+		
+	</div>
+	
+    <script src="../../mui/js/mui.min.js"></script>
+    <script src="../../jxm/js/jxm.js"></script>
+    <script type="text/javascript" charset="UTF-8">
+      	mui.ready(function(){
+      		//获取服务器路径
+      		document.getElementById("selectbtn").addEventListener("tap", function(){
+  				var scode = document.getElementById("server_code").value;
+  				if (scode.length == 0) {
+					mui.alert('必须输入项目代号！');
+					return;
+				}
+  				var hdcall = function(data){
+					var surl = data.surl||'';
+					if (surl.length == 0) {
+						mui.alert('没有找到此项目代号的服务器信息！');
+						return;
+					}
+					document.getElementById("server_url").value = surl;
+				}
+				var params = "funid=app_server&eventcode=queryurl&nousercheck=1&scode="+scode;
+				jxm.post(params,hdcall,{serverurl:'http://112.124.110.117:8080/cloud/fileAction.do'});
+  			});
+  			
+      		//保存系统参数
+      		document.getElementById("savebtn").addEventListener("tap", function(){
+  				var url = document.getElementById("server_url").value;
+  				console.log('........server_url='+url);
+  				localStorage.setItem("server_url", url);
+  				
+  				var isoff = document.getElementById("login_off_is").classList.contains("mui-active");
+  				console.log('........isoff='+isoff);
+  				localStorage.setItem("login_off_is", isoff);
+  				
+  				mui.back();
+  			});
+      		
+      		//清除本地存储信息
+      		document.getElementById("cleardata").addEventListener("tap",  function(){
+      			if (confirm("确定清空缓存数据吗？")) {
+      				var url = localStorage.getItem("server_url");
+      				localStorage.clear();
+      				if (url && url.length > 0) {
+	      				localStorage.setItem("server_url", url);
+	      			}
+      			}
+			});
+			
+			var url = localStorage.getItem("server_url");
+			if (url && url.length > 0) {
+				document.getElementById("server_url").value = url;
+			}
+			var isoff = JSON.parse(localStorage.getItem("login_off_is")||'false');
+			if (isoff) {
+				document.getElementById("login_off_is").classList.add("mui-active");
+			}
+      	});
+			
+    </script>
+</body>
+</html>

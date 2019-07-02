@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+    <title></title>
+    <link rel="stylesheet" href="../../mui/css/mui.min.css"/>
+    <link rel="stylesheet" href="../../jxm/css/jxm.css">
+   	<style type="text/css">
+    	.mui-bar {
+			-webkit-box-shadow: none;
+			box-shadow: none;
+		}
+		.iconfont{
+			font-size:24px;
+		}
+		.newstitle{
+			font-size: 26px;
+			text-align: center;
+			overflow: hidden; 
+			text-overflow:clip;
+		}
+		
+		.check-time {
+			padding-top: 10px;
+		}
+		.check-time:before {
+			  content: ''; 
+			  position: absolute; 
+			  top: -15px;
+			  right: 40px; 
+			  height: 150%; 
+			  width: 2px; 
+			  background-color:#D8D8D8; 
+		}
+		.check-time:after {
+			  content: ''; 
+			  position: absolute; 
+			  top: 11px; 
+			  right: 32px;
+			  height: 14px; 
+			  width: 14px; 
+			  border-radius: 10px;
+			  border: 2px solid #D8D8D8;
+			  background-color:#FFF; 
+		}
+	</style>
+</head>
+<body>
+	<header class="mui-bar mui-bar-nav mui-bar-primary">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<h1 class="mui-title">公告</h1>
+	</header>
+	
+	<!--单据基本信息-->
+	<div class="mui-content" style="width:96%;margin-left:2% ;" >
+		<div id="news-content" style="background-color: white;padding: 10px;">
+		</div>
+		
+		<div class="mui-input-row" style="margin-top: 20px;">
+			<input id="reply_cont" type="text" class="" placeholder="请输入评论内容" style="width:75%;height: 40px;"/>
+			<button type="button" id="btnreply" class="mui-btn mui-btn-primary mui-pull-right" style="width:23%;height: 40px;">评论</button>
+		</div>
+		<ul id="reply-list" class="mui-table-view">
+		</ul>
+		
+	</div>	
+	<div class="mui-loader">加载中...</div>
+	
+	<script src="../../mui/js/mui.min.js"></script>
+	<script src="../../jxm/js/jxm.js"></script>
+	<script src="../util/jxm-util.js"></script>
+	<script src="../util/combo-data.js"></script>
+	<script type="text/javascript" charset="UTF-8">
+      	mui.init();
+      	var news_id = '';
+      	mui.plusReady(function(){
+      		var self = plus.webview.currentWebview();
+      		news_id = self.news_id;
+      		loadData();
+	    });
+	    
+  		//加载单据信息
+  		var loadData = function(){
+  			if (news_id == null || news_id.length == 0) {
+  				mui.toast('单据ID为空！');
+  				mui.back();
+  				return;
+  			}
+  			
+  			
+  			var mainlist = document.querySelector('.mui-content');
+  			var hdcall = function(data){
+  				var newsinfo = data.news;
+  				if (!data || !newsinfo){
+  					jxm.loadhint(mainlist, false);
+  					return;
+  				} 
+  				
+  				var showed = false;
+  				//加载单据信息
+  				if (newsinfo && newsinfo.news_code.length > 0) {
+  					var content = newsinfo.news_cont.replace(/width="640"/g,'width=80%').replace(/height="400"/g,'height=80%')
+		            content = content.replace(/width="415"/g,'');
+		            content = content.replace(/311.25pt;/g,'');
+		            var headurl = jxm.getURL();
+		            content = content.replace(/onclick="return JxExt.bbsfile\(this\);"/g,'class="downloadfiles" onclick="jxm.bbsurl(this.id)"');
+		            content = content.replace(/.\/fileAction.do/g,headurl);
+		            var	newsHtml = '<center class="newstitle">'+newsinfo.news_title+'</center>'+
+		            	'<center><p style="font-size:12px; padding-top:10px;">' +
+							'<label>发布人：</label><span>'+newsinfo.edit_user+'</span>' +
+							'<span style="margin-left:15px;">'+newsinfo.edit_date+'</span>' +
+						'</p>'
+		            	+'</center>' +
+						'<div id="newscontent" style="margin-top: 5px;">'+content +'</div>' 
+						 ;
+	               
+      				document.getElementById('news-content').innerHTML = newsHtml;
+
+      				showed = true;
+				}
+  				
+  				//加载评价明细
+  				var reply = data.reply;
+  				if (reply && reply.length > 0) {
+  					var replyHtml = '';
+  					mui.each(reply, function(i, obj){
+						var record = obj;
+						replyHtml += '<li class="mui-table-view-cell">'+
+						            '<div class="mui-table">'+
+						            	'<div class="mui-table-cell mui-col-xs-4 check-time">'+
+						                    '<span>'+ jxm.shortTime(record.edit_date, true) +'</span>'+
+						                '</div>'+
+						                '<div class="mui-table-cell mui-col-xs-8">'+
+						                    record.edit_user+
+						                    '<p>' + record.reply_cont + '</p>' +
+						                '</div>'+
+						            '</div>'+
+						        '</li>';
+					});
+  					document.getElementById('reply-list').innerHTML = replyHtml;
+  				}
+                jxm.loadhint(mainlist, showed);
+                
+  			};
+  			//发送请求
+			var params = 'funid=oa_news&eventcode=newsinfo&news_id='+ news_id;
+			jxm.post(params, hdcall);
+  		};
+  		
+  		//提交评论
+  		document.getElementById('btnreply').addEventListener('tap', function(){
+  			var reply_cont = document.getElementById('reply_cont').value;
+  			if (!reply_cont || reply_cont.length == 0) {
+  				mui.alert('请输入评论内容！');
+  				return false;
+  			}
+  			
+  			var hdcall = function(data){ 
+  				mui.toast('评论提交成功！');
+  				document.getElementById('reply_cont').value ="";
+  				//刷新数据
+  				loadData();
+  			};
+  			//发送请求
+			var params = 'funid=oa_news&eventcode=reply&news_id='+ news_id;
+			var e = encodeURIComponent;
+			params += '&reply_cont=' +e(reply_cont);
+			jxm.post(params, hdcall);
+  		});
+  		
+    </script>
+</body>
+</html>

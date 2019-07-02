@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html>
+	<head>
+	    <meta charset="UTF-8">
+	    <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+	    <title>版本更新</title>
+	    <link rel="stylesheet" href="../../mui/css/mui.min.css"/>
+	    <link rel="stylesheet" href="../../jxm/css/jxm.css">
+	     <style>
+	     .update{
+	     	width: 90%;
+	     	margin-left: 5%;
+	     	margin-top: 5%;
+	     	margin-right: 5%;
+	     	background-color: #e0e0e0;
+	     	padding: 10px;
+	     }
+	     .update center{
+	     	font-size: 18px;
+	     	padding-top: 7%;
+	     }
+	     .update button{
+	     	width:90%;
+	     	height: 44px;
+	     	margin-left: 5%;
+	     	margin-top: 8%;
+	     }
+	     .description{
+	     	width: 90%;
+	     	margin-left: 5%;
+	     	margin-top: 10%;
+	     	margin-right: 5%;
+	     }
+	     .description h4{
+	     	margin-bottom: 5%;
+	     }
+	     </style>
+    </head>
+    	
+	<body>
+		<header class="mui-bar mui-bar-nav mui-bar-primary">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<h1 class="mui-title">版本更新</h1>
+		</header>
+    	<div class="mui-content">
+    		<div class="update">
+    			<center>新版本：</center>
+    			<button class="mui-btn-green" id="updatebtn">立即更新</button>
+    		</div>
+    		<div class="description ">
+    			<h4>更新内容：</h4>
+    			<div class="desc-content"></div>
+    		</div>
+    	</div>
+    	<script src="../../mui/js/mui.min.js"></script>
+		<script src="../../jxm/js/jxm.js"></script>
+   		<script type="text/javascript" charset="UTF-8">
+   		 	mui.init();
+   		 	
+   		 	mui.plusReady(function(){
+   		 		var self = plus.webview.currentWebview();
+   		 		var update_type = self.update_type;
+   		 		var os_type = self.os_type;
+   		 		var update_note = self.update_note;
+   		 		var update_title = self.update_title;
+   		 		var down_url = self.down_url;
+   		 		var update_version = self.update_version;
+   		 		mui(".desc-content")[0].innerHTML = update_note;
+				mui(".update")[0].getElementsByTagName("center")[0].innerHTML = "新版本：" + update_version;
+	 			//点击 更新按钮 事件
+	   		 	document.getElementById("updatebtn").addEventListener('tap',function(){
+					if(update_type == '0'){
+						if(os_type == '0'){
+							console.log("ios整包安装");
+							//ios整包安装
+							plus.ui.confirm(update_note, function(event) {
+							if (0 == event.index) {
+								plus.runtime.openURL(down_url);
+							}
+						}, update_title, ["立即更新", "取　　消"]);
+						}else {
+							console.log("android整包安装");
+							//android整包安装
+							plus.nativeUI.showWaiting("下载文件...");
+							plus.downloader.createDownload( down_url, {filename:"_doc/update/"}, function(d,status){
+						        if ( status == 200 ) { 
+						            console.log("下载成功："+d.filename);
+						            plus.nativeUI.showWaiting("安装文件...");
+								    plus.runtime.install(d.filename,{},function(){
+								        plus.nativeUI.closeWaiting();
+								        console.log("安装apk文件结束！");
+								        plus.nativeUI.alert("安装结束！",function(){
+								            plus.runtime.restart();
+								        });
+								    },function(e){
+								        plus.nativeUI.closeWaiting();
+								        console.log("安装文件失败["+e.code+"]："+e.message);
+								        plus.nativeUI.alert("安装文件失败["+e.code+"]："+e.message);
+								    });
+						        } else {
+						            console.log("下载apk失败！");
+						            plus.nativeUI.alert("下载失败！");
+						        }
+						        plus.nativeUI.closeWaiting();
+						    }).start();
+						}
+					}else if(update_type == '1'){
+						console.log("差量安装");
+						//差量安装
+						plus.nativeUI.showWaiting("下载文件...");
+						plus.downloader.createDownload( down_url, {filename:"_doc/update/"}, function(d,status){
+					        if ( status == 200 ) { 
+					            console.log("下载wgt成功："+d.filename);
+					            plus.nativeUI.showWaiting("安装文件...");
+							    plus.runtime.install(d.filename,{},function(){
+							        plus.nativeUI.closeWaiting();
+							        console.log("安装wgt结束！");
+							        plus.nativeUI.alert("安装结束！",function(){
+							            plus.runtime.restart();
+							        });
+							    },function(e){
+							        plus.nativeUI.closeWaiting();
+							        console.log("安装wgt文件失败["+e.code+"]："+e.message);
+							        plus.nativeUI.alert("安装文件失败["+e.code+"]："+e.message);
+							    });
+					        } else {
+					            console.log("下载wgt失败！");
+					            plus.nativeUI.alert("下载失败！");
+					        }
+					        plus.nativeUI.closeWaiting();
+					    }).start();
+					}	
+				});
+   		 	});
+   		</script>
+		
+	</body>
+</html>

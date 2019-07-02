@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+    <title>品质查看</title>
+    <link rel="stylesheet" href="../../../mui/css/mui.min.css"/>
+    <link rel="stylesheet" href="../../../jxm/css/jxm.css">
+    <link rel="stylesheet" href="../../../ddcg/css/ddcgIcon.css">
+    <style type="text/css">
+    	.mui-bar {
+			-webkit-box-shadow: none;
+			box-shadow: none;
+		}
+		.head-search {
+			padding-top: 1px;
+			height: 50px !important; 
+		}
+		.head-search button {
+			height: 48px; 
+			width: 18%;
+			border: none;
+			border-radius: 0 !important;
+			background-color:#f7f7f7;
+		}
+		.head-search input {
+			width:62%; 
+			height: 50px; 
+			border: none;
+		}
+    	.label-red {
+			padding-left: 5px;
+			color:red !important;
+		}
+		.text-disabled {
+			background-color: #EEEEEE;
+		}
+		.iconfont{
+			font-size:24px;
+		}
+		h5 {
+	    	font-size: 14px;
+	    	padding: 8px 5px 6px;
+	    	background-color: #efeff4;
+	    }
+	    .d{
+	     height: 32px;
+	     width: 100%;
+	     margin-top: 2%;
+	    }
+	    .d5{
+	    	margin-left: 5%;
+	    }
+	    .d10{
+	    	margin-left: 10%;
+	    }
+	    .d11{
+	    	margin-left: 12%;
+	    }
+	    
+	    #addPopover {
+			position: fixed;
+			top: 0;
+			right: 0;
+			bottom: 0;
+			left: 0%;
+			z-index: 998;
+			background-color: rgba(0, 0, 0, .4);
+		}
+		.listtip {
+			padding-top: 20px;
+			text-align: center;
+			background-color: white;
+			height: 140px;
+			color: #CCCCCC;
+		}
+		
+		.addContent {
+			position: absolute;
+			left: 0;
+			top: 20px;
+		}	
+    </style>
+
+</head>
+<body>
+	<header class="mui-bar mui-bar-nav mui-bar-primary">
+		    <a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<h1 class="mui-title" id="title">品质查看</h1>
+			<a class="mui-icon mui-pull-right icon-header" id="print_setting">
+			<i class="iconfont icon-icon-test"></i>
+			</a>
+	</header>
+	<div class="mui-content">
+       <form class="mui-input-group">
+			<div class="mui-input-row head-search">
+				<button type="button" id="btnscan" class="mui-icon iconfont icon-saoma1 mui-pull-left" style=""></button><!--扫描资产条码-->
+				<input type="text" id="barcode" class="mui-input" placeholder="扫描工单号"/><!--资产条码输入框--> 
+			</div>
+	    </form>
+	</div>
+	<div>
+	    <button id="prev">上一页</button>
+	    <button id="next">下一页</button>
+	    &nbsp; &nbsp;
+	    <span>Page: <span id="page_num"></span> / <span id="page_count"></span></span>
+	</div>
+		<canvas style="width: 100%;height: 60%;" id="the-canvas"></canvas>
+		<script src="../../../mui/js/mui.min.js"></script>
+	<script src="../../../jxm/js/jxm.js"></script>
+	<script src="../../../jxm/js/JxDao.js"></script>
+	<script src="../../../jxm/js/json2.js"></script>
+	<script src="../../../jxm/js/jxm-image-input.js"></script>
+	<script src="../../util/jxm-util.js"></script>
+	<script src="../../../Resources/js/jquery-3.3.1.min.js"></script>
+	<script src="../../../Resources/js/juicer-min.js"></script>
+	<script src="../../../Resources/js/juicerUtil.js"></script>
+<script src="../../pdf/build/pdf.js"></script>
+<script src="../../pdf/build/pdf.worker.js"></script>
+<script>
+	var url = jxm.getURL(false)+'?funid=sys_attach&keyid=jxstar-882-10957&nousercheck=1&pagetype=editgrid&eventcode=down&user_id=administrator&dataType=byte&_dc=1556763652086';
+   // var url = 'http://192.168.2.114:8080/demo/fileAction.do?user_id=administrator&nousercheck=1&funid=sys_attach&keyid=jxstar-523-10757&eventcode=down&dataType=byte&_dc=1556689518953';
+    console.log(url);
+    var pdfDoc = null,
+        pageNum = 1,
+        pageRendering = false,
+        pageNumPending = null,
+        scale = 2,
+        canvas = document.getElementById('the-canvas'),
+        ctx = canvas.getContext('2d');
+
+    /**
+     * Get page info from document, resize canvas accordingly, and render page.
+     * @param num Page number.
+     */
+    function renderPage(num) {
+        pageRendering = true;
+        // Using promise to fetch the page
+        pdfDoc.getPage(num).then(function(page) {
+            var viewport = page.getViewport(scale);
+            canvas.height = viewport.height;
+            canvas.width = viewport.width;
+
+            // Render PDF page into canvas context
+            var renderContext = {
+                canvasContext: ctx,
+                viewport: viewport
+            };
+            var renderTask = page.render(renderContext);
+
+            // Wait for rendering to finish
+            renderTask.promise.then(function() {
+                pageRendering = false;
+                if (pageNumPending !== null) {
+                    // New page rendering is pending
+                    renderPage(pageNumPending);
+                    pageNumPending = null;
+                }
+            });
+        });
+
+        // Update page counters
+        document.getElementById('page_num').textContent = num;
+    }
+
+    /**
+     * If another page rendering in progress, waits until the rendering is
+     * finised. Otherwise, executes rendering immediately.
+     */
+    function queueRenderPage(num) {
+        if (pageRendering) {
+            pageNumPending = num;
+        } else {
+            renderPage(num);
+        }
+    }
+
+    /**
+     * Displays previous page.
+     */
+    function onPrevPage() {
+        if (pageNum <= 1) {
+            return;
+        }
+        pageNum--;
+        queueRenderPage(pageNum);
+    }
+    document.getElementById('prev').addEventListener('click', onPrevPage);
+
+    /**
+     * Displays next page.
+     */
+    function onNextPage() {
+        if (pageNum >= pdfDoc.numPages) {
+            return;
+        }
+        pageNum++;
+        queueRenderPage(pageNum);
+    }
+    document.getElementById('next').addEventListener('click', onNextPage);
+
+    /**
+     * Asynchronously downloads PDF.
+     */
+    PDFJS.getDocument(url).then(function(pdfDoc_) {
+        pdfDoc = pdfDoc_;
+        document.getElementById('page_count').textContent = pdfDoc.numPages;
+
+        // Initial/first page rendering
+        renderPage(pageNum);
+    });
+</script>
+	<!--
+	<script src="../../../mui/js/mui.min.js"></script>
+	<script src="../../../jxm/js/jxm.js"></script>
+	<script src="../../../jxm/js/JxDao.js"></script>
+	<script src="../../../jxm/js/json2.js"></script>
+	<script src="../../../jxm/js/jxm-image-input.js"></script>
+	<script src="../../util/jxm-util.js"></script>
+	<script src="../../../Resources/js/jquery-3.3.1.min.js"></script>
+	<script src="../../../Resources/js/juicer-min.js"></script>
+	<script src="../../../Resources/js/juicerUtil.js"></script>
+	<script type="text/javascript" charset="UTF-8">
+      	mui.init({
+      		swipeBack:false //关闭-右滑关闭功能
+      	});
+      	//页面初始化完成加载此方法
+      	mui.plusReady(function(){
+      		//初始化扫描工单号获取焦点
+      		$("#barcode").focus();
+      		loadPage();
+	    });
+	     /*扫描工单号*/
+	    document.getElementById('btnscan').addEventListener('tap', function() {
+			jxm.open('../../util/barcode_scan.html');
+		});
+		
+		//扫描工单号完成,触发回调函数
+		var scanSucess=function(result) {
+			document.getElementById('barcode').value=result;
+			addAsset(result);
+		}; 
+		$('#btnadd').on('click',function(e){
+			//?file='http://192.168.2.114:8080/demo/fileAction.do?user_id=administrator&&nousercheck=1&funid=sys_attach&keyid=jxstar-523-10757&eventcode=down&dataType=byte&_dc=1556689518953'
+			//window.open("../pdf/web/viewer.html");
+			var self = plus.webview.currentWebview();  
+			var baiduWV = plus.webview.create("http://192.168.2.114:8080/demo/fileAction.do?user_id=administrator&&nousercheck=1&funid=sys_attach&keyid=jxstar-523-10757&eventcode=down&dataType=byte&_dc=1556689518953", "baidu", {  
+			    top: "44px",  
+			    bottom: 0  
+			});  
+			self.append(baiduWV);
+		});
+		//扫描工单号回车后根据工单号读取信息
+  		document.getElementById('barcode').addEventListener('keypress', function(event){
+  			if (event.keyCode == 13) { 
+	  			//阻止默认回车键事件
+				event.preventDefault();
+				var barcode = document.getElementById('barcode').value;
+  				addAsset(barcode);
+  			} 
+  			return false;
+  		});
+  		/*工单信息方法*/
+  		var addAsset = function(barcode){
+  			var params = "funid=app_full&eventcode=qryOrder&order_code="+ barcode;
+			jxm.post(params,function(data){
+				if(data!=""){
+					
+				}else{
+					mui.toast("扫描失败！");
+				}
+			});
+  		};
+    </script>-->
+</body>
+</html>

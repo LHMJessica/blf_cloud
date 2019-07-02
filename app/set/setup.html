@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+    <title>设置</title>
+    <link rel="stylesheet" href="../../mui/css/mui.min.css"/>
+    <link rel="stylesheet" href="../../jxm/css/jxm.css">
+    <style>
+		.mui-table-view:before,
+		.mui-table-view:after {
+			height: 0;
+		}
+		
+		/* app line */
+		.mui-media-object {
+			margin: 0 !important;
+			margin-right: 12px !important;
+		}
+		.mui-media-object .mui-icon {
+			color: #00AAEF;
+		}
+		.mui-media-icon .mui-media-body {
+			padding-top: 4px;
+		}
+		
+		/* me photo */
+		.photo {
+			height: 80px !important;
+			line-height: 80px !important;
+			width: 80px !important;
+			max-width: 80px !important;
+			border-radius: 100px;
+			margin-right: 20px !important;
+		}
+		.photo-title {
+			padding: 20px 0;
+			font-size: 20px;
+		}
+		.photo-title p {
+			color: #333;
+			font-size: 15px;
+		}
+	</style>
+    
+</head>
+<body>
+	<header class="mui-bar mui-bar-nav mui-bar-primary">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<h1 class="mui-title">设置</h1>
+	</header>
+	<div class="mui-content" >
+	    
+	    <div style="height: 10px;"></div>
+	    <ul class="mui-table-view mui-hidden">
+        	<li class="mui-table-view-cell">
+				推送消息
+				<div id="M_Toggle_push" class="mui-switch mui-active">
+					<div class="mui-switch-handle"></div>
+				</div>
+			</li>
+	        <li class="mui-table-view-cell">
+				推送提示音
+				<div id="M_Toggle_voice" class="mui-switch mui-active">
+					<div class="mui-switch-handle"></div>
+				</div>
+			</li>
+	    </ul> 
+	    
+	    
+	    <div style="height: 10px;"></div>
+	    <ul class="mui-table-view">
+	        <li class="mui-table-view-cell " >
+	        	<a class="mui-navigate-right" href="#" id="about">
+		            <div class="mui-media-body">关于
+		            <span class="mui-pull-right" style="color: #a3a3a3;padding-right: 40px;"></span>
+		            </div>
+	        	</a>
+	        </li>
+	    </ul> 
+	    
+	    <div class="mui-hidden" style="height: 10px;"></div>
+	    <ul class="mui-hidden mui-table-view">
+	        <li class="mui-table-view-cell " >
+	        	<a class="mui-navigate-right" href="#">
+		           <div class="mui-media-body">清空缓存</div>
+	        	</a>
+	        </li>
+	        <li class="mui-table-view-cell " >
+	        	<a class="mui-navigate-right" href="#">
+		            <div class="mui-media-body">切换公司</div>
+	        	</a>
+	        </li>
+	        <li class="mui-table-view-cell " >
+	        	<a class="mui-navigate-right" href="#">
+		            <div class="mui-media-body">上次登录信息</div>
+	        	</a>
+	        </li>
+	    </ul>
+	</div>
+	
+	<script src="../../mui/js/mui.min.js"></script>
+	<script src="../../jxm/js/jxm.js"></script>
+    <script type="text/javascript" charset="UTF-8">
+      	mui.init();
+      	mui.plusReady(function(){
+  			if(localStorage.getItem("is_push") == '0'){
+  				document.getElementById("M_Toggle_push").classList.remove("mui-active");
+  			}
+  			if(localStorage.getItem("is_voice") == '0'){
+  				document.getElementById("M_Toggle_voice").classList.remove("mui-active");
+  			}
+      		var span = document.getElementById("about").getElementsByTagName('span');
+      		plus.runtime.getProperty( plus.runtime.appid, function ( news ) {
+					span[0].innerHTML = news.version;
+			});
+      	});
+      	
+      	document.getElementById("about").addEventListener('tap',function(){
+      		var message = '宝立方移动办公平台';//\n开发商：广州市东宏软件科技有限公司\n网站：www.eamcloud.cn\n服务电话：400-8888-888
+      		mui.alert(message,'关于');
+      	});
+      	
+      	document.getElementById("M_Toggle_push").addEventListener("tap",function(){
+      		var is_push = document.getElementById("M_Toggle_push");
+      		if(is_push.classList.toString().indexOf("mui-active") > 0){
+      			var params = "eventcode=saveIsPush&funid=app_role&is_push=1";
+      			jxm.post(params, function(){
+      				localStorage.setItem("is_push",1);
+      			});
+      		}else{
+      			var params = "eventcode=saveIsPush&funid=app_role&is_push=0";
+      			jxm.post(params, function(){
+      				localStorage.setItem("is_push",0);
+      			});
+      		}
+      	});
+      	
+      	document.getElementById("M_Toggle_voice").addEventListener("tap",function(){
+      		var is_push = document.getElementById("M_Toggle_voice");
+      		if(is_push.classList.toString().indexOf("mui-active") > 0){
+      			var params = "eventcode=saveIsVoice&funid=app_role&is_voice=1";
+      			jxm.post(params, function(){
+      				localStorage.setItem("is_voice",1);
+      			});
+      		}else{
+      			var params = "eventcode=saveIsVoice&funid=app_role&is_voice=0";
+      			jxm.post(params, function(){
+      				localStorage.setItem("is_voice",0);
+      			});
+      		}
+      	});
+      	
+    </script>
+</body>
+</html>

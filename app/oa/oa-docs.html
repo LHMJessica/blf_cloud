@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+    <title>知识库</title>
+    
+	<link href="../../mui/css/mui.min.css" rel="stylesheet" />
+	<link href="../../mui/css/mui.indexedlist.css" rel="stylesheet" />
+	<link href="../../jxm/css/jxm.css" rel="stylesheet" />
+	<style>
+		.mui-bar {
+			-webkit-box-shadow: none;
+			box-shadow: none;
+		}
+		.mui-search,
+		.mui-search .mui-icon-clear,
+		.mui-search .mui-placeholder {
+			padding-top: 5px;
+			padding-bottom: 5px;
+		}
+		.mui-media-object {
+			margin: 0 !important;
+			margin-right: 10px !important;
+			height:48px !important;
+			line-height:48px !important;
+			width:48px !important;
+			max-width:48px !important;
+		}
+		.mui-table-view .mui-table-view-cell.mui-media-icon .mui-media-body:after {
+			left: 70px;
+			background-color:#D8D8D8;
+		}
+		.mui-indexed-list {
+			height: 100%;
+		}
+		.mui-indexed-list-item {
+			padding-right: 10px;
+			line-height: 50px;
+		}
+		.folder {
+			width: 50px !important;
+			height: 50px !important;
+			line-height: 50px !important;
+		    max-width: 50px !important;
+		}
+	</style>
+</head>
+<body>
+	<header class="mui-bar mui-bar-nav mui-bar-primary">
+		<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+		<h1 class="mui-title">知识库</h1>
+	</header>
+	<footer class="mui-bar mui-bar-footer mui-hidden">
+		<center>
+		<button type="button" id="btn-select" class="mui-btn mui-btn-primary" style="width: 60%;">确定</button>
+		</center>
+	</footer>
+	<div class="mui-content">
+		<div id='main-list' class="mui-indexed-list">
+			<div class="mui-indexed-list-search mui-input-row mui-search">
+				<input type="search" id="searchkeyword" class="mui-input-clear mui-indexed-list-search-input" placeholder="搜索文件名">
+			</div>
+			<div class="mui-indexed-list-alert"></div>
+			<div class="mui-indexed-list-inner">
+				<div class="mui-indexed-list-empty-alert">没有数据</div>
+				<ul id="data-list" class="mui-table-view noline">
+					<li file-range="0" data-id="0" data-name="公司知识库" data-isparent=true class="mui-table-view-cell mui-indexed-list-item mui-media mui-media-icon">
+				   		<a class="mui-navigate-right">
+				   			<div class="mui-media-object mui-pull-left">
+								<img class="folder" src="../../jxm/img/file_type/folder.jpg" />
+							</div>
+							<div class="mui-media-body">公司知识库</div>
+						</a>
+					</li>
+					<li file-range="1" data-id="1" data-name="部门知识库" data-isparent=true class="mui-table-view-cell mui-indexed-list-item mui-media mui-media-icon">
+				   		<a class="mui-navigate-right">
+				   			<div class="mui-media-object mui-pull-left">
+								<img class="folder" src="../../jxm/img/file_type/folder.jpg" />
+							</div>
+							<div class="mui-media-body">部门知识库</div>
+						</a>
+					</li>
+					<li file-range="2" data-id="2" data-name="我的知识库" data-isparent=true class="mui-table-view-cell mui-indexed-list-item mui-media mui-media-icon">
+				   		<a class="mui-navigate-right">
+				   			<div class="mui-media-object mui-pull-left">
+								<img class="folder" src="../../jxm/img/file_type/folder.jpg" />
+							</div>
+							<div class="mui-media-body">我的知识库</div>
+						</a>
+					</li>
+				</ul>
+			</div>
+		</div>
+		
+		<div class="mui-loader">加载中...</div>
+	</div>
+	
+    <script src="../../mui/js/mui.min.js"></script>
+	<script src="../../jxm/js/jxm.js"></script>
+	<script type="text/javascript" charset="utf-8">
+		mui.init();
+		mui.plusReady(function(){
+			var page_back = mui.back;
+			var ppid = [];
+			var title = [];
+			var firststr = document.getElementById("data-list").innerHTML;
+			//查询数据与需要的数据格式转换
+			var dataConvert = function(item){
+				var data = {
+						data_id:item['oa_docs__docs_id'],
+						attach_id:item['oa_docs__attach_id'],
+						data_name:item['oa_docs__docs_name'],
+						data_desc:jxm.shortTime(item['oa_docs__edit_date']) + '&nbsp;' + item['oa_docs__docs_size']+'K',
+						docs_type:item['oa_docs__docs_type'],
+						is_folder:item['oa_docs__is_folder'],
+						son_count:item['oa_docs__son_count'],
+						attach_id:item['oa_docs__attach_id']
+					};
+				return data;
+			};
+			
+			var showDocsData = function(filerange,parentid, parentname,filename) {
+				var mainList = document.getElementById('main-list');
+				var dataList = document.getElementById("data-list");
+				//参数值需要根据不同的功能进行调整
+				if (!parentid || parentid.length == 0 || parentid == 'null') {
+					parentid = '0';
+					parentname = '知识库';
+				}
+				var hdcall = function(data){
+	  				var str = "";
+					mui.each(data.root, function(i, item){
+						//参数值需要根据不同的功能进行调整
+						item = dataConvert(item);
+						//有子节点
+						var hs = item.son_count > 0;
+						var img = jxm.fileTypeImg(item.docs_type);
+						//有子节点的不支持多选
+						//if (hs) ms = false;
+						str += '<li file-range='+filerange+' data-id="'+item.data_id+'" attach_id="'+item.attach_id+'" data-name="'+item.data_name+'" data-isparent='+hs
+									+' class="mui-table-view-cell mui-media '
+									+(item.is_folder == '1'?'mui-indexed-list-item  mui-media-icon':'')+'">'+
+							   		'<a href="javascript:;">'+
+										(item.is_folder == '1' ? '<img class="folder mui-media-object mui-pull-left" src="../../jxm/img/file_type/folder.jpg" />' :
+											'<img class="folder mui-media-object mui-pull-left" src="'+img+'" />') +
+										'<div class="mui-media-body">'+
+											item.data_name+
+											(item.is_folder != '1' ? '<p class="mui-ellipsis">'+item.data_desc+'</p>' : '') +
+										'</div>'+
+									'</a>'+
+								'</li>';
+					});
+					dataList.innerHTML = str;
+					jxm.loadhint(mainList, (str.length > 0));
+					//用于返回上一级参数
+					dataList.setAttribute('data-parentid', parentid);
+					dataList.setAttribute('data-parentname', parentname);
+					document.querySelector('.mui-title').innerHTML = parentname;
+	  			};
+				var params = 'funid=queryevent&eventcode=query_data&query_funid=oa_docs&limit=10000&start=0';
+	  			if(!filename || filename == null || filename.length == 0){
+	  				if(parentid == '0' ||parentid == '1'||parentid == '2'){
+		  				params += '&where_sql=(file_range = ? and parent_id is null)';
+						params += '&where_type=string';
+						params += '&where_value='+filerange;
+		  			}else{
+		  				params += '&where_sql=(file_range = ? and parent_id = ?)';
+						params += '&where_type=string;string';
+		  				params += '&where_value='+filerange+";"+parentid;
+		  			}
+	  			}else{
+	  				if(parentid == '4'){
+	  					params += '&where_sql=((parent_id is null or parent_id like ?)and (oa_docs.docs_name like ?))';
+						params += '&where_type=string;string';
+						params += '&where_value='+encodeURIComponent("%")+";"+encodeURIComponent('%'+filename+'%');
+						
+	  				}else{
+	  					if(parentid == '0' ||parentid == '1'||parentid == '2'){
+			  				params += '&where_sql=(file_range = ? and (parent_id is null or parent_id like ?) and (oa_docs.docs_name like ?))';
+							params += '&where_type=string;string;string';
+							params += '&where_value='+filerange+";"+encodeURIComponent("%")+";"+encodeURIComponent('%'+filename+'%');
+			  			}else{
+			  				params += '&where_sql=(file_range = ? and (parent_id is null or parent_id like ?) and (oa_docs.docs_name like ?))';
+							params += '&where_type=string;string;string';
+			  				params += '&where_value='+filerange+";"+encodeURIComponent(parentid+"%")+";"+encodeURIComponent('%'+filename+'%');
+			  			}
+	  				}
+	  				params += '&is_query=1&query_type=0';
+	  			}
+	  			
+	  			
+				//从后台加载用户数据
+				jxm.post(params, hdcall);
+			};
+			
+			//传递父节点点击执行的方法
+			mui.back = function(){
+			 	var dataList = document.getElementById("data-list");
+			 	var mainList = document.getElementById("main-list");
+				var filerange = dataList.getAttribute('data-filerange');
+				var index = dataList.getAttribute('data-index');
+				if (!index || index.length == 0 || index == 'null'||parseInt(index)<0) {
+					page_back();
+				} else if(parseInt(index) == 0){
+					dataList.setAttribute('data-index', parseInt(index)-1);
+					dataList.innerHTML = firststr;
+					jxm.loadhint(mainList, true);
+					document.querySelector('.mui-title').innerHTML = "知识库";
+				}else{
+					var num =  parseInt(index)-1;
+					dataList.setAttribute('data-index', num);
+					var ppId = ppid[num];
+					var ppName = title[num];
+					showDocsData(filerange,ppId, ppName);
+				}
+			};
+			
+			//打开远程文件
+			function openRemoteFile(url){
+			    var wait = plus.nativeUI.showWaiting("正在打开文件...");
+			    var dtask = plus.downloader.createDownload(url, {method: "GET"}, function(d, status) {
+			        if (status == 200) {
+			            plus.runtime.openFile(d.filename, {}, function(e){
+			                wait.close();
+			                mui.alert( "无法打开此文件","我的软件" );
+			            });
+			            wait.close();
+			        } else {
+			            wait.close();
+			            mui.alert("文件打开失败" , "我的软件");
+			        }
+			    });
+			    dtask.start();
+			}
+			
+			mui('#data-list').on('tap', 'li', function(){
+				if(this.className.indexOf("mui-indexed-list-item") == -1){
+					//阅读功能
+					var attach_id =this.getAttribute("attach_id");
+					var url = jxm.getURL()+'?funid=sys_attach&pagetype=editgrid'
+								+'&eventcode=down&nousercheck=1&dataType=byte&keyid='+attach_id;
+					openRemoteFile(url);
+				}else{
+					var dataList = document.getElementById("data-list");
+		  			var dataname = this.getAttribute("data-name");
+		  			var dataid = this.getAttribute("data-id");
+		  			var filerange = this.getAttribute("file-range");
+		  			var index = dataList.getAttribute('data-index');
+		  			
+		  			showDocsData(filerange,dataid, dataname);
+		  			if(dataid == '0' || dataid == '1'||dataid == '2'){
+		  				ppid =[];
+		  				title =[];
+		  				ppid[0] = dataid;
+		  				title[0] = dataname;
+		  				dataList.setAttribute('data-index', 0);
+		  			}else{
+		  				var num = parseInt(index)+1;
+		  				ppid[num] = dataid;
+		  				title[num] = dataname;
+		  				dataList.setAttribute('data-index', num);
+		  			}
+		  			dataList.setAttribute('data-filerange', filerange);
+				}
+				
+	  		});
+			
+			//回车后查询
+	  		document.getElementById('searchkeyword').addEventListener('keydown', function(event){
+	  			if (event.keyCode == 13) { 
+		  			//阻止默认回车键事件
+					event.preventDefault();
+					var dataList = document.getElementById("data-list");
+					var filename = document.getElementById('searchkeyword').value;
+					var index = dataList.getAttribute('data-index');
+					var filerange = dataList.getAttribute("data-filerange");
+					if(!index || index == null ||parseInt(index) < 0){
+						showDocsData('%','4','知识库','%'+filename+'%');
+					}else{
+						var ppId = ppid[parseInt(index)];
+						var ppName = title[parseInt(index)];
+						showDocsData(filerange,ppId,ppName,filename);
+					}
+	  			} 
+	  			return false;
+	  		});
+		});
+	</script>
+</body>
+</html>

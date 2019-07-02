@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<title>组长看板</title>
+		<link rel="stylesheet" href="../../../mui/css/mui.min.css" />
+		<link rel="stylesheet" href="../../../jxm/css/jxm.css">
+		<link rel="stylesheet" href="../../../mui/css/main.css">
+		<style type="text/css">
+			.mui-bar {
+				-webkit-box-shadow: none;
+				box-shadow: none;
+			}
+			
+			.head-search {
+				padding-top: 1px;
+				height: 50px !important;
+			}
+			
+			.head-search button {
+				height: 48px;
+				width: 18%;
+				border: none;
+				font-weight: bolder;
+				border-radius: 0 !important;
+				background-color: #f7f7f7;
+			}
+			
+			.head-search input {
+				width: 62%;
+				height: 50px;
+				border: none;
+			}
+			
+			.label-red {
+				padding-left: 5px;
+				color: red !important;
+			}
+			
+			.text-disabled {
+				background-color: #EEEEEE;
+			}
+			
+			.iconfont {
+				font-size: 24px;
+			}
+			
+			h5 {
+				font-size: 14px;
+				padding: 8px 5px 6px;
+				background-color: #efeff4;
+			}
+			
+			.d {
+				height: 32px;
+				width: 100%;
+				margin-top: 2%;
+			}
+			
+			.d5 {
+				margin-left: 5%;
+			}
+			
+			.d10 {
+				margin-left: 10%;
+			}
+			
+			.d11 {
+				margin-left: 12%;
+			}
+			
+			#addPopover {
+				position: fixed;
+				top: 0;
+				right: 0;
+				bottom: 0;
+				left: 0%;
+				z-index: 998;
+				background-color: rgba(0, 0, 0, .4);
+			}
+			
+			.listtip {
+				padding-top: 20px;
+				text-align: center;
+				background-color: white;
+				height: 140px;
+				color: #CCCCCC;
+			}
+			
+			.addContent {
+				position: absolute;
+				left: 0;
+				top: 20px;
+			}
+			
+			.processes-title {
+				font-size: 12px;
+				color: #000000;
+			}
+			
+			.processes-value {
+				font-size: 12px;
+				color: #555555;
+			}
+			/*清除框架自带的内边距样式*/
+			/*清除每组输入框下面的线*/
+			
+			#processes_info li {
+				display: inline-block;
+				list-style: none;
+				text-align: center;
+				vertical-align: top;
+			}
+			
+			.mui-input-group .mui-input-row:after {
+				height: 0px;
+			}
+			
+			#processes_info ul {
+				padding-left: 10px;
+			}
+			
+			.mspan {
+				margin-top: 2%;
+				overflow-x: scroll;
+				display: inline-block;
+				width: 100%;
+				overflow-y: hidden;
+				white-space: pre-wrap;
+			}
+			
+			.mui-bar-footer {
+				height: 40px !important;
+			}
+			
+			.total p {
+				display: inline-block;
+				vertical-align: middle;
+				margin: 5px 10px;
+				font-size: 16px;
+			}
+			
+			body .data-table .t_r table th,
+			#tabOnesub td {
+				width: auto;
+				text-align: center;
+				font-size: 12px;
+			}
+			
+			#sp_img {
+				height: 40px;
+			}
+			
+			#tableOneTh th:nth-child(2),
+			#tabOnesub td:nth-child(2) {
+				width: 35%;
+			}
+			
+			#tableOneTh th:nth-child(1),
+			#tabOnesub td:nth-child(1) {
+				width: 10%;
+			}
+			
+			#tableOneTh th:nth-child(3),
+			#tabOnesub td:nth-child(3) {
+				width: 17%;
+			}
+			
+			#tableOneTh th:nth-child(4),
+			#tabOnesub td:nth-child(4) {
+				width: 17%;
+			}
+			
+			#tableOneTh th:nth-child(5),
+			#tabOnesub td:nth-child(5) {
+				width: 20%;
+			}			
+			#tableOne {
+				touch-action: none;
+			}
+			#tableOneTh th{
+				background-color: #464b5e;
+				vertical-align: middle;
+			}
+		</style>
+
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav mui-bar-primary">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<h1 class="mui-title" id="title">组长看板</h1>
+		</header>
+		<div class="mui-content">
+			<form class="mui-input-group">
+				<div class="mui-input-row head-search">
+					<!--扫描条码-->
+					<button type="button" id="btnscan" class="mui-icon iconfont icon-saoma1 mui-pull-left"></button>
+					<!--输入框-->
+					<input type="text" id="barcode" autofocus="autofocus" class="mui-input" placeholder="扫描二维码" />
+					<!--选择框-->
+					<button style="font-weight: bolder;" id='showQrPicker' class="mui-icon mui-icon-plusempty mui-pull-right" type='button'></button>
+				</div>
+				<div id="processes_info">
+					<ul>
+						<li style="width: 10%;">
+							<p class="processes-title">款号</p>
+							<p id="sp_id" class="processes-value"></p>
+						</li>
+						<li style="width: 1px;background-color: lightgrey;height: 30px;"></li>
+						<li style="width: 15%;">
+							<p class="processes-title">产品名称</p>
+							<p id="sp_name" class="processes-value"></p>
+						</li>
+						<li style="width: 1px;background-color: lightgrey;height: 30px;"></li>
+						<li style="width: 22%;">
+							<p class="processes-title">工单编号</p>
+							<p id="pro_code" class="processes-value"></p>
+						</li>
+						<li style="width: 1px;background-color: lightgrey;height: 30px;"></li>
+						<li style="width: 15%;">
+							<p class="processes-title">入仓数量</p>
+							<p id="in_num" class="processes-value"></p>
+						</li>
+						<li style="width: 1px;background-color: lightgrey;height: 30px;"></li>
+						<li style="width: 15%;">
+							<p class="processes-title">工单数量</p>
+							<p id="pro_num" style="color: red;" class="processes-value"></p>
+						</li>
+						<li style="width: 10%;overflow: hidden;">
+							<img src="../../../jxm/img/logo1.png" style="width: 100%;" alt="产品" title="产品" id="sp_img" />
+						</li>
+					</ul>
+				</div>
+				<div class="data-table">
+					<table class="mui-table" style="width: 100%;">
+						<thead id="tableOneTh">
+							<th><span class='mspan'>工序</span></th>
+							<th><span class='mspan'>工序名称</span></th>
+							<th style="background-color: green;"><span class='mspan'>完成数量</span></th>
+							<th style="background-color: orange;"><span class='mspan'>剩余数量</span></th>
+							<th><span class='mspan'>二维码</span></th>
+						</thead>
+						<tbody id="tabOnesub">
+							
+						</tbody>
+					</table>
+				</div>
+			</form>
+		</div>
+
+		<script src="../../../mui/js/mui.min.js"></script>
+		<script src="../../../jxm/js/jxm.js"></script>
+		<script src="../../../jxm/js/JxDao.js"></script>
+		<script src="../../../jxm/js/json2.js"></script>
+		<script src="../../../jxm/js/jxm-image-input.js"></script>
+		<script src="../../util/jxm-util.js"></script>
+		<script src="../../../Resources/js/jquery-3.3.1.min.js"></script>
+		<script src="../../../jxm/js/iscroll-probe.min.js"></script>
+		<script src="../../../jxm/js/main.js"></script>
+		<script src="../../../Resources/js/juicer-min.js"></script>
+		<script src="../../../Resources/js/juicerUtil.js"></script>
+		<script type="text/javascript" charset="UTF-8">
+			mui.init({
+				swipeBack: false //关闭-右滑关闭功能
+			});
+			document.getElementById("barcode").focus();
+			//页面初始化完成加载此方法
+			mui.plusReady(function() {
+				//loadPage();
+				console.log(jxm.getURL());
+				$("#tabOnesub tr:odd td").css("background-color", "#F2F2F2");
+			});
+			//回车后根据工单号读取信息
+			document.getElementById('barcode').addEventListener('keypress', function(event) {
+				if(event.keyCode == 13) {
+					//阻止默认回车键事件
+					var barcode = document.getElementById('barcode').value;
+					$('#barcode').data("code", barcode);
+					$('#barcode').val('');
+					addAsset(barcode);
+				}
+				return false;
+			});
+			//扫描工单号完成
+			var scanSucess = function(result) {
+				$('#barcode').data("code", result);
+				addAsset(result);
+			};
+			/*扫描工单号*/
+			document.getElementById('btnscan').addEventListener('tap', function() {
+				jxm.open('../../util/barcode_scan.html');
+			});
+			/*工单信息方法*/
+			var addAsset = function(barcode) {
+				var params = "funid=app_full&eventcode=qryWorkInfo&qrcode=" + barcode;
+				jxm.post(params, function(data) {
+					console.log(JSON.stringify(data));
+					if(data.type != "") {
+						$('#sp_id').html(data.sp_code); //产品编号
+						$('#sp_name').html(data.sp_name); //产品名称
+						$('#pro_code').html(data.div_code); //工单编号
+						$('#pro_num').html(data.div_num); //工单数量
+						var img_src = jxm.getURL() + '?&funid=sys_attach&pagetype=editgrid&eventcode=fdown&attach_field=sp_imge&dataid=' + data.sp_id + '&table_name=sp_catalog&datafunid=sp_catalog&dataType=byte&nousercheck=1&dc=1556729137482';
+						console.log(img_src); 
+						$("#sp_img").attr("src", img_src);
+						$('#in_num').html(data.done_num); //入仓数量
+						appendTable(barcode);
+						$("#processes_info ul").attr("id",barcode);
+					} else {
+						mui.toast("扫描失败！");
+					}
+				});
+			};
+			/**
+			 * 格式化返回的数据并追加到表格
+			 * @param {Object} data
+			 */
+			var appendTable = function(data) {
+				$("#tabOnesub").children().remove();
+				var params = "funid=app_full&eventcode=qryWorkProcess&qrcode=" + data;
+				jxm.post(params, function(results) {
+					$.each(results, function(index, result) {
+						var item = '<tr id="' + result["sp_process_id"] + '">' +
+							'<td  class="tabOnesub_list" ><span class="mspan">' + result["process_code"] + '</span></td>' +
+							'<td class="tabOnesub_list"><span class="mspan" >' + result["process_name"] + '</span></td>' +
+							'<td><span class="mspan" >' + result["done_num"] + '</span></td>' +
+							'<td><span class="mspan" >' + (parseInt($('#pro_num').html()) - parseInt(result["done_num"])) + '</span></td>' +
+							'<td><span class="mspan btnqrcode">生成</span></td>' +
+							'</tr>';
+						$('#tabOnesub').append(item);
+					});
+				});
+				$("#tabOnesub tr:odd").css("background-color", "#F2F2F2");
+			};
+			//行选择事件
+			mui("#tabOnesub").on('tap', '.tabOnesub_list', function(e) {
+				var cache = "";
+				var href = "processes_group_view_item.html";
+				var param = {
+					callbackWinId: mui.currentWebview.id,
+					callbackEvent: view_item,
+					process_id: $(this).parent().attr("id"),
+					plan_id: $("#processes_info ul").attr("id")//plan_id
+				};
+				jxm.open(href, {
+					extras: {
+						selectParams: param
+					}
+				});
+			});
+			/**
+			 * 生成二维码
+			 */
+			mui("#tabOnesub").on('tap', '.btnqrcode', function(e) {
+				var href = "processes_group_qrcode.html";
+				var param = {
+					callbackWinId: mui.currentWebview.id,
+					callbackEvent: qrcode,
+					process_id: $(this).parent().parent().attr("id"),
+					pro_code: $("#processes_info ul").attr("id") //plan_id
+				};
+				jxm.open(href, {
+					extras: {
+						selectParams: param
+					}
+				});
+			})
+			var selectprocess = "selectprocess";
+			var view_item = "view_item";
+			var qrcode = "qrcode";
+			/**
+			 * 选择工单
+			 */
+			$("#showQrPicker").on('click', function(e) {
+				var href = "../../util/select-process.html";
+				var param = {
+					callbackWinId: mui.currentWebview.id,
+					callbackEvent: selectprocess,
+					dept_id: jxm.getDeptId(),
+					mutilsel: false //不需要多选
+				};
+				jxm.open(href, {
+					extras: {
+						selectParams: param
+					}
+				});
+			});
+			/**
+			 * 行选择事件回调函数
+			 */
+			window.addEventListener(view_item, function(e) {
+
+			});
+			/**
+			 * 生成二维码回调函数
+			 */
+			window.addEventListener(qrcode, function(e) {
+
+			});
+			/**
+			 * 选择工单回调函数
+			 */
+			window.addEventListener(selectprocess, function(e) {
+				var obj = e.detail;
+				console.log(JSON.stringify(obj.dataid));
+				addAsset(obj.dataid);
+			});
+		</script>
+	</body>
+
+</html>

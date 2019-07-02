@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+    <title></title>
+    <link rel="stylesheet" href="../../mui/css/mui.min.css"/>
+    <link rel="stylesheet" href="../../jxm/css/jxm.css">
+   	<style type="text/css">
+    	
+	</style>
+</head>
+<body>
+	<header class="mui-bar mui-bar-nav mui-bar-primary">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<h1 class="mui-title">个人信息</h1>
+	</header>
+	<nav class="mui-bar mui-bar-footer">
+		<center>
+			<button type="button" id="btncommit" class="mui-btn mui-btn-primary " style="width: 60%;">提交</button>
+		</center>
+	</nav>
+	<div class="mui-content">
+		<h5>头像设置</h5>
+		<div class="mui-input-group" style="height: 200px;">
+			<img class="mui-media-object mui-pull-left" name='sys_user__user_photo' style="height: 180px;width:180px;margin-left: 10px;margin-top: 10px;" src="../../jxm/img/face-set.png" id="userphoto">
+			<button class="mui-btn-primary mui-pull-right" style="margin-top: 70px;margin-right: 10%;width: 100px;" id='photobtn'>更改图片</button>
+		</div>
+		<h5>基本信息</h5>
+		<form class="mui-input-group">
+			<div class="mui-input-row" >
+				<label>姓名 </label>
+				<input type="text" class="mui-input-clear"  id="user_name" placeholder="点击填写" />
+			</div>
+			<div class="mui-input-row" >
+				<label>性别</label>
+				<select id='sex'>
+					<option value="0">女</option>
+					<option value="1">男</option>
+				</select>
+			</div>
+			<div class="mui-input-row" >
+				<label>手机号码</label>
+				<input id="mob_code" type="text"  class="mui-input-clear" placeholder="点击填写"/>
+			</div>
+			<div class="mui-input-row" >
+				<label>固定电话</label>
+				<input id="phone_code" type="text"  class="mui-input-clear" placeholder="点击填写"/>
+			</div>
+			<div class="mui-input-row" >
+				<label>邮箱</label>
+				<input id="email" type="email"  class="mui-input-clear" placeholder="点击填写"/>
+			</div>
+			<div class="mui-input-row" >
+				<label>职务</label>
+				<input id="duty" type="text"  class="mui-input-clear" placeholder="点击填写"/>
+			</div>
+		</form>
+	</div>	
+	
+	<script src="../../mui/js/mui.min.js"></script>
+	<script src="../../jxm/js/jxm.js"></script>
+	<script type="text/javascript" charset="UTF-8">
+     	mui.init();
+      	var oldimgpath ;
+      	var user_name;
+      	var gender;
+      	var phone;
+      	var telphone;
+      	var mail;
+      	var post;
+      	mui.plusReady(function(){
+      		var session = jxm.getSession();
+      		var userid = session.user_id;
+      		var hdcall = function(data){
+				document.getElementById("user_name").value=data.root[0].sys_user__user_name;
+				document.getElementById("sex").value=data.root[0].sys_user__sex;
+				document.getElementById("mob_code").value=data.root[0].sys_user__mob_code;
+				document.getElementById("phone_code").value=data.root[0].sys_user__phone_code;
+				document.getElementById("email").value=data.root[0].sys_user__email;
+				document.getElementById("duty").value=data.root[0].sys_user__duty;
+				user_name = data.root[0].sys_user__user_name;
+      			gender = data.root[0].sys_user__sex;
+      			phone = data.root[0].sys_user__mob_code;
+      			telphone = data.root[0].sys_user__phone_code;
+      		    mail = data.root[0].sys_user__email;
+      			post = data.root[0].sys_user__duty;
+				if(data.root[0].sys_user__user_photo.length != 0){
+					var img = document.getElementById("userphoto");
+					img.setAttribute('imgname',data.root[0].sys_user__user_photo);
+					var params = 'funid=sys_attach&eventcode=qryatt&attachfield=user_photo';
+					params += '&tablename=sys_user&dataid='+ userid;
+					jxm.post(params, function(data){
+						if (data && data.attachId) {
+							var url = jxm.getURL()+'?funid=sys_attach&eventcode=downPhoto&keyid='+ data.attachId;
+								url += '&dataType=byte&image_small_use=0&nousercheck=1&dc=' + (new Date()).getTime();
+							img.src = url;
+							img.setAttribute('imgpath',url);
+							oldimgpath = url;
+						}
+					});
+				}
+      		};
+      		
+      		//发送请求
+			var params = 'funid=queryevent&eventcode=query_data&query_funid=sys_user&query_type=0&has_page=0';
+			params += '&where_sql=sys_user.user_id = ?';
+			params += '&where_type=string';
+			params += '&where_value='+userid;
+			jxm.post(params, hdcall);
+      	});
+      	
+      	
+      	//缩放图片
+      	var zoomImage = function(src){
+      		plus.zip.compressImage({
+					src:src,
+					dst:src,
+					overwrite:true,
+					width:"600px",
+					height:'600px'
+				},
+				function() {
+					console.log(" 缩放成功！");
+				},function(e) {
+					console.log("缩放失败："+e);
+			});
+      	};
+      	
+      	//提交
+      	var commitform = function(){
+  			var userid = jxm.getSession().user_id;
+      		var img = document.getElementById("userphoto");
+      		var path = img.getAttribute('imgpath');
+      		var imgname = img.getAttribute('imgname');
+      		var flag = 0;
+      		if(oldimgpath != path){
+      			flag = 1;
+      			var names = path.split('/');
+      			imgname = names[names.length-1];
+      		}
+      		var hdcall = function(data) {
+      			if (path.length != 0 && flag == 1) {
+		  			var params = {
+						dataid:userid,
+						datafunid:'sys_user',
+						table_name:'sys_user',
+						attach_path:path,
+						attach_name:imgname,
+						attach_field:'user_photo',
+						image_small_use:'1',
+						image_small_size:'120',
+						fieldname:'sys_user__user_photo',
+						eventcode:'createPhoto',
+					};
+					jxm.fuploadFile(params, function(){
+						setTimeout(function(){
+							mui.toast('提交成功！');
+							jxm.backHome('set');
+							var set = plus.webview.getWebviewById("set-main");
+							set.reload();
+						}, 500);
+						
+					});
+      			}
+  			};
+      		var username = document.getElementById('user_name').value;
+      		var sex = document.getElementById('sex').value;
+      		var mob = document.getElementById('mob_code').value;
+      		var phonecode = document.getElementById('phone_code').value;
+      		var email = document.getElementById('email').value;
+      		var duty = document.getElementById('duty').value;
+      		var dirtyfields ='';
+      		if(username != user_name){
+      			dirtyfields +='sys_user.user_name;';
+      		}
+      		if(sex != gender){
+      			dirtyfields +='sys_user.sex;';
+      		}
+      		if(mob != phone){
+      			dirtyfields +='sys_user.mob_code;';
+      		}
+      		if(phonecode != telphone){
+      			dirtyfields +='sys_user.phone_code;';
+      		}
+      		if(email != mail){
+      			dirtyfields +='sys_user.email;';
+      		}
+      		if(duty != post){
+      			dirtyfields +='sys_user.duty;';
+      		}
+      		if(oldimgpath != path){
+      			dirtyfields +='sys_user.user_photo;';
+      		}
+      		var e = encodeURIComponent;
+  			var params = 'funid=sys_user&eventcode=save&pagetype=form&keyid='+ userid+'&dataType=json&fkValue=';
+  			params += '&sys_user__user_name='+ e(username);
+  			params += '&sys_user__sex='+sex;
+  			params += '&sys_user__mob_code='+mob;
+  			params += '&sys_user__phone_code='+phonecode;
+  			params += '&sys_user__email='+email;
+  			params += '&sys_user__duty='+e(duty);
+  			params += '&sys_user__user_photo='+e(imgname);
+  			params += '&dirtyfields='+dirtyfields.substring(0,dirtyfields.length-1);
+  			jxm.post(params, hdcall);
+      	};
+      	
+      	//清除表单
+      	var newApply = function(){
+      		var textinputs = document.body.querySelectorAll('input');
+			mui.each(textinputs, function(n, obj){
+				obj.value = '';
+			});
+      	};
+      	//点击提交按钮后提交
+		document.getElementById('btncommit').addEventListener('tap', commitform);
+		
+		//更新图片到img上
+		var  addImg = function(event){
+			var img = document.getElementById("userphoto");
+			var path = event.target;
+			img.src = path;
+			img.setAttribute('imgpath', path);
+			zoomImage(path);
+		};
+		//拍照取图片
+		var getImage = function() {
+			var c = plus.camera.getCamera();
+			c.captureImage(function(path) {
+				path = "file://" + plus.io.convertLocalFileSystemURL(path);
+				//压缩图片后再发消息
+				jxm.compressImage(path, function(event){
+					addImg(event);
+				});
+			}, function(e) {
+				mui.toast("取消拍照。");
+			});
+		};
+		
+		//从相册中取图片
+		var galleryImg = function() {
+			plus.gallery.pick(function(path) {
+				//压缩为临时图片文件
+				var msgid = new Date().getTime();
+				var dst = '_doc/'+msgid+'.jpg';
+				//压缩图片
+				jxm.compressImage(path, function(event){
+					addImg( event);
+				},null,{dst:dst});
+			}, function(e) {
+				mui.toast("获取图片取消。");
+			}, {
+				filter: "image",
+				filename: "_doc/gallery/"
+			})
+		};
+		//更改图片按钮
+		document.getElementById('photobtn').addEventListener('tap', function(){
+			var a = [{
+				title: "拍照"
+			}, {
+				title: "从手机相册选择"
+			}];
+			plus.nativeUI.actionSheet({
+				title: "选择图片",
+				cancel: "取消",
+				buttons: a
+			}, function(b) {
+				switch (b.index) {
+					case 0:
+						break;
+					case 1:
+						getImage();
+						break;
+					case 2:
+						galleryImg();
+						break;
+					default:
+						break
+				}
+			});
+		});
+		
+		
+		
+    </script>
+</body>
+</html>

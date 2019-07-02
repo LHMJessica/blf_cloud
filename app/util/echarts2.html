@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<title>经营指标</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1,user-scalable=no">
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black">
+		<!--标准mui.css-->
+		<link rel="stylesheet" href="../../mui/css/mui.min.css">
+		<style>
+			.chart {
+				height: 300px;
+				margin: 0px;
+				padding: 0px;
+			}
+			h5 {
+				margin-top: 30px;
+				font-weight: bold;
+			}
+			h5:first-child {
+				margin-top: 15px;
+			}
+		</style>
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav mui-bar-primary">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<h1 class="mui-title">经营指标</h1>
+		</header>
+		<div class="mui-content">
+			<div class="mui-content-padded">
+				
+			</div>
+			<div class="mui-content-padded">
+				<h5>业绩类型</h5>
+				<div class="chart" id="areaChart"></div>
+				<h5>销售绩效</h5>
+				<div class="chart" id="ybChart"></div>
+				<h5>客户类型</h5>
+				<div class="chart" id="ldChart"></div>
+			</div>
+		</div>
+		<script src="../../mui/js/mui.min.js"></script>
+		<script src="../../lib/echarts.min.js"></script>
+		<script>
+			
+			var option1 = {
+			    tooltip : {
+			        formatter: "{a} <br/>{b} : {c}%"
+			    },
+			    toolbox: {
+			        feature: {
+			            restore: {},
+			            saveAsImage: {}
+			        }
+			    },
+			    series: [
+			        {
+			            name: '业务指标',
+			            type: 'gauge',
+			            axisLine: {            // 坐标轴线
+					      lineStyle: {         // 属性lineStyle控制线条样式
+					        width: 19,
+					        color: [[0.6, '#DA5430'], [0.9, '#EC971F'], [1, '#449D44']]
+					      }
+					    },
+					    axisTick: {            // 坐标轴小标记
+					      length:23,        // 属性length控制线长
+					      lineStyle: {       // 属性lineStyle控制线条样式
+					        color: 'auto'
+					      }
+					    },
+					    splitLine: {           // 分隔线
+					      length:27,         // 属性length控制线长
+					      lineStyle: {       // 属性lineStyle（详见lineStyle）控制线条样式
+					        color: 'auto'
+					      }
+					    },
+					    pointer: {
+					      width:6
+					    },
+			            detail: {formatter:'{value}%'},
+			            data: [{value: 50, name: '完成率'}]
+			        }
+			    ]
+			};
+			
+			var option2 = {
+				series: [
+			        {
+			            name:'访问来源',
+			            type:'pie',
+			            radius: [0, '30%'],
+			
+			            data:[
+			                {value:335, name:'直达', selected:true},
+			                {value:679, name:'营销广告'},
+			                {value:1548, name:'搜索引擎'}
+			            ]
+			        },
+			        {
+			            name:'访问来源',
+			            type:'pie',
+			            radius: ['40%', '55%'],
+			
+			            data:[
+			                {value:335, name:'直达'},
+			                {value:310, name:'邮件营销'},
+			                {value:234, name:'联盟广告'},
+			                {value:135, name:'视频广告'},
+			                {value:1048, name:'百度'},
+			                {value:251, name:'谷歌'},
+			                {value:147, name:'必应'},
+			                {value:102, name:'其他'}
+			            ]
+			        }
+			    ]
+			};
+
+			var option3 = {
+				series: [
+			        {
+			            name: '预期',
+			            type: 'funnel',
+			            left: '10%',
+			            width: '80%',
+			            label: {
+			                normal: {
+			                    formatter: '{b}预期'
+			                },
+			                emphasis: {
+			                    position:'inside',
+			                    formatter: '{b}预期: {c}%'
+			                }
+			            },
+			            labelLine: {
+			                normal: {
+			                    show: false
+			                }
+			            },
+			            itemStyle: {
+			                normal: {
+			                    opacity: 0.7
+			                }
+			            },
+			            data: [
+			                {value: 60, name: '访问'},
+			                {value: 40, name: '咨询'},
+			                {value: 20, name: '订单'},
+			                {value: 80, name: '点击'},
+			                {value: 100, name: '展现'}
+			            ]
+			        },
+			        {
+			            name: '实际',
+			            type: 'funnel',
+			            left: '10%',
+			            width: '80%',
+			            maxSize: '80%',
+			            label: {
+			                normal: {
+			                    position: 'inside',
+			                    formatter: '{c}%',
+			                    textStyle: {
+			                        color: '#fff'
+			                    }
+			                },
+			                emphasis: {
+			                    position:'inside',
+			                    formatter: '{b}实际: {c}%'
+			                }
+			            },
+			            itemStyle: {
+			                normal: {
+			                    opacity: 0.5,
+			                    borderColor: '#fff',
+			                    borderWidth: 2
+			                }
+			            },
+			            data: [
+			                {value: 30, name: '访问'},
+			                {value: 10, name: '咨询'},
+			                {value: 5, name: '订单'},
+			                {value: 50, name: '点击'},
+			                {value: 80, name: '展现'}
+			            ]
+			        }
+			    ]
+			};
+			
+			var byId = function(id) {
+				return document.getElementById(id);
+			};
+			var areaChart = echarts.init(byId('areaChart'));
+			areaChart.setOption(option1);
+			var ybChart = echarts.init(byId('ybChart'));
+			ybChart.setOption(option2);
+			var ldChart = echarts.init(byId('ldChart'));
+			ldChart.setOption(option3);
+		</script>
+	</body>
+
+</html>

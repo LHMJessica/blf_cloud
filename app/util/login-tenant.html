@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+    <title>登录</title>
+    <link rel="stylesheet" href="../../mui/css/mui.min.css" />
+    <link rel="stylesheet" href="../../jxm/css/jxm.css"/>
+    <style>
+		.mui-media-object .iconfont {
+			color: #00AAEF;
+			font-size: 28px;
+		}
+		.mui-media-object {
+			margin: 0 !important;
+			margin-right: 10px !important;
+			height:48px !important;
+			line-height:48px !important;
+			width:48px !important;
+			max-width:48px !important;
+		}
+		.mui-media-title {
+			color: #00AAEF;
+			padding: 12px 0;
+		}
+    </style>
+</head>
+<body>
+	<header class="mui-bar mui-bar-nav mui-bar-primary">
+		<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+		<h1 class="mui-title">登录</h1>
+	</header>
+	
+	<div class="mui-content">
+		<h5 class="mui-label-h5">选择需要进入的公司：</h5>
+		
+		<ul id="select-tenant" class="mui-table-view">
+			<!--
+            <li class="mui-table-view-cell mui-media mui-media-icon">
+				<a class="mui-navigate-right">
+					<div class="mui-media-object mui-media-grey mui-pull-left">
+						<span class="mui-icon"><i class="iconfont icon-home"></i></span>
+					</div>
+					<div class="mui-media-body mui-media-title">
+						公司名称
+					</div>
+				</a>
+			</li>
+           -->
+		</ul>
+		
+		<div class="mui-margin20 mui-hidden"> 
+			<button id="savebtn" type="button" class="mui-btn mui-btn-block mui-btn-primary" style="margin-left: 5%;">进入首页</button>
+		</div>
+	</div>
+	
+    <script src="../../mui/js/mui.min.js"></script>
+    <script src="../../jxm/js/jxm.js"></script>
+    <script type="text/javascript" charset="UTF-8">
+   		//登录信息
+		var appid = 'jxm';
+		var appinfo = '';
+		var timestamp = jxm.getTimeStamp();
+		
+		mui.plusReady(function() {
+			//取推送信息
+			var os = plus.os.name.toLowerCase();
+			var cid = plus.push.getClientInfo().clientid;
+			appinfo = '{"os_name"="'+os+'","push_cid"="'+cid+'"}';
+		});
+		
+      	mui.ready(function(){
+      		var is_keep = localStorage.getItem('is_keep');
+      		var userpwd = localStorage.getItem('user_and_pwd');
+	  		var tenants = localStorage.getItem('select_tenants');
+	  		
+	  		console.log('........select_tenants='+tenants);
+	  		tenants = JSON.parse(tenants);
+	  		//不删除了，在切换公司时用
+	  		//localStorage.removeItem("is_keep");
+	  		//localStorage.removeItem("user_and_pwd");
+	  		//localStorage.removeItem("select_tenants");
+	  		
+      		var selten = document.getElementById("select-tenant");
+      		//加载公司信息
+			var str = '';
+			mui.each(tenants, function(i, obj){
+				str += '<li class="mui-table-view-cell mui-media mui-media-icon" dataid="'+ obj.tenant_id +'" dataname="'+ obj.tenant_name +'">'+
+							'<a class="mui-navigate-right">'+
+								'<div class="mui-media-object mui-media-grey mui-pull-left">'+
+									'<span class="mui-icon"><i class="iconfont icon-home"></i></span>'+
+								'</div>'+
+								'<div class="mui-media-body mui-media-title">'+
+									obj.tenant_name+
+								'</div>'+
+							'</a>'+
+						'</li>';
+			});
+			selten.innerHTML = str;
+			
+			mui("#select-tenant").on("tap", "li", function(){
+				login(this.getAttribute("dataid"), this.getAttribute("dataname"));
+			});
+			
+			var login = function(tenant_id, tenant_name) {
+				if (window.plus) sw = plus.nativeUI.showWaiting();
+				
+				var e = encodeURIComponent;
+				var ups = userpwd.split(";");
+				
+				var params = "not_verify=1&eventcode=cloud_login&funid=login_event&user_code="+ ups[0] +
+							 "&user_pwd="+ ups[1] +"&tenant_id="+ tenant_id +"&tenant_name="+ e(tenant_name);
+					params += "&appinfo="+appinfo+"&appid="+ appid +"&timestamp="+ timestamp;
+				
+				mui.ajax(jxm.getURL(true), {
+					data:params,
+					dataType:'json',//服务器返回json格式数据
+					type:'post',//HTTP请求类型
+					timeout:10000,//超时时间设置为10秒；
+					success:hdcall,
+					error:function(xhr,type,errorThrown){
+						if (sw) sw.close();
+						
+						console.log(type);
+						mui.alert('连接服务器失败！');
+					}
+				});
+			};
+			
+			var hdcall = function(data) {
+				if (sw) sw.close();
+					
+				if(data.success == true || data.success == 'true' ){
+					var info = data.data;
+					info.is_keep = is_keep; //记住我，下次自动登录
+					info.off_line = false;
+					var json = JSON.stringify(info);
+					//保存登录会话信息
+					localStorage.setItem('cur_user', json);
+					
+					//打开主界面
+					window.location.href = "../../home.html";
+				} else {
+					mui.alert(data.message);
+				}
+			};
+		});
+		
+		mui.back = function() {
+			//清空临时数据
+			var url = localStorage.getItem("server_url");
+  			localStorage.clear();
+  			if (url && url.length > 0) {
+  				localStorage.setItem("server_url", url);
+  			}
+  			//返回登录页面
+			plus.webview.currentWebview().loadURL("/index.html");
+		};
+    </script>
+</body>
+</html>

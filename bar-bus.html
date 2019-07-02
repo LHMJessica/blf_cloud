@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<title>业务</title>
+		<link rel="stylesheet" href="mui/css/mui.min.css" />
+		<link rel="stylesheet" href="jxm/css/jxm.css">
+		<link rel="stylesheet" href="Resources/css/iconfont.css" />
+		<style>
+			.icon-left {
+				padding-top: 12px !important;
+			}
+			
+			.mui-grid-view.mui-grid-9 {
+				border-top-width: 0;
+				border-left-width: 0;
+				background-color: #fff !important;
+			}
+			
+			.mui-grid-view.mui-grid-9 .mui-table-view-cell {
+				padding: 4px !important;
+				border-left-width: 0;
+				border-right-width: 0;
+				border-bottom-width: 0;
+			}
+			
+			.mui-table-view:before,
+			.mui-table-view:after {
+				background-color: #d8d8d8;
+			}
+			/* app icon */
+			
+			.mui-grid-view .iconfont {
+				font-size: 36px;
+				position: relative;
+			}
+			
+			.mui-grid-view .icon-bg {
+				color: #fff;
+				padding-top: 20px;
+				padding-left: 1px;
+				border-radius: 100px;
+				height: 58px;
+				width: 58px;
+				display: inline-block;
+			}
+			
+			.icon-bg-blue {
+				background-color: deepskyblue;
+			}
+			
+			.icon-bg-coral {
+				background-color: coral;
+			}
+			
+			.icon-bg-quoise {
+				background-color: darkturquoise;
+			}
+			/* app line */
+			
+			.mui-media-object {
+				margin: 0 !important;
+				margin-right: 12px !important;
+			}
+			
+			.mui-media-object .iconfont {
+				color: #00AAEF;
+				font-size: 26px;
+			}
+			
+			.mui-media-icon .mui-media-body {
+				padding-top: 4px;
+			}
+		</style>
+
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav1 mui-bar-primary mui-hidden">
+			<a class="mui-icon mui-pull-left icon-left"><i class="iconfont icon-saoma1"></i></a>
+			<h1 id="title" class="mui-title">业务</h1>
+			<a class="mui-pull-right"><span class="mui-icon mui-icon-gear"></span></a>
+		</header>
+		<div class="mui-content" id="bus-content">
+			<script id='bus-fast-done' type="text/template">
+				<ul class="mui-table-view mui-grid-view mui-grid-9 noline">
+					<% for(var i in record){
+					var funs = record[i].funs;
+					for(var j in funs){
+						var item  = funs[j];
+						if(item.is_show == "0"){
+							continue;
+						}
+						if(item.is_fast != '1'){
+							continue;
+						}
+				%>
+					<li class="mui-table-view-cell mui-col-xs-4">
+						<a id="<%= item.fun_code %>" href="<%= item.page_url%>">
+							<span class="<%= item.fun_color %>"><i class="<%= item.fun_icon %>"></i></span>
+							<div class="mui-media-body">
+								<%= item.fun_name %>
+							</div>
+						</a>
+					</li>
+
+					<%} } %>
+				</ul>
+			</script>
+
+			<script id='bus-list-done' type="text/template">
+				<ul class="mui-table-view noline">
+					<% for(var i in record){
+					var funs = record[i].funs;
+					if(funs.length < 1) continue;
+					%>
+					<div class="pack-fun">
+						<%
+					if(record.length != 1){
+						%>
+						<h5 style="padding: 5px 10px 5px;background-color: #efeff4;"><%= record[i].pack_name %></h5>
+						<%
+					}
+					for(var j in funs){
+						var item  = funs[j];
+						if(item.is_show == "0"){
+							continue;
+						}
+						if(item.is_fast == '1'){
+							continue;
+						}
+				%>
+						<li class="mui-table-view-cell mui-media mui-media-icon">
+							<a class="mui-navigate-right" id="<%= item.fun_code %>" href="<%= item.page_url%>">
+								<div class="mui-media-object mui-pull-left">
+									<i class="<%= item.fun_icon %>"></i>
+								</div>
+								<div class="mui-media-body ">
+									<%= item.fun_name %>
+								</div>
+							</a>
+						</li>
+
+						<% } %>
+					</div>
+					<%} %>
+				</ul>
+
+			</script>
+
+			<script id='bus-all-done' type="text/template">
+				<ul class="mui-table-view noline">
+					<% for(var i in record){
+					var funs = record[i].funs;
+					if(funs.length < 1) continue;
+					%>
+					<div class="pack-fun">
+						<%
+					if(record.length > 1){
+						%>
+						<h5 style="padding: 5px 10px 5px;background-color: #efeff4;"><%= record[i].pack_name %></h5>
+						<%
+					}
+					for(var j in funs){
+						var item  = funs[j];
+						if(item.is_show == "0"){
+							continue;
+						}
+				%>
+						<li class="mui-table-view-cell mui-media mui-media-icon">
+							<a class="mui-navigate-right" id="<%= item.fun_code %>" href="<%= item.page_url%>">
+								<div class="mui-media-object mui-pull-left">
+									<i class="<%= item.fun_icon %>"></i>
+								</div>
+								<div class="mui-media-body ">
+									<%= item.fun_name %>
+								</div>
+							</a>
+						</li>
+
+						<% } %>
+					</div>
+					<%} %>
+				</ul>
+			</script>
+
+		</div>
+
+		<script src="mui/js/mui.min.js"></script>
+		<script src="mui/js/arttmpl.js"></script>
+		<script src="jxm/js/jxm.js"></script>
+		<script type="text/javascript" charset="UTF-8">
+			mui.init();
+			mui.plusReady(function() {
+				loadPage();
+			});
+			var loadPage = function() {
+				var str = localStorage.getItem('cur_user_menu_bus');
+				if(!str || str.length == 0) return;
+				var data = JSON.parse(str);
+				if(data.fastSize == 3) {
+					var fastHtml = template('bus-fast-done', {
+						"record": data.packs
+					});
+					var listHtml = template('bus-list-done', {
+						"record": data.packs
+					});
+					document.getElementById("bus-content").innerHTML = fastHtml + listHtml;
+					var h5 = document.getElementsByTagName("h5");
+					if(h5.length == 1) {
+						h5[0].innerHTML = "";
+					}
+				} else {
+					var allHtml = template('bus-all-done', {
+						"record": data.packs
+					});
+					document.getElementById("bus-content").innerHTML = allHtml;
+					var h5 = document.getElementsByTagName("h5");
+					if(h5.length == 1) {
+						h5[0].innerHTML = "";
+					}
+				}
+
+				//修改样式
+				var divs = document.body.querySelectorAll('.pack-fun');
+				mui.each(divs, function(i, obj) {
+					var pack = obj;
+					var funs = pack.querySelectorAll('li');
+					if(funs.length == 0) {
+						var h5 = pack.querySelector('h5');
+						if(h5) {
+							h5.innerHTML = "";
+						}
+					} else {
+						funs[funs.length - 1].querySelector('.mui-media-body').classList.add('noline');
+					}
+				});
+
+				mui(".mui-table-view").on('tap', 'li', function(e) {
+					var href = this.getElementsByTagName('a')[0].getAttribute('href');
+					var code = this.getElementsByTagName('a')[0].id;
+					jxm.open(href, {
+						extras: {
+							code: code
+						}
+					})
+				});
+			}
+			mui.back=function () {
+				plus.cache.clear();//清除缓存
+				localStorage.clear();
+			}
+			window.addEventListener("refresh", function() {
+				loadPage();
+			});
+		</script>
+	</body>
+
+</html>

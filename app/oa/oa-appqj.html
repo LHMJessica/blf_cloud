@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+    <title>请假</title>
+    <link rel="stylesheet" href="../../mui/css/mui.min.css"/>
+    <link rel="stylesheet" href="../../jxm/css/jxm.css">
+    <style type="text/css">
+    	.mui-bar {
+			-webkit-box-shadow: none;
+			box-shadow: none;
+		}
+		h5 {
+	    	font-size: 14px;
+	    	padding: 8px 5px 6px;
+	    	background-color: #efeff4;
+	    }
+		
+	</style>
+</head>
+<body>
+	<header class="mui-bar mui-bar-nav mui-bar-primary">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<h1 class="mui-title">请假</h1>
+			<a class="mui-icon mui-icon-minus mui-pull-right mui-hidden"></a>
+	</header>
+	<nav class="mui-bar mui-bar-footer">
+		<button type="button" id="btnquery" class="mui-btn mui-btn-primary mui-btn-outlined mui-pull-left" style="width: 30%;" >查询</button>
+		<button type="button" id="btncommit" class="mui-btn mui-btn-primary mui-pull-right" style="width: 30%;">提交</button>
+	</nav>
+	
+	<div class="mui-content ">
+		<form class="mui-input-group">
+			<div class="mui-input-row" >
+				<label>类型     <span style="color:red">*</span></label>
+				<select id="theme">
+					<option value="0">事假</option>
+					<option value="1">病假</option>
+					<option value="2">年假</option>
+					<option value="3">婚假</option>
+					<option value="4">产假</option>
+					<option value="5">丧假</option>
+					<option value="9">其他</option>
+				</select>
+			</div>
+			<div class="mui-input-row" >
+				<label>天数   <span style="color:red">*</span></label>
+				<input id="day_num" type="number" class="mui-input-clear" />
+			</div>
+			<div class="mui-input-row" >
+				<label>开始时间   <span style="color:red">*</span></label>
+				<input id="begin_date" type="datetime-local"  class="mui-input-clear" placeholder="点击选择"/>
+			</div>
+			<div class="mui-input-row" >
+				<label>结束时间</label>
+				<input id="end_date" type="datetime-local" class="mui-input-clear" placeholder="点击选择"/>
+			</div>
+			
+		</form>
+		<h5>请假事由 <span style="color:red">*</span></h5>
+		<form class="mui-input-group">
+			<textarea id="summary" rows="8" placeholder="填写请假事由 "></textarea>
+		</form>
+		
+	</div>
+	
+	<script src="../../mui/js/mui.min.js"></script>
+	<script src="../../jxm/js/jxm.js"></script>
+	<script type="text/javascript" charset="UTF-8">
+      	mui.init();
+      	
+      	mui.ready(function(){
+      		//点击列表显示请假记录
+      		var keyid = jxm.getUrlParam('keyid');
+      		if (keyid && keyid.length > 0) {
+      			reloadData(keyid);
+      		}
+      	});
+      	
+      	//提交请假申请
+  		var commitApply = function() {
+  			var apptype = document.getElementById('theme').value;
+  			switch(apptype){
+  				case "0":theme = "事假";break;
+  				case "1":theme = "病假";break;
+  				case "2":theme = "年假";break;
+  				case "3":theme = "婚假";break;
+  				case "4":theme = "产假";break;
+  				case "5":theme = "丧假";break;
+  				case "9": theme = "其他";break;
+  				default : theme = "事假";
+  			}
+  			var day_num = document.getElementById('day_num').value;
+  			var begin_date = document.getElementById('begin_date').value;
+  			var end_date = document.getElementById('end_date').value;
+  			var summary = document.getElementById('summary').value;
+  			
+  			if (!theme || theme.length == 0) {
+  				mui.alert('请输入主题！');
+  				return false;
+  			}
+  			if (!day_num || day_num.length == 0) {
+				mui.alert('请输入请假天数！');
+				return false;
+			}
+  			if (!begin_date || begin_date.length == 0) {
+  				mui.alert('请选择开始时间！');
+  				return false;
+  			}else{
+  				begin_date = jxm.dealDateTime(begin_date);
+			}
+  			if (!summary || summary.length == 0) {
+  				mui.alert('请输入请假事由！');
+  				return false;
+  			}
+  			if (end_date.length != 0) {
+  				end_date = jxm.dealDateTime(end_date);
+  			}
+  			var hdcall = function(data) {
+  				//提交表单
+				if(data.type == "none"){
+					var url = "funid=oa_appqj&eventcode=appaudit&keyid="+data.apply_id;
+					jxm.post(url,function(){
+						mui.toast("表单提交成功");
+						newApply();
+						jxm.backHome('oa');
+					});
+				}else if(data.type =="dyn"){
+					jxm.open("oa-app-wf-dyn.html",{extras:{page:"oa-appqj.html",data:data}});
+				}else if(data.type == "free"){
+					jxm.open("oa-app-wf-free.html",{extras:{page:"oa-appqj.html",data:data}});
+				}else {
+					mui.toast("提交表单出错。");
+				}
+  			};
+  			var e = encodeURIComponent;
+  			var params = 'funid=oa_appqj&eventcode=submit&apply_type=qj' ;
+  			params += '&theme='+ e(theme);
+  			params += '&apptype='+ apptype;
+  			params += '&days='+ day_num;
+  			params += '&begin_date='+ begin_date;
+  			params += '&end_date='+ end_date;
+  			params += '&summary='+ e(summary);
+  			jxm.post(params, hdcall);
+  		};
+  		
+  		//打开请假页面
+  		var queryApply = function(){
+  			jxm.open('oa-appqj-list.html');
+  		};
+  		
+  		var newApply = function(){
+  			//清除原有的单据信息
+  			var textinputs = document.body.querySelectorAll('input');
+			mui.each(textinputs, function(n, obj){
+				obj.value = '';
+			});
+			document.getElementById('summary').value = '';
+  		};
+      	
+      	var showData = function(keyid){
+      		var params ="eventcode=query_data&funid=queryevent&pagetype=grid&query_funid=oa_appqj&limit=50&start=0";
+			params +="&where_sql=oa_apply.apply_id=?";
+			params +="&where_type=string";
+			params +="&where_value="+keyid;
+			jxm.post(params,function(data){
+				if(data&&data.root.length>0){
+					var obj = data.root[0];
+					document.getElementById('theme').value = obj.oa_apply__app_type;
+					document.getElementById('day_num').value = obj.oa_apply__app_days;
+		  			document.getElementById('begin_date').value = obj.oa_apply__begin_date.replace(" ","T");
+		  			document.getElementById('end_date').value = obj.oa_apply__end_date.replace(" ","T");
+		  			document.getElementById('summary').value =obj.oa_apply__app_desc; 
+				}
+			});
+      	}
+      	//载入数据
+      	window.addEventListener('load-data', function(event){
+  			var data = event.detail;
+  			var keyid = data.keyid;
+  			reloadData(keyid);
+      		if(keyid){
+      			mui.back = function(){
+      				queryApply();
+      			}
+      		}
+		});
+      	
+      	//进入编辑页面，载入表单数据并提供删除修改
+      	var reloadData = function(keyid){
+      		if(keyid){
+      			showData(keyid);//将数据显示到表单上
+      			document.body.querySelectorAll(".mui-icon-minus")[0].classList.remove("mui-hidden");
+      			//删除申请表
+      			document.body.querySelectorAll(".mui-icon-minus")[0].addEventListener('tap',function(){
+      				var params = "funid=oa_appqj&eventcode=delete&keyid="+keyid;
+      				jxm.post(params,function(){
+      					mui.toast("删除成功.");
+      					queryApply();
+      				})
+      			});
+      			document.getElementById('btncommit').removeEventListener('tap',commitApply);
+      			//更新数据并提交
+      			document.getElementById('btncommit').addEventListener('tap',function(){
+      				var apptype = document.getElementById('theme').value;
+		  			switch(apptype){
+		  				case "0":theme = "事假";break;
+		  				case "1":theme = "病假";break;
+		  				case "2":theme = "年假";break;
+		  				case "3":theme = "婚假";break;
+		  				case "4":theme = "产假";break;
+		  				case "5":theme = "丧假";break;
+		  				case "9": theme = "其他";break;
+		  				default : theme = "事假";
+		  			}
+		  			var day_num = document.getElementById('day_num').value;
+		  			var begin_date = document.getElementById('begin_date').value;
+		  			var end_date = document.getElementById('end_date').value;
+		  			var summary = document.getElementById('summary').value;
+		  			
+		  			if (!theme || theme.length == 0) {
+		  				mui.alert('请输入主题！');
+		  				return false;
+		  			}
+		  			if (!day_num || day_num.length == 0) {
+						mui.alert('请输入请假天数！');
+						return false;
+					}
+		  			if (!begin_date || begin_date.length == 0) {
+		  				mui.alert('请选择开始时间！');
+		  				return false;
+		  			}else{
+  						begin_date = jxm.dealDateTime(begin_date);
+					}
+		  			if (!summary || summary.length == 0) {
+		  				mui.alert('请输入请假事由！');
+		  				return false;
+		  			}
+		  			if (end_date.length != 0) {
+  						end_date = jxm.dealDateTime(end_date);
+		  			}
+      				var hdcall = function(){
+      					mui.toast("提交成功，已进入审批流程");
+      					queryApply();
+      				}
+      				
+      				var e = encodeURIComponent;
+		  			var params = 'funid=oa_appqj&eventcode=saveInfo&apply_type=qj' ;
+		  			params += '&theme='+ e(theme);
+		  			params += '&apptype='+ apptype;
+		  			params += '&days='+ day_num;
+		  			params += '&keyid='+ keyid;
+		  			params += '&begin_date='+ begin_date;
+		  			params += '&end_date='+ end_date;
+		  			params += '&summary='+ e(summary);
+		  			jxm.post(params, hdcall);
+      			});
+      			
+      		}
+      	}
+      	
+      	
+      	//点击提交按钮后提交请假申请
+		document.getElementById('btncommit').addEventListener('tap', commitApply);
+		//点击查询
+		document.getElementById('btnquery').addEventListener('tap', queryApply);
+		//处理输入法挡住输入框问题
+		document.getElementById('summary').addEventListener('tap',function(){
+      		mui.trigger(document.getElementById('summary'),'focus');
+      		setTimeout(function() {
+				mui.trigger(document.getElementById('summary'),'focus');
+			}, 300);
+
+      	});
+      	
+      	document.getElementById('summary').addEventListener('focus',function(){
+      		window.scrollTo(0,500);
+      	});
+		
+		
+    </script>
+</body>
+</html>

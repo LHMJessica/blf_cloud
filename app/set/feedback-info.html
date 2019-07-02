@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+    <title></title>
+    <link rel="stylesheet" href="../../mui/css/mui.min.css"/>
+    <link rel="stylesheet" href="../../jxm/css/jxm.css">
+    <style>
+	    .mui-content {
+	    	padding-bottom: 59px !important;
+	    }
+		h5{
+			padding-left: 5px;
+			padding-top: 2px;
+		}
+	</style>
+</head>
+<body>
+	<header class="mui-bar mui-bar-nav mui-bar-primary">
+		<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+		<h1 class="mui-title">反馈结果</h1>
+	</header>
+	
+	<div class="mui-content">
+		<!--主要信息-->
+		<div>
+			<h5>反馈问题</h5>
+			<textarea id="problem" disabled="true" rows="4"></textarea>
+			<h5>问题处理</h5>
+			<form class="mui-input-group">
+				<div class="mui-input-row" >
+					<label>处理人</label>
+					<input id="delPerson" type="text" disabled="true" />
+				</div>
+				<div class="mui-input-row" >
+					<label>处理时间</label>
+					<input id="delTime" type="datetime-local" disabled="true" />
+				</div>
+			</form>
+			<h5>处理结果和原因分析</h5>
+			<textarea id="delR" disabled="true" rows="4" ></textarea>
+		</div>
+		
+		<!--附件信息-->
+		<div id="attachContent">
+			<h5>相关附件 [<span id='attach-num'>0</span>]</h5>
+			<ul id="fileDetail" class="mui-table-view"></ul>
+		</div>
+	   
+	</div>
+		
+	<div class="mui-loader">加载中...</div>
+	
+	<script src="../../mui/js/mui.min.js"></script>
+	<script src="../../jxm/js/jxm.js"></script>
+	<script type="text/javascript" charset="UTF-8">
+	  	mui.init();
+		
+		var mainlist = document.querySelector('.mui-content');
+		
+		mui.ready(function(){
+			
+		});
+
+	  	mui.plusReady(function(){
+	  		var self = plus.webview.currentWebview();
+			var dataid = self.dataid; 	
+			
+			if ( dataid == null) {
+				mui.alert('缺少参数！');
+				return;
+			}
+			
+			document.getElementById('fileDetail').innerHTML = '';
+			var params = 'funid=queryevent&eventcode=query_data&query_funid=que_report&limit=50&start=0';
+			params += '&where_sql=sys_question.que_id=?';
+			params += '&where_type=string';
+			params += '&where_value='+dataid;
+			var hdcall = function(data){
+				if (!data.root) {
+					jxm.loadhint(mainlist, false);
+					return;
+				}
+				var obj = data.root[0];
+				document.getElementById("problem").innerHTML = obj.sys_question__que_desc;
+				document.getElementById("delPerson").innerHTML = obj.sys_question__done_user;
+				document.getElementById("delTime").innerHTML = obj.sys_question__done_date;
+				document.getElementById("delR").innerHTML = obj.sys_question__done_desc;
+			}
+			jxm.post(params,hdcall);
+		
+			var loadInfoHtml = function() {
+				jxm.post(
+					'funid=wf_assign&eventcode=orderinfo&chk_funid=que_report&chk_dataid='+dataid,
+					function(data){
+						if (!data) {
+							jxm.loadhint(mainlist, false);
+							return;
+						}
+						//加载单据附件内容
+						var file_detail = data.file_detail;
+						var filehtml = '';
+						console.log(file_detail)
+						if (file_detail != null && file_detail.length > 0) {
+							mui.each(file_detail, function(i, obj){
+								var record = obj;
+								var filetype = record.type;
+								var fileurl = jxm.getURL() + '?nousercheck=1&' +record.url +'&user_code=jxstar';
+								
+								var imgPath = '';
+								if (filetype.indexOf('word') > -1) {
+									imgPath = '../../jxm/img/file_type/docx.png';
+								} else if (filetype.indexOf('excel') > -1 || filetype.indexOf('sheet') > -1) {
+									imgPath = '../../jxm/img/file_type/xlsx.png';
+								} else if (filetype.indexOf('pdf') > -1) {
+									imgPath = '../../jxm/img/file_type/pdf.png';
+								} else if (filetype.indexOf('ppt') > -1 || filetype.indexOf('powerpoint') > -1) {
+									imgPath = '../../jxm/img/file_type/pptx.png';
+								} else if (filetype.indexOf('zip') > -1 || filetype.indexOf('octet-stream') > -1) {
+									imgPath = '../../jxm/img/file_type/rar.png';
+								} else if (filetype.indexOf('text') > -1) {
+									imgPath = '../../jxm/img/file_type/text.png';
+								} else if (filetype.indexOf('image') > -1) {
+									imgPath = '../../jxm/img/file_type/jpeg.png';
+								}
+								filehtml += '<li class="mui-table-view-cell mui-media">';
+							    filehtml += '<a href="'+ fileurl +'" title="'+ record.title +'">';
+							    filehtml += '<img class="mui-media-object mui-pull-left" src="'+ imgPath +'">';
+							    filehtml += '<div class="mui-media-body">'+ record.title +'</div></a></li>';
+							});
+							
+							document.getElementById('attachContent').classList.remove('mui-hidden');
+							
+							document.getElementById('fileDetail').innerHTML = filehtml;
+							document.getElementById('attach-num').innerHTML = file_detail.length;
+						} else {
+							document.getElementById('attach-num').innerHTML = '0';
+							document.getElementById('attachContent').classList.add('mui-hidden');
+						}
+						jxm.loadhint(mainlist, true);
+					}, {hasmask:false, errorcall:function(e){
+						mui.alert(e.message);
+						//一定要返回，否则没办法继续打开
+						mui.back();
+					}}
+				);
+			};
+			loadInfoHtml();
+	  	});
+	</script>
+</body>
+</html>

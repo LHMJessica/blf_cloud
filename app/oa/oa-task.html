@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+    <title></title>
+    <link rel="stylesheet" href="../../mui/css/mui.min.css"/>
+    <link rel="stylesheet" href="../../jxm/css/jxm.css">
+    <style type="text/css">
+    	.mui-bar {
+			-webkit-box-shadow: none;
+			box-shadow: none;
+		}
+		h5 {
+	    	font-size: 14px;
+	    	padding: 8px 5px 6px;
+	    	background-color: #efeff4;
+	    }
+	    .label-red {
+			padding-left: 5px;
+			color:red !important;
+		}
+		
+	</style>
+</head>
+<body>
+	<header class="mui-bar mui-bar-nav mui-bar-primary">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<h1 class="mui-title">新建任务</h1>
+	</header>
+	<nav class="mui-bar mui-bar-footer">
+		<center>
+		<button type="button" id="btncommit" class="mui-btn mui-btn-primary" style="width: 50%;">提交</button>
+		</center>
+	</nav>
+	
+	<div class="mui-content">
+		<h5>基本信息</h5>
+		<form class="mui-input-group">
+			<div class="mui-input-row" >
+				<label>任务名称<span class="label-red">*</span></label>
+				<input id='task_title' type="text" class="mui-input-clear" placeholder="请选择任务名称"/>
+			</div>
+			<div class="mui-input-row" >
+				<label>责任人<span class="label-red">*</span></label>
+				<input id='task_user' type="text" class="mui-input-clear" readonly="readonly" placeholder="请选择责任人"/>
+				<input id="task_userid" type="hidden"/>
+			</div>
+			<div class="mui-input-row" >
+				<label>截止时间<span class="label-red">*</span></label>
+				<input id='end_date' type="datetime" class="mui-input-clear" placeholder="请选择截止时间"/>
+			</div>
+			<div class="mui-input-row" >
+				<label>提醒时间</label>
+				<select id="warn_time">
+					<option value="">不需要</option>
+					<option value="10m" selected="selected">提前10分钟</option>
+					<option value="30m">提前30分钟</option>
+					<option value="1h">提前1小时</option>
+					<option value="4h">提前4小时</option>
+					<option value="1d">提前1天</option>
+					<option value="1w">提前1周</option>
+				</select>
+			</div>
+			<div class="mui-input-row" >
+				<label>重要程度</label>
+				<select id="import_level">
+					<option value="0">一般</option>
+					<option value="1">重要</option>
+					<option value="2">非常重要</option>
+				</select>
+			</div>
+			<div class="mui-input-row " style="height: 100px;">
+				<label>任务描述</label>
+				<textarea id="task_cont" rows="4" placeholder="请输入任务描述"></textarea>
+			</div>
+			<div class="mui-input-row" >
+				<label>关联业务</label>
+				<input id='business_code' type="text" class="mui-input-clear" placeholder=""/>
+			</div>
+		</form>
+		
+	</div>
+	
+	<script src="../../mui/js/mui.min.js"></script>
+	<script src="../../jxm/js/jxm.js"></script>
+	<script src="../util/jxm-util.js"></script>
+	<script type="text/javascript" charset="UTF-8">
+      	mui.init();
+      	
+      	var task_id = '';
+      	mui.plusReady(function(){
+      		var self = plus.webview.currentWebview();
+      		task_id = self.task_id;
+      		//loadData();
+      	});
+      	
+      	//加载单据信息
+  		var loadData = function(){
+  			if (task_id == null || task_id.length == 0) {
+  				return;
+  			}
+  			//修改界面显示内容
+	    	document.querySelector('.mui-title').innerHTML = '编辑公告';
+  			
+  			var mainlist = document.querySelector('.mui-content');
+  			var hdcall = function(data){
+  				var taskinfo = data.task;
+  				if (!data || !taskinfo){
+  					jxm.loadhint(mainlist, false);
+  					return;
+  				} 
+  				
+  				var showed = false;
+  				//加载单据信息
+  				if (taskinfo && taskinfo.task_code.length > 0) {
+  					document.getElementById('task_title').value = taskinfo.task_title;
+  					document.getElementById('task_cont').value = taskinfo.task_cont;
+  					document.getElementById('task_range').value = taskinfo.task_range;
+  					document.getElementById('task_rangecode').value = taskinfo.task_rangecode;
+  					document.getElementById('task_rangeid').value = taskinfo.task_rangeid;
+  					
+      				showed = true;
+				}
+  				
+                jxm.loadhint(mainlist, showed);
+                
+  			};
+  			//发送请求
+			var params = 'funid=oa_task&eventcode=taskinfo&task_id='+ task_id;
+			jxm.post(params, hdcall);
+  		};
+      	
+      	//提交
+  		var commit = function() {
+  			var task_title = document.getElementById('task_title').value;
+  			var task_user = document.getElementById('task_user').value;
+  			var task_userid = document.getElementById('task_userid').value;
+  			var end_date = document.getElementById('end_date').value;
+  			var warn_time = document.getElementById('warn_time').value;
+  			var task_cont = document.getElementById('task_cont').value;
+  			var import_level = document.getElementById('import_level').value;
+  			var business_code = document.getElementById('business_code').value;
+  			
+  			if (!task_title || task_title.length == 0) {
+  				mui.alert('请输入任务名称！');
+  				return false;
+  			}
+  			if (!task_user || task_user.length == 0) {
+  				mui.alert('请选择责任人！');
+  				return false;
+  			}
+  			if (!end_date || end_date.length == 0) {
+  				mui.alert('请选择截止时间！');
+  				return false;
+  			}
+  			
+  			var hdcall = function(data) {
+  				if (task_id && task_id.length > 0) {
+  					//返回并刷新公告信息
+  					var targetWin = plus.webview.getWebviewById('asset-card.html');
+  					mui.fire(targetWin, 'load-data', {device_id: device_id});
+					mui.back();
+  				} else {
+  					mui.toast('提交成功！');
+  					newForm();
+  				}
+  				
+  			};
+  			
+  			var e = encodeURIComponent;
+  			var params = 'funid=oa_task&eventcode=submit';
+  			params += '&task_id='+ task_id;
+  			params += '&task_title='+ e(task_title);
+  			params += '&task_user='+ e(task_user);
+  			params += '&task_userid='+ task_userid;
+  			params += '&end_date='+ end_date;
+  			params += '&warn_time='+ warn_time;
+  			params += '&import_level='+ import_level;
+  			params += '&task_cont='+ e(task_cont);
+  			params += '&business_code='+ e(business_code);
+  			
+  			//添加提交类型，默认是create,有公告ID则为save
+			var committype = 'create';
+  			if (device_id.length >0) {
+  				committype = 'save';
+  			} 
+  			params += '&committype='+committype;
+  			
+  			jxm.post(params, hdcall);
+  		};
+  		
+  		//清空原有信息新建表单
+  		var newForm = function(){
+  			//清除原有的单据信息
+  			var textinputs = document.body.querySelectorAll('input');
+			mui.each(textinputs, function(n, obj){
+				obj.value = '';
+			});
+			document.getElementById('task_cont').value = '';
+  		};
+  		
+  		//选择责任人
+		var seluser = 'select-user';
+		document.getElementById('task_user').addEventListener('tap', function(){
+			var href = "../../app/util/select-user.html";
+			var param = {callbackWinId:mui.currentWebview.id, callbackEvent:seluser};
+			jxm.open(href,{extras:{selectParams:param}});
+		});
+		window.addEventListener(seluser, function(event){
+			var obj = event.detail;
+			document.getElementById('task_user').value = obj.dataname;
+			document.getElementById('task_userid').value = obj.dataid;
+		});
+      	
+      	//点击提交按钮后提交
+		document.getElementById('btncommit').addEventListener('tap', commit);
+      	
+    </script>
+</body>
+</html>

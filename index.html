@@ -1,0 +1,266 @@
+<!DOCTYPE html> 
+<html class="ui-page-login">
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+	<title>Jxm 登录</title>
+	<link href="mui/css/mui.min.css" rel="stylesheet"/>
+	<link href="jxm/css/jxm.css" rel="stylesheet"/>
+	<style>
+		.mui-input-group {
+			margin-top: 10px;
+		}
+		.mui-input-group:first-child {
+			margin-top: 20px;
+		}
+		.spliter {
+			color: #bbb;
+			padding: 0px 8px;
+		}
+		.link-area {
+			display: block;
+			margin-top: 25px;
+			text-align: center;
+		}
+	</style>
+
+</head>
+
+<body>
+	<header id="login_header" class="mui-bar mui-bar-nav mui-bar-primary mui-hidden">
+		<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+		<h1 class="mui-title">登录</h1>
+		<a class="mui-icon mui-icon-gear mui-pull-right" href="app/util/login-set.html"></a>
+	</header>
+	
+	<div id="login_content" class="mui-content mui-hidden">
+		<div class="mui-content-padded">
+			<form class="mui-input-group">
+				<div class="mui-input-row">
+					<label>账号</label>
+					<input id='user_code' type="text" class="mui-input-clear mui-input" placeholder="账号/手机号/邮箱">
+				</div>
+				<div class="mui-input-row mui-password">
+					<label>密码</label>
+					<input id='user_pwd' type="password" class="mui-input-clear mui-input" placeholder="请输入密码">
+				</div>
+			</form>
+			<form class="mui-input-group">
+				<ul class="mui-table-view mui-table-view-chevron">
+					<li class="mui-table-view-cell">
+						记住我
+						<div id="is_keep" class="mui-switch mui-active">
+							<div class="mui-switch-handle"></div>
+						</div>
+					</li>
+				</ul>
+			</form>
+		</div>
+		<div class="mui-margin20">
+			<button id="login_btn" type="button" class="mui-btn mui-btn-block mui-btn-primary" style="margin-left: 5%;">登录</button>
+			<button id="login_off" type="button" class="mui-btn mui-btn-block mui-btn-grey mui-hidden" style="margin-left: 5%;">离线进入</button>
+		</div>
+		
+		<center class="mui-margin20 mui-hidden">
+            <div class="link-area">
+            	<a id='regist_btn' href="app/util/login-reg.html">注册账号</a> 
+            	<span class="spliter">|</span> 
+            	<a id='find_btn'   href="app/util/login-findpwd.html">忘记密码</a>
+			</div>
+		</center>
+	</div>
+	
+	<script src="mui/js/mui.min.js"></script>
+	<script src="jxm/js/jxm.js"></script>
+	<script src="lib/ytx/base64.min.js"></script>
+	<script>
+		var sw;
+		//登录信息
+		var appid = 'jxm';
+		var appinfo = '';
+		var timestamp = jxm.getTimeStamp();
+		//取上次登录信息
+		var cur_user = localStorage.getItem('cur_user');
+		var cur_user_code = localStorage.getItem('cur_user_code');
+		var isoff = JSON.parse(localStorage.getItem('login_off_is')||'false');
+		//console.log("cur_user:"+cur_user+"; login_off_is:"+isoff);
+			
+		mui.init();
+		
+		mui.plusReady(function() {
+			//取推送信息
+			var os = plus.os.name.toLowerCase();
+			//用于判断APP端与服务端的push设置是否正确
+			var pid = plus.push.getClientInfo().appid;
+			var cid = plus.push.getClientInfo().clientid;
+			appinfo = '{"os_name"="'+os+'","push_cid"="'+cid+'","push_pid"="'+pid+'"}';
+		
+			//仅支持竖屏显示
+			plus.screen.lockOrientation("portrait-primary");
+			//关闭日志输出功能
+			plus.navigator.setLogs(true);
+			//关闭等待动画
+			plus.navigator.closeSplashscreen();
+			
+			//网络状态判断
+			/*document.addEventListener("netchange", function() {
+				var network = plus.networkinfo.getCurrentType();
+				if(network < 2) {
+					mui.toast('网络未连接！');
+				}
+			});*/
+		});
+		
+		//判断加载登录页面，还是加载主页
+		mui.ready(function(){
+			var surl = localStorage.getItem("server_url");
+			if (surl == null || surl.length == 0) {
+				localStorage.setItem("server_url", jxm.SERVER_URL);
+			}
+			
+			//直接进入主页面
+			if (cur_user && cur_user.length > 0) {
+				var data = JSON.parse(cur_user);
+				if (data.is_keep) {
+					window.location.href = "home.html";
+					//在home.html中继续关闭等待画面
+				}
+			} else {
+				//处理登录页面
+				doLogin();
+			}
+		});
+		
+		//加载主页面并关闭首页等待画面；不用了，直接加载href速度更快
+		var openHome = function(cb){
+			if (window.plus) {
+				var home = plus.webview.create("home.html", "home.html");
+				
+				//showcb在loaded之前执行，close放在此处的执行体验比loaded中好
+				//fade-in 改为 pop-in 打开页面的速度要快2倍
+				home.show("pop-in",100,cb);
+			} else {//在纯浏览器环境中也可以执行
+				window.location.href = "home.html";
+			}
+		};
+		
+		//加载登录页面并绑定事件
+		var doLogin = function(){
+			//显示登录页面
+			document.getElementById("login_header").classList.remove('mui-hidden');
+			document.getElementById("login_content").classList.remove('mui-hidden');
+			if (isoff) {
+				document.getElementById("login_off").classList.remove('mui-hidden');
+			}
+			
+			//处理登录事件绑定
+			var loginBtn = document.getElementById("login_btn");
+			//登录方法
+			var login = function(){
+				if (window.plus) sw = plus.nativeUI.showWaiting();
+				
+				var user_code = document.getElementById("user_code").value;
+				var user_pwd = document.getElementById("user_pwd").value;
+				var is_keep = document.getElementById("is_keep").classList.contains("mui-active");
+				//密码加密传输
+				user_pwd = Base64.encode(user_pwd);
+				
+				var hdcall=function(data){
+					if (sw) sw.close();
+					
+					if(data.success == true || data.success == 'true' ){
+						var info = data.data.info;
+						var isone = data.data.isone;
+						if (isone) {
+							info.is_keep = is_keep; //记住我，下次自动登录
+							info.off_line = false;
+							var json = JSON.stringify(info);
+							//保存登录会话信息
+							localStorage.setItem('cur_user', json);
+							
+							//打开主界面
+							window.location.href = "home.html";
+						} else {
+							if (info.length > 1) {
+								var json = JSON.stringify(info);
+								localStorage.setItem('is_keep', is_keep);
+								localStorage.setItem('select_tenants', json);
+								localStorage.setItem('user_and_pwd', user_code+";"+user_pwd);
+								
+								window.location.href = "app/util/login-tenant.html";
+							} else {
+								mui.toast("登录返回信息格式错误！");
+							}
+						}
+					} else {
+						mui.toast(data.message);
+					}
+				};
+			
+			    var params = "not_verify=1&eventcode=cloud_login&funid=login_event&appinfo="+appinfo+
+			    			 "&appid="+ appid +"&timestamp="+ timestamp +
+			    			 "&user_code="+ user_code +"&user_pwd="+ user_pwd;
+				mui.ajax(jxm.getURL(true), {
+					data:params,
+					dataType:'json',//服务器返回json格式数据
+					type:'post',//HTTP请求类型
+					timeout:10000,//超时时间设置为10秒；
+					success:hdcall,
+					error:function(xhr,type,errorThrown){
+						if (sw) sw.close();
+						console.log(jxm.getURL());
+						console.log(type);
+						mui.toast('连接服务器失败！');
+					}
+				});
+			};
+			
+			//给登录按钮绑定登录事件
+			loginBtn.addEventListener("tap", login);
+			
+			//离线登录
+			document.getElementById("login_off").addEventListener("tap", function(){
+				var data = JSON.parse(cur_user);
+				if (data && data.user_code.length > 0) {
+					data.off_line = true;
+					localStorage.setItem("cur_user", JSON.stringify(data));
+					
+					//打开主页
+					setTimeout(function(){
+						window.location.href = "home.html";
+					},200);
+					mui.toast("将用上次登录的账号登录！");
+				} else {
+					mui.toast("第一次不能离线登录！");
+				}
+			});
+			
+			//如果是非自动登录，则加载上次的账号
+			if (cur_user && cur_user.length > 0) {
+				var data = JSON.parse(cur_user);
+				document.getElementById("user_code").value = data.user_code;
+				document.getElementById("user_pwd").value = '';
+				document.getElementById("user_pwd").focus();
+				if (data.is_keep) {
+					document.getElementById("is_keep").classList.add("mui-active");
+				} else {
+					document.getElementById("is_keep").classList.remove("mui-active");
+				}
+			} else {
+				if (cur_user_code && cur_user_code.length > 0) {
+					document.getElementById("user_code").value = cur_user_code;
+				} else {
+					document.getElementById("user_code").focus();
+				}
+			}
+		};
+		
+		mui.back = function() {
+			jxm.confirm('确认退出？', function(){
+				if (window.plus)plus.runtime.quit();
+			});
+		};
+	</script>
+</body>
+
+</html>

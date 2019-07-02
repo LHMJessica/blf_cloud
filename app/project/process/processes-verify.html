@@ -1,0 +1,685 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<title>报工核对</title>
+		<link rel="stylesheet" href="../../../mui/css/mui.min.css" />
+		<link rel="stylesheet" href="../../../jxm/css/jxm.css">
+		<link rel="stylesheet" type="text/css" href="../../../mui/css/icons-extra.css" />
+		<style type="text/css">
+			.mui-bar {
+				-webkit-box-shadow: none;
+				box-shadow: none;
+			}
+			
+			#fixed {
+				height: auto;
+			}
+			
+			.mui-btn {
+				padding: 5px 13px;
+				position: initial;
+			}
+			
+			.s1 {
+				width: 60%;
+				text-align: left;
+				vertical-align: middle;
+				height: auto;
+				color: grey;
+			}
+			
+			.s2 {
+				width: 40%;
+				text-align: left;
+				vertical-align: middle;
+				height: auto;
+				color: grey;
+			}
+			
+			.work-number {
+				color: #AC2925;
+			}
+			
+			.mui-input-row {
+				text-align: center;
+				height: 30px;
+				vertical-align: middle;
+			}
+			
+			.mui-input-row input[type=text] {
+				width: 30%;
+				border-bottom: 1px solid lightgray !important;
+				padding: 3px 8px;
+				height: 30px;
+				font-size: 14px;
+			}
+			
+			.radio_row {
+				display: inline-block;
+				width: 32%;
+				height: 30px;
+				vertical-align: middle;
+			}
+			
+			.radio_row label {
+				height: 30px;
+				line-height: 30px;
+				text-align: right;
+			}
+			
+			.mui-input-row .input {
+				height: 30px;
+				font-size: 12px;
+				float: none;
+				padding: 0px 5px !important;
+				width: 22%;
+				display: inline-block;
+				vertical-align: middle;
+				background-color: green;
+				border: 1px solid green;
+			}
+			
+			.mui-input-row .result {
+				height: 30px;
+				font-size: 12px;
+				float: none;
+				padding: 0px 5px !important;
+				width: 22%;
+				display: inline-block;
+				vertical-align: middle;
+				background-color: orange;
+				border: 1px solid orange;
+				overflow: hidden;
+			}
+			
+			.mui-input-group .mui-input-row:after {
+				height: 0px;
+			}
+			
+			.numbers .title {
+				color: darkgrey;
+			}
+			
+			.numbers th {
+				color: grey;
+				font-weight: 300;
+			}
+			
+			.mui-table {
+				vertical-align: middle;
+				text-align: center;
+			}
+			
+			.numbers th,
+			td {
+				font-size: 12px;
+				line-height: 25px;
+			}
+			
+			.yesked {
+				color: green;
+			}
+			
+			.nochecked {
+				color: red;
+			}
+			
+			.total {
+				color: blue;
+			}
+			
+			.none {
+				display: inline-block;
+			}
+			
+			.numbers th:nth-child(2),
+			.numbers td:nth-child(2) {
+				border-left: 1px solid #F2F2F2;
+				border-right: 1px solid #F2F2F2;
+			}
+			
+			.mui-pager {
+				text-align: left;
+			}
+			
+			.mui-checkbox.mui-left label,
+			.mui-radio.mui-left label {
+				padding: 5px 41px;
+				width: 130px;
+			}
+			
+			.mui-checkbox input[type=checkbox]:before,
+			.mui-radio input[type=radio]:before {
+				font-size: 20px;
+				line-height: 30px;
+			}
+			
+			.mui-card-footer,
+			.mui-card-header,
+			.mui-card-content-inner {
+				padding: 5px 5px;
+			}
+			
+			select {
+				background: #fffff;
+				/*border: 1px solid grey !important;*/
+				font-size: 14px;
+				height: 30px;
+				padding-right: 0px;
+				padding-left: 8px;
+				margin-bottom: 0;
+				height: 35px;
+				margin: 0px 0px;
+				padding: 5px 5px;
+			}
+			/*清除原生样式*/
+			
+			option {
+				font-weight: normal;
+				display: block;
+				white-space: pre;
+				min-height: 30px;
+				padding: 0px 2px 1px;
+				height: 30px;
+			}
+		</style>
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav mui-bar-primary">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<h1 class="mui-title" id="title">报工核对</h1>
+			<a class="mui-icon mui-icon-search mui-pull-right" id="search"></a>
+		</header>
+		<section class="mui-bar mui-bar-header-secondary" id="fixed">
+			<form class="mui-input-group">
+				<div class="mui-input-row">
+					<span class="mui-icon-extra mui-icon-extra-calendar" style="color: orangered;font-size: 26px;vertical-align: middle;"></span>
+					<select style="width: 20%;" id="time_temporal">
+						<option value="threemonth">三个月内</option>
+						<option value="twomonth">两个月内</option>
+						<option value="today">今天</option>
+						<option value="yesterday">昨天</option>
+						<option value="qiantian">前天</option>
+						<option value="currmonth">本月</option>
+						<option value="beforemonth">上月</option>
+						<option value="beforeyear">上半年</option>
+						<option value="nextyear">下半年</option>
+						<option value="curryear">本年</option>
+						<option value="beforeyears">上年度</option>
+					</select>
+					<span>从</span><input type="text" id="start_date" readonly="readonly" /><span>到</span><input type="text" id="end_date" readonly="readonly" />
+				</div>
+				<div class="mui-input-row" id="selects">
+					<!--<button type="button" id="seldep" class="mui-btn mui-btn-grey input">选择部门</button>-->
+					<button type="button" id="select_user" class="mui-btn mui-btn-grey input">选择员工</button>
+				</div>
+				<div class="mui-input-row">
+					<div class="radio_row mui-radio mui-left">
+						<label>全部</label>
+						<input name="radio1" type="radio" class="radio" value="1">
+					</div>
+					<div class="radio_row mui-radio mui-left">
+						<label>未核对</label>
+						<input name="radio1" type="radio" class="radio" checked="checked" value="2">
+					</div>
+					<div class="radio_row mui-radio mui-left">
+						<label>已核对</label>
+						<input name="radio1" type="radio" class="radio" value="3">
+					</div>
+				</div>
+			</form>
+			<table class="mui-table numbers" id="numbers" style="background-color: #FFFFFF;">
+				<tr>
+					<th>今天</th>
+					<th>昨天</th>
+					<th>前天</th>
+				</tr>
+				<tr class="tablist">
+					<td class="today" status="1"><span class="title">总条数：</span><span class="total" id="today-total"></span></td>
+					<td class="yesterday" status="1"><span class="title">总条数：</span><span class="total" id="yes-total"></span></td>
+					<td class="qiantian" status="1"><span class="title">总条数：</span><span class="total" id="yesyes-total"></span></td>
+				</tr>
+				<tr class="tablist">
+					<td class="today" status="2"><span class="title">未核对：</span><span class="nochecked" id="today-nocheck"></span></td>
+					<td class="yesterday" status="2"><span class="title">未核对：</span><span class="nochecked" id="yes-nocheck"></span></td>
+					<td class="qiantian" status="2"><span class="title">未核对：</span><span class="nochecked" id="yesyes-nocheck"></span></td>
+				</tr>
+				<tr class="tablist">
+					<td class="today" status="3"><span class="title">已核对：</span><span class="yesked" id="today-check"></span></td>
+					<td class="yesterday" status="3"><span class="title">已核对：</span><span class="yesked" id="yes-check"></span></td>
+					<td class="qiantian" status="3"><span class="title">已核对：</span><span class="yesked" id="yesyes-check"></span></td>
+				</tr>
+			</table>
+		</section>
+		<footer class="mui-bar mui-bar-footer">
+			<div class="mui-content-padded">
+				<ul class="mui-pager">
+					<li>
+						<a href="#" id="pre">
+							上一页
+						</a>
+					</li>
+					<li>
+						<a href="#" id="next">
+							下一页
+						</a>
+					</li>
+					<li id="pagers"></li>
+				</ul>
+			</div>
+		</footer>
+
+		<div class="mui-content">
+			<div id="works" style="padding: 10px 10px; margin-top: 160px;">
+
+			</div>
+		</div>
+		<script src="../../../mui/js/mui.min.js"></script>
+		<script src="../../../jxm/js/jxm.js"></script>
+		<script src="../../../jxm/js/jxm-image-input.js"></script>
+		<script src="../../util/jxm-util.js"></script>
+		<script src="../../../Resources/js/jquery-3.3.1.min.js"></script>
+		<script src="../../../Resources/js/juicer-min.js"></script>
+		<script src="../../../Resources/js/juicerUtil.js"></script>
+		<script type="text/javascript">
+			mui.init({
+				swipeBack: false //关闭-右滑关闭功能
+			})
+			//页面加载完成调用此事件
+			mui.plusReady(function() {
+				dateFormat(jxm.getTimeStamp());
+				loadPage();
+			});
+			mui(".tablist").on("tap","td",function () {
+				var classname=$(this).attr("class");
+				var status=$(this).attr("status");
+				var year = parseInt(jxm.getToday().substr(0, 4));
+				var day = parseInt(jxm.getToday().substr(8, 10));
+				var month = parseInt(jxm.getToday().substr(5, 7));
+			//	mui.toast(classname+":"+status);
+				$(".radio[value=2]").prop("checked","checked");
+				if("qiantian" == classname) {
+					day = (day - 2) + "";
+					day = day.length == 1 ? "0" + day : day;
+					month = month + "";
+					month = month.length == 1 ? "0" + month : month;
+					$("#start_date").val(year + "-" + month + "-" + day);
+					$("#end_date").val(year + "-" + month + "-" + day);
+				}else if("today" == classname) {
+					month = month + "";
+					month = month.length == 1 ? "0" + month : month;
+					day = day + "";
+					day = day.length == 1 ? "0" + day : day;
+					$("#start_date").val(year + "-" + month + "-" + day);
+					$("#end_date").val(year + "-" + month + "-" + day);
+				} else if("yesterday" == classname) {
+					day = (day - 1) + "";
+					day = day.length == 1 ? "0" + day : day;
+					month = month + "";
+					month = month.length == 1 ? "0" + month : month;
+					$("#start_date").val(year + "-" + month + "-" + day);
+					$("#end_date").val(year + "-" + month + "-" + day);
+				}
+				$("#useres").remove();
+				loadPage();
+			})
+			/**
+			 * 选择日期
+			 */
+			document.getElementById("start_date").addEventListener('tap', function() {
+				plus.nativeUI.pickDate(function(e) {
+					var d = e.date;
+					var month = d.getMonth() + 1 + "";
+					month = month.length == 1 ? "0" + month : month;
+					$("#start_date").val(d.getFullYear() + "-" + month + "-" + d.getDate())
+				}, function(e) {}, {});
+			})
+			/**
+			 * 选择日期
+			 */
+			document.getElementById("end_date").addEventListener('tap', function() {
+				plus.nativeUI.pickDate(function(e) {
+					var d = e.date;
+					var month = d.getMonth() + 1 + "";
+					month = month.length == 1 ? "0" + month : month;
+					$("#end_date").val(d.getFullYear() + "-" + month + "-" + d.getDate())
+				}, function(e) {}, {});
+			})
+			$("#time_temporal").on("change", function() {
+				var temporal = $(this).val();
+				var year = parseInt(jxm.getToday().substr(0, 4));
+				var day = parseInt(jxm.getToday().substr(8, 10));
+				var month = parseInt(jxm.getToday().substr(5, 7));
+				if("threemonth" == temporal) {
+					month = (month - 2) + "";
+					month = month.length == 1 ? "0" + month : month;
+					day = day + "";
+					day = day.length == 1 ? "0" + day : day;
+					$("#start_date").val(year + "-" + month + "-01");
+					$("#end_date").val(year + "-" + month + "-" + day);
+				} else if("twomonth" == temporal) {
+					month = (month - 1) + "";
+					month = month.length == 1 ? "0" + month : month;
+					day = day + "";
+					day = day.length == 1 ? "0" + day : day;
+					$("#start_date").val(year + "-" + month + "-01");
+					$("#end_date").val(year + "-" + month + "-" + day);
+				} else if("today" == temporal) {
+					month = month + "";
+					month = month.length == 1 ? "0" + month : month;
+					day = day + "";
+					day = day.length == 1 ? "0" + day : day;
+					$("#start_date").val(year + "-" + month + "-" + day);
+					$("#end_date").val(year + "-" + month + "-" + day);
+				} else if("yesterday" == temporal) {
+					day = (day - 1) + "";
+					day = day.length == 1 ? "0" + day : day;
+					month = month + "";
+					month = month.length == 1 ? "0" + month : month;
+					$("#start_date").val(year + "-" + month + "-" + day);
+					$("#end_date").val(year + "-" + month + "-" + day);
+				} else if("currmonth" == temporal) {
+					month = month + "";
+					month = month.length == 1 ? "0" + month : month;
+					$("#start_date").val(year + "-" + month + "-" + "01");
+					$("#end_date").val(year + "-" + month + "-" + day);
+				} else if("qiantian" == temporal) {
+					day = (day - 2) + "";
+					day = day.length == 1 ? "0" + day : day;
+					month = month + "";
+					month = month.length == 1 ? "0" + month : month;
+					$("#start_date").val(year + "-" + month + "-" + day);
+					$("#end_date").val(year + "-" + month + "-" + day);
+				} else if("beforemonth" == temporal) {
+					month = (month - 1) + "";
+					month = month.length == 1 ? "0" + month : month;
+					$("#start_date").val(year + "-" + month + "-01");
+					$("#end_date").val(year + "-" + month +"-"+getCurrentMonthLast(year + "-" + month));
+				}else if("beforeyear" == temporal) {
+					$("#start_date").val(year + "-01-01");
+					$("#end_date").val(year + "-06-30");
+				}else if("nextyear" == temporal) {
+					$("#start_date").val(year + "-07-01");
+					$("#end_date").val(year + "-12-31");
+				}else if("beforeyears" == temporal) {
+					$("#start_date").val((year-1) + "-01-01");
+					$("#end_date").val((year-1) + "-12-31");
+				}else if("curryear" == temporal) {
+					$("#start_date").val(year + "-01-01");
+					$("#end_date").val(year + "-12-31");
+				}
+				page_num = 1;
+				loadPage();
+			});
+			//获取指定时间的最后一天
+			function getCurrentMonthLast(date) {
+				var endDate = new Date(date); //date 是需要传递的时间如：2018-08
+				var month = endDate.getMonth();
+				var nextMonth = ++month;
+				var nextMonthFirstDay = new Date(endDate.getFullYear(), nextMonth, 1);
+				var oneDay = 1000 * 60 * 60 * 24;
+				var dateString = new Date(nextMonthFirstDay - oneDay);
+				console.log(dateString) //Wed Oct 31 2018 00:00:00 GMT+0800 (中国标准时间)
+				return dateString.toLocaleDateString().substr(2,2) //toLocaleDateString() 返回 如：2018/8/31
+
+			};
+			//单选按钮选中事件切换
+			$("input[type=radio]").on("change", function() {
+				loadPage();
+			});
+			var radioindex = 2;
+			var userid = '';
+			var deptid = '';
+			var start_date = ''
+			var end_date = '';
+			var page_num = 1;
+			var last = 1;
+			var getValue = function() {
+				radioindex = $("input[type=radio]:checked").val(); //获取被选中的单选按钮的值
+				userid = $("#useres").attr("userId");
+				deptid = jxm.getDeptId();
+				start_date = $("#start_date").val();
+				end_date = $("#end_date").val();
+				if(userid == undefined) {
+					userid = '';
+				}
+				if(deptid == undefined) {
+					deptid = '';
+				}
+
+			}
+			var loadPage = function() {
+				getValue();
+				getAllData();
+			};
+			/**
+			 * 获取所有数据
+			 */
+			var getAllData = function() {
+				var params = "funid=app_full&eventcode=pageInit&start_date=" + start_date + "&end_date=" + end_date + "&edit_userid=" + userid + "&dept_id=" + deptid + "&check_type=" + radioindex;
+				params += "&page_num=" + page_num;
+				jxm.post(params, function(data) {
+					setDays(data); //设置今天前天昨天的数据
+					setCard(data); //设置报工卡片资料
+				});
+			};
+			$("#search").on("tap", function() {
+				//getValue();
+				page_num = 1;
+				loadPage();
+			});
+			/**
+			 * 上一页
+			 */
+			$("#pre").on("tap", function() {
+				//getValue();
+				if(page_num != 1) {
+					page_num = page_num - 1;
+				}
+				loadPage();
+			});
+			/**
+			 * 下一页
+			 */
+			$("#next").on("tap", function() {
+				//	getValue();
+				if(page_num != last) {
+					page_num = page_num + 1;
+				}
+				loadPage();
+			});
+			/**
+			 * 设置今天，昨天，前天的数据
+			 * @param {Object} data
+			 */
+			var setDays = function(data) {
+				if(data != '') {
+					$("#works").children().remove();
+					$.each(data, function(i, rs) {
+						if(i == data.length - 3) {
+							$("#today-total").html(parseInt(rs.check_num) + parseInt(rs.nocheck_num));
+							$("#today-check").html(rs.check_num);
+							$("#today-nocheck").html(rs.nocheck_num);
+						} else if(i == data.length - 2) {
+							$("#yes-total").html(parseInt(rs.check_num) + parseInt(rs.nocheck_num));
+							$("#yes-check").html(rs.check_num);
+							$("#yes-nocheck").html(rs.nocheck_num);
+						} else if(i == data.length - 1) {
+							$("#yesyes-total").html(parseInt(rs.check_num) + parseInt(rs.nocheck_num));
+							$("#yesyes-check").html(rs.check_num);
+							$("#yesyes-nocheck").html(rs.nocheck_num);
+						}
+					});
+
+				}
+			}
+			/**
+			 * 验证页码
+			 */
+			var checkPage = function() {
+				if(page_num >= last) {
+					$("#next").attr("disabled", true).css("pointer-events", "none").parent().attr("class", "mui-disabled");
+				}
+				if(page_num <= 1) {
+					$("#pre").attr("disabled", true).css("pointer-events", "none").parent().attr("class", "mui-disabled");
+				}
+			};
+			/**
+			 * 设置报工数据卡片
+			 * @param {Object} data
+			 */
+			var setCard = function(data) {
+				if(data != '') {
+					$("#works").children().remove();
+					$("#pre").removeAttr("disabled").css("pointer-events", "auto").parent().removeAttr("class");
+					$("#next").removeAttr("disabled").css("pointer-events", "auto").parent().removeAttr("class");
+					for(var i = 0; i < data.length; i++) {
+						data[i]
+					}
+					$.each(data, function(i, rs) {
+
+						if(i == data.length - 4) {
+							last = rs.cnt;
+							$("#pagers").html(page_num + "/" + last + "页");
+							checkPage();
+						} else if(i < data.length - 4) {
+						//	console.log(JSON.stringify(rs))
+							var ext={"edit_user":rs.edit_user,"edit_userid":rs.edit_userid,"div_code":rs.div_code,"process_name":rs.process_name,"process_code":rs.process_code,"det_id":rs.det_id};
+							var html = '<div class="mui-card">' +
+								'<div class="mui-card-header"><span class="clerk-name">姓名：' + rs.edit_user + '</span></div>' +
+								'<div class="mui-card-content">' +
+								'<div class="mui-card-content-inner">' +
+								'<table class="mui-table">' +
+								'<tr>' +
+								'<td class="s1">工序编号：<span class="process-code">' + rs.process_code + '</span></td>' +
+								'<td class="s2 work-number">数量：<span>' + rs.work_num + '</span></td>' +
+								'</tr>' +
+								'<tr>' +
+								'<td class="s1">工序名称：<span class="process-name">' + rs.process_name + '</span></td>' +
+								'<td class="s2"></td>' +
+								'</tr>' +
+								'<tr>' +
+								'<td class="s1">工单号：<span class="div-code">' + rs.div_code + '</span></td>' +
+								'<td class="s2">款号：<span class="sp-code">' + rs.sp_code + '</span></td>' +
+								'</tr>' +
+								'<tr>' +
+								'<td class="s1">生产日期：<span class="work-date">' + (rs.work_date.substr(0, 10)) + '</span></td>' +
+								'<td class="s2"><button det-id=' + rs.det_id + ' status=' + rs.status + ' type="button" class="mui-btn ' + (rs.status == "0" ? "mui-btn-green" : "") + ' check mui-btn-outlined  mui-pull-left">' +
+								(rs.status == "0" ? "核对" : "反核") +
+								'</button><button dataext='+JSON.stringify(ext)+' status=' + rs.status + ' type="button" class="mui-btn ' + (rs.status == "0" ? "mui-btn-danger" : "mui-hidden") + ' return mui-btn-outlined  mui-pull-right ">' +
+								'退回</button></td>' +
+								'</tr>' +
+								'</table>' +
+								'</div>' +
+								'</div>' +
+								'</div>';
+							$("#works").append(html);
+						}
+					});
+
+				}
+			}
+			/**
+			 * 核对或者反核对
+			 */
+			$("#works").on('click', '.check', function() {
+				console.log("11111");
+				var det_id = $(this).attr("det-id");
+				var status = $(this).attr("status");
+				var params = "funid=app_full&eventcode=checkDet&check_user=" + jxm.getUserName() + "&check_userid=" + jxm.getUserId() + "&det_id=" + det_id + "&status=" + status;
+				jxm.post(params, function(data) {
+					loadPage();
+				});
+			});
+			/**
+			 * 退回
+			 */
+			$("#works").on('click', '.return', function() {
+				var dataext = $(this).attr("dataext");
+				dataext=JSON.parse(dataext)
+				var params = "funid=app_full&eventcode=workReturn&user_name=" + jxm.getUserName() + "&user_id=" + jxm.getUserId() + "&edit_user=" + dataext.edit_user + "&edit_userid=" + dataext.edit_userid;
+				params+="&div_code="+dataext.div_code+"&process_code="+dataext.process_code+"&process_name="+dataext.process_name+"&det_id="+dataext.det_id;
+				jxm.post(params, function(data) {
+					loadPage();
+				});
+			});
+			/**
+			 * 格式化日期  参数格式 YYYYMMddHHmmss
+			 * @param {Object} date
+			 */
+			var dateFormat = function(date) {
+				var year = date.substr(0, 4);
+				var month = date.substr(4, 2);
+				var day = date.substr(6, 2);
+				var str = year + "-" + month + "-" + day;
+				$("#start_date").val(year + "-" + month + "-" + "01");
+				$("#end_date").val(str);
+				$("#time_temporal").val("currmonth");
+			}
+			/**
+			 * 选择用户
+			 */
+			var select_user = "select_user";
+			$("#select_user").click(function() {
+				var href = "../../util/select-user.html";
+				var deptId = jxm.getDeptId();
+				var param = {
+					callbackWinId: mui.currentWebview.id,
+					callbackEvent: select_user,
+					deptid: deptId,
+					mutilsel: false //不需要多选
+				};
+				jxm.open(href, {
+					extras: {
+						selectParams: param
+					}
+				});
+
+			});
+			window.addEventListener(select_user, function(e) {
+				var obj = e.detail;
+				user_id = obj.dataid;
+				$("#useres").remove();
+				$("#selects").append('<button type="button" id="useres" userId=' + obj.dataid + ' class="mui-btn mui-btn-grey result">' + obj.dataname + '<span class="mui-icon mui-icon-closeempty"></span></button>');
+				console.log(JSON.stringify(obj));
+			});
+			/**
+			 * 选择部门
+			 */
+			/*var seldep = "seldep";
+			$("#seldep").click(function() {
+				var href = "../../util/select-dept.html";
+				var param = {
+					callbackWinId: mui.currentWebview.id,
+					callbackEvent: seldep,
+					main_cache: "",
+					mutilsel: false //不需要多选
+				};
+				jxm.open(href, {
+					extras: {
+						selectParams: param
+					}
+				});
+
+			});
+			window.addEventListener(seldep, function(e) {
+				var obj = e.detail;
+				user_id = obj.dataid;
+				$("#deprs").remove();
+				$("#selects").append('<button type="button" id="deprs" deptId=' + obj.dataid + ' class="mui-btn mui-btn-grey result">' + obj.dataname + '<span class="mui-icon mui-icon-closeempty"></span></button>');
+				console.log(JSON.stringify(obj));
+			});*/
+			$(".mui-input-row").on("click", "#useres", function() {
+				$(this).remove();
+			});
+			$(".mui-input-row").on("click", "#deprs", function() {
+				$(this).remove();
+			});
+		</script>
+	</body>
+
+</html>

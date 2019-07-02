@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+    <title></title>
+    <link rel="stylesheet" href="../../mui/css/mui.min.css"/>
+    <link rel="stylesheet" href="../../jxm/css/jxm.css">
+   	<style type="text/css">
+    	
+	</style>
+</head>
+<body>
+	<header class="mui-bar mui-bar-nav mui-bar-primary">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<h1 class="mui-title">意见反馈</h1>
+	</header>
+	<nav class="mui-bar mui-bar-footer">
+		<button type="button" id="btnquery" class="mui-btn mui-btn-primary mui-btn-outlined mui-pull-left" style="width: 30%;" >查询</button>
+		<button type="button" id="btncommit" class="mui-btn mui-btn-primary mui-pull-right" style="width: 30%;">提交</button>
+	</nav>
+	<div class="mui-content">
+		<form class="mui-input-group" style="margin-top: 20px;">
+			<textarea id="summary" rows="6" placeholder="请输入反馈内容"></textarea>
+		</form>
+		<form class="mui-input-group" style="margin-top: 20px;">
+			<div class="mui-input-row" >
+				<label>联系方式</label>
+				<input type="text" name="phone" id="phone" placeholder="点击输入" />
+			</div>
+		</form>
+		<h5 style="margin-top: 20px;margin-left: 10px;">上传图片</h5>
+		<div class="jxm-image-input">
+			<div id='image-list' class="image-list"></div>
+		</div>
+	</div>	
+	
+	<script src="../../mui/js/mui.min.js"></script>
+	<script src="../../jxm/js/jxm.js"></script>
+	<script src="../util/jxm-util.js"></script>
+	<script src="../../jxm/js/jxm-image-input.js"></script>
+	<script type="text/javascript" charset="UTF-8">
+   		mui.init();
+      	
+      	mui.plusReady(function(){
+      		var self = plus.webview.currentWebview();
+      	});
+      	jxm.imgUI.newImageDiv();
+		
+		var commitApply = function() {
+			var summary = document.getElementById('summary').value;
+			if (summary.length == 0) {
+  				mui.alert('请输入反馈内容！');
+  				return false;
+  			}
+			var phone = document.getElementById('phone').value;
+			if(summary.length == 0){
+				mui.alert("请填写反馈内容");
+				return ;
+			}
+			var hdcall = function(data) {
+  				var p = 'funid=que_report&eventcode=exesql&pagetype=form&keyid='+data.keyid;
+  				jxm.post(p, null);
+  				var params = {
+					dataid:data.keyid,
+					datafunid:'que_report',
+					callback:function(){
+  						newApply();
+  						jxm.imgUI.clearImage();
+  						setTimeout(function(){
+  							mui.toast('提交成功！');
+  							jxm.backHome('set');
+  						}, 500);
+					}
+				};
+				
+				jxm.imgUI.uploadImages(params);
+  			};
+  			var e = encodeURIComponent;
+  			var session = jxm.getSession();
+      		var userid = session.user_id;
+      		var username = session.user_name;
+      		var time = jxm.getTodayTime();
+      		var dept_name = session.dept_name;
+      		var deptid = session.dept_id;
+  			var params = 'funid=que_report&eventcode=create&pagetype=form';
+  			params += '&sys_question__report_userid='+userid;
+  			params += '&sys_question__report_user='+e(username);
+  			params += '&sys_question__report_date='+time;
+  			params += '&sys_question__que_status='+0;
+  			params += '&sys_question__dept_name='+e(dept_name);
+  			params += '&sys_question__dept_id='+deptid;
+  			params += '&sys_question__que_desc='+ e(summary);
+  			params += '&sys_question__phone='+ e(phone);
+  			jxm.post(params, hdcall);
+		}
+		
+		//打开反馈历史列表页面
+  		var queryBX = function(){
+  			var targetWin = plus.webview.getWebviewById('feedback-list.html');
+			mui.fire(targetWin, 'load-data', {});
+  			jxm.open('feedback-list.html');
+  		};
+		
+  		var newApply = function(){
+			document.getElementById('summary').value = '';
+			document.getElementById('phone').value = '';
+  		};
+		//点击提交按钮后提交
+		document.getElementById('btncommit').addEventListener('tap', commitApply);
+		//点击查询按钮跳转到反馈历史列表页面
+		document.getElementById('btnquery').addEventListener('tap', queryBX);
+    </script>
+</body>
+</html>

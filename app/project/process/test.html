@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+    <title>工序流程图</title>
+    <link rel="stylesheet" href="../../../mui/css/mui.min.css"/>
+    <link rel="stylesheet" href="../../../jxm/css/jxm.css">
+    <link rel="stylesheet" href="../../../mui/css/main.css">
+    <style type="text/css">
+    	.mui-bar {
+			-webkit-box-shadow: none;
+			box-shadow: none;
+		}
+		.head-search {
+			padding-top: 1px;
+			height: 50px !important; 
+		}
+		.head-search button {
+			height: 48px; 
+			width: 18%;
+			border: none;
+			border-radius: 0 !important;
+			background-color:#f7f7f7;
+		}
+		.head-search input {
+			width:62%; 
+			height: 50px; 
+			border: none;
+		}
+    	.label-red {
+			padding-left: 5px;
+			color:red !important;
+		}
+		.text-disabled {
+			background-color: #EEEEEE;
+		}
+		.iconfont{
+			font-size:24px;
+		}
+		h5 {
+	    	font-size: 14px;
+	    	padding: 8px 5px 6px;
+	    	background-color: #efeff4;
+	    }
+	    .d{
+	     height: 32px;
+	     width: 100%;
+	     margin-top: 2%;
+	    }
+	     .d5{
+	    	margin-left: 13%;
+	    }
+	    .d10{
+	    	margin-left: 6%;
+	    }
+	    .d11{
+	    	margin-left: 8%;
+	    }
+	    
+
+.mspan{
+	    	margin-top:2% ;overflow-x:scroll;white-space: nowrap; display: inline-block; width:9em; overflow: hidden;text-overflow: ellipsis;
+	    }
+
+    </style>
+
+</head>
+<body>
+	<header class="mui-bar mui-bar-nav mui-bar-primary">
+		    <a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<h1 class="mui-title" id="title">工序流程图</h1>
+			<a class="mui-icon mui-pull-right icon-header" id="print_setting">
+			<i class="iconfont icon-icon-test"></i>
+			</a>
+	</header>
+	
+	<nav class="mui-bar mui-bar-footer">
+		<button type="button" id="btncommit" class="mui-btn mui-btn-primary mui-pull-right" style="width:30%;">确定</button>
+		<button type="button" id="btnback" onclick="mui.back();" class="mui-btn mui-btn-primary mui-pull-left" style="width:30%;">返回</button>
+	</nav>
+	
+	<div class="mui-content">
+		        
+		        <form class="mui-input-group">
+		           <div class="mui-input-row">
+					  <label>单据编号：<span class="label-red">*</span></label>
+					  <input type="text" id="barcode" class="mui-input"  placeholder="请选择单据编号"/><!--商品编码输入框--> 
+				   </div>
+				</form>
+<div class="data-table">
+<div class="t_r"  style="margin-left: 0px;">
+        <div class="t_r_t"  style="margin-top: 0.5%;">
+            <table id="tableOne" style="width: 200%;">
+                <tbody >
+                <tr id="tableOneTh">
+                	<th><span  class='mspan' >规格型号</span></th>
+                    <th><span  class='mspan' >不良内容</span></th>
+                    <th><span  class='mspan' >不良原因</span></th>
+                    <th><span  class='mspan' >条码</span></th>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="t_r_content">
+            <table id="tabOnesub" style="width: 200%;" >
+                
+            </table>
+        </div>
+    </div>
+
+		    </div>    
+		</div>
+	
+	<script src="../../../mui/js/mui.min.js"></script>
+	<script src="../../../jxm/js/jxm.js"></script>
+	<script src="../../../jxm/js/JxDao.js"></script>
+	<script src="../../../Resources/js/jquery-3.3.1.min.js"></script>
+     <script src="../../../jxm/js/main.js"></script>
+	<script src="../../util/jxm-util.js"></script>
+	
+	<script type="text/javascript" charset="UTF-8">
+      	mui.init({
+      		swipeBack:false //关闭-右滑关闭功能
+      	});
+      	 /*扫描条码*/
+	    document.getElementById('btnscan').addEventListener('tap', function() {
+			jxm.open('../../util/barcode_scan.html');
+		});
+		
+		//扫描商品条码完成
+		var scanSucess=function(result) {
+			document.getElementById('barcode').value=result;
+			var barcode = $("#barcode").val();
+	  			if(barcode == $("#barcode").data('barcode')){
+	  				mui.toast('不能重复扫码');
+	  				jxm.playSound("../../../voice/chongfu.wav");
+	  				return;
+	  			}else{
+	  				$("#barcode").data('barcode',barcode);
+	  		}
+		}; 
+    </script>
+</body>
+</html>

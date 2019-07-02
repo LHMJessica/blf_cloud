@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+    <title>异常处理</title>
+    <link rel="stylesheet" href="../../../mui/css/mui.min.css"/>
+    <link rel="stylesheet" href="../../../jxm/css/jxm.css">
+    <link rel="stylesheet" href="../../../ddcg/css/ddcgIcon.css">
+    <style type="text/css">
+    	.mui-bar {
+			-webkit-box-shadow: none;
+			box-shadow: none;
+		}
+		.head-search {
+			padding-top: 1px;
+			height: 50px !important; 
+		}
+		.head-search button {
+			height: 48px; 
+			width: 18%;
+			border: none;
+			border-radius: 0 !important;
+			background-color:#f7f7f7;
+		}
+		.head-search input {
+			width:62%; 
+			height: 50px; 
+			border: none;
+		}
+    	.label-red {
+			padding-left: 5px;
+			color:red !important;
+		}
+		.text-disabled {
+			background-color: #EEEEEE;
+		}
+		.iconfont{
+			font-size:24px;
+		}
+		h5 {
+	    	font-size: 14px;
+	    	padding: 8px 5px 6px;
+	    	background-color: #efeff4;
+	    }
+	    .d{
+	     height: 32px;
+	     width: 100%;
+	     margin-top: 2%;
+	    }
+	    .d5{
+	    	margin-left: 5%;
+	    }
+	    .d10{
+	    	margin-left: 10%;
+	    }
+	    .d11{
+	    	margin-left: 12%;
+	    }
+	    
+	    #addPopover {
+			position: fixed;
+			top: 0;
+			right: 0;
+			bottom: 0;
+			left: 0%;
+			z-index: 998;
+			background-color: rgba(0, 0, 0, .4);
+		}
+		.listtip {
+			padding-top: 20px;
+			text-align: center;
+			background-color: white;
+			height: 140px;
+			color: #CCCCCC;
+		}
+		
+		.addContent {
+			position: absolute;
+			left: 0;
+			top: 20px;
+		}	
+    </style>
+
+</head>
+<body>
+	<header class="mui-bar mui-bar-nav mui-bar-primary">
+		    <a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<h1 class="mui-title" id="title">异常处理</h1>
+			<a class="mui-icon mui-pull-right icon-header" id="print_setting">
+			<i class="iconfont icon-icon-test"></i>
+			</a>
+	</header>
+	
+	<nav class="mui-bar mui-bar-footer">
+		<center>
+			<button type="button" id="btnback" onclick="mui.back();" class="mui-btn mui-btn-primary mui-pull-left" style="width:30%;">返回</button>
+			<button type="button" id="btncommit" class="mui-btn mui-btn-primary mui-pull-right" style="width:30%;">提交</button>
+		</center>
+	</nav>
+	<div class="mui-content">
+       <form class="mui-input-group">
+      	 	<h5>异常信息</h5>
+      	 	<div class="mui-input-row">
+					<label style="width: 40%;">单据编号：</label>
+				    <input style="width: 60%;" type="text" readonly="readonly" id="report_code" ></input>	
+			</div>
+			<div class="mui-input-row">
+					<label style="width: 40%;">工单编号：</label>
+				    <input style="width: 60%;" type="text" readonly="readonly" id="work_code" ></input>	
+			</div>
+			<div class="mui-input-row">
+					<label style="width: 40%;">上报人：</label>
+				    <input style="width: 60%;" type="text" readonly="readonly" id="report_user" ></input>	
+			</div>
+			<div class="mui-input-row">
+					<label style="width: 40%;">上报时间：</label>
+				    <input style="width: 60%;" type="text" readonly="readonly" id="report_date" ></input>	
+			</div>			
+			<div class="mui-input-row">
+					<label style="width: 40%;">异常类型：</label>
+				    <input style="width: 60%;" type="text" readonly="readonly" id="excep_name" ></input>	
+			</div>
+			<div class="mui-input-row">
+					<label style="width: 40%;">异常描述：</label>
+				    <input style="width: 60%;" type="text" readonly="readonly" id="excep_desc"></input>	
+			</div>
+			<h5>分配信息</h5>
+			<div class="mui-input-row">
+					<label style="width: 40%;">责任人：</label>
+				    <input style="width: 60%;" type="text" id="repair_user" readonly="readonly"></input>	
+			</div>
+			<div class="mui-input-row">
+					<label style="width: 45%;">要求完成时间：</label>
+				    <input style="width: 55%;" type="datetime-local" id="req_time"></input>	
+			</div>
+			<div class="mui-input-row">
+					<label style="width: 45%;">处理建议：</label>
+				    <input style="width: 55%;" type="text" id="repair_memo"></input>	
+			</div>
+	    </form>
+	</div>
+		
+	<script src="../../../mui/js/mui.min.js"></script>
+	<script src="../../../jxm/js/jxm.js"></script>
+	<script src="../../../jxm/js/JxDao.js"></script>
+	<script src="../../../jxm/js/json2.js"></script>
+	<script src="../../../jxm/js/jxm-image-input.js"></script>
+	<script src="../../util/jxm-util.js"></script>
+	<script src="../../../Resources/js/jquery-3.3.1.min.js"></script>
+	<script src="../../../Resources/js/juicer-min.js"></script>
+	<script src="../../../Resources/js/juicerUtil.js"></script>
+	<script type="text/javascript" charset="UTF-8">
+      	mui.init({
+      		swipeBack:false //关闭-右滑关闭功能
+      	});
+      	var main_cahce = null;
+      	//页面初始化完成加载此方法
+      	mui.plusReady(function(){
+      		//初始化扫描工单号获取焦点
+      		main_cahce = mui.currentWebview.selectParams.main_cache;
+      		main_cahce = JSON.parse(main_cahce);
+      		loadPage();
+	    });
+	    var chkuser_back = "chkuser_back";
+	    //选择分配人
+	    $('#repair_user').on('click',function(e){
+	    	var href = "../util/select-user.html";
+			var param = {callbackWinId:mui.currentWebview.id, callbackEvent:chkuser_back, main_cache:""};
+		    jxm.open(href,{extras:{selectParams:param}});
+	    });
+	    window.addEventListener(chkuser_back, function(event) {
+				var obj=event.detail; 
+				var data = obj.dataext;
+				data = JSON.parse(data);
+				$('#repair_user').val(data.name);//分配人ID
+  			    $('#repair_user').data("uid",data.id);//分配人
+		});
+  		//页面加载执行方法
+  		var loadPage = function(){
+  		    $('#ExcpType').val(Excp_type(main_cahce.excep_report__excp_type));//异常类型
+  		    $('#report_code').val(main_cahce.excep_report__report_code); //单据编号
+  		    $('#work_code').val(main_cahce.excep_report__work_code); //工单编号
+  		    $('#report_user').val(main_cahce.excep_report__report_user); //上报人
+  		    $('#report_date').val(main_cahce.excep_report__report_date); //上报时间
+  		    $('#excep_name').val(main_cahce.excep_report__excep_name); //异常类型
+  		    $('#excep_desc').val(main_cahce.excep_report__excep_desc); //异常描述
+  		};
+  		//提交按钮点击事件
+  		$('#btncommit').on('click',function(e){
+  			var repair_username = $('#repair_user').val();//分配人
+  			var repair_user = $('#repair_user').data("uid");//分配人分配人ID
+  			var repair_memo = $('#repair_memo').val(); //处理建议
+  			var req_time = $('#req_time').val();//要求完成时间
+  			if(repair_user && repair_user.length==0){
+  				mui.alert("请选择责任人");
+  				return false;
+  			}
+  			if(req_time && req_time.length==0){
+  				mui.alert("请填写要求完成时间");
+  				return false;
+  			}
+  			if(req_time.indexOf('T')!=-1){
+  				req_time = req_time.replace('T',' ');
+  				req_time += ":00"
+  			}
+  			if(repair_memo && repair_memo.length==0){
+  				mui.alert("请填写处理建议")
+  			}
+  			var param = "funid=app_full&eventcode=addEcpDispose&repair_user="+repair_username+"&repair_userid="+repair_user+"&req_time="+req_time+"&report_id="+main_cahce.excep_report__report_id+"&repair_memo="+repair_memo;
+  			jxm.post(param,function(data){
+  				if(data.type && data.type=="success"){
+  					mui.toast("提交成功！");
+  				    clearPage();
+  				}
+  			});
+  		});
+  		var clearPage = function(){
+  			$('#ExcpType').val("");//异常类型
+  		    $('#report_code').val(""); //单据编号
+  		    $('#work_code').val(""); //工单编号
+  		    $('#report_user').val(""); //上报人
+  		    $('#report_date').val(""); //上报时间
+  		    $('#excep_name').val(""); //异常类型
+  		    $('#excep_desc').val(""); //异常描述
+  		    $('#repair_user').val("");//分配人
+  			$('#repair_user').data("uid","");//分配人分配人ID
+  			$('#repair_memo').val(""); //处理建议
+  			$('#req_time').val("");//要求完成时间
+  			//获取当前webviwew
+  			var main = plus.webview.currentWebview();
+  			var opener = main.opener();//获取父页面webview
+  			//调用父页面js
+  			opener.evalJS('loadPage()');
+  			mui.back();
+  		}
+    </script>
+</body>
+</html>

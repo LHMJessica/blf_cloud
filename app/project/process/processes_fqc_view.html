@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<title>品检报工统计</title>
+		<link rel="stylesheet" href="../../../mui/css/mui.min.css" />
+		<link rel="stylesheet" href="../../../jxm/css/jxm.css"/>
+		<link rel="stylesheet" href="../../../mui/css/main.css"/>
+		<style type="text/css">
+			.mui-bar {
+				-webkit-box-shadow: none;
+				box-shadow: none;
+			}
+			
+			.head-search {
+				padding-top: 1px;
+				height: 50px !important;
+			}
+			
+			.head-search button {
+				height: 48px;
+				width: 18%;
+				border: none;
+				border-radius: 0 !important;
+				background-color: #f7f7f7;
+			}
+			.mui-bar-footer {
+				height: auto !important;
+			}
+			.head-search input {
+				width: 62%;
+				height: 50px;
+				border: none;
+			}
+			
+			.label-red {
+				padding-left: 5px;
+				color: red !important;
+			}
+			
+			.text-disabled {
+				background-color: #EEEEEE;
+			}
+			
+			.iconfont {
+				font-size: 24px;
+			}
+			.mui-btn {
+				border: none;
+			}
+			.t_r_content{
+				height: auto !important;
+			}
+			h5 {
+				font-size: 14px;
+				padding: 8px 5px 6px;
+				background-color: #efeff4;
+			}
+			
+			.d {
+				height: 32px;
+				width: 100%;
+				margin-top: 2%;
+			}
+			
+			.d5 {
+				margin-left: 5%;
+			}
+			
+			.d10 {
+				margin-left: 10%;
+			}
+			
+			.d11 {
+				margin-left: 12%;
+			}
+			
+			#addPopover {
+				position: fixed;
+				top: 0;
+				right: 0;
+				bottom: 0;
+				left: 0%;
+				z-index: 998;
+				background-color: rgba(0, 0, 0, .4);
+			}
+			
+			.listtip {
+				padding-top: 20px;
+				text-align: center;
+				background-color: white;
+				height: 140px;
+				color: #CCCCCC;
+			}
+			
+			.addContent {
+				position: absolute;
+				left: 0;
+				top: 20px;
+			}
+			
+			.mspan {
+				margin-top: 2%;
+				overflow-x: scroll;
+				display: inline-block;
+				width: 100%;
+				overflow-y: hidden;
+				white-space: pre-wrap;
+			}
+			.total p {
+				display: inline-block;
+				vertical-align: middle;
+				margin: 5px 10px;
+				font-size: 16px;
+			}
+			.total{
+				display: inline-flex;
+				width: 45%;
+			}
+			body .data-table .t_r table th{height: auto;}
+			body .data-table .t_r table th,
+			#tabOnesub td {
+				text-align: center;
+				font-size: 12px;
+			}
+			.s1{width: 10% !important;}
+			.s2{width: 40% !important;}
+			.s3{width: 10% !important;}
+			.s4{width: 10% !important;}
+			.s5{width: 10% !important;}
+			.s6{width: 10% !important;}
+			.s7{width: 10% !important;}
+			.processes-title {
+				font-size: 14px;
+				color: #000000;
+			}
+			
+			.processes-value {
+				font-size: 12px;
+				color: #555555;
+			}
+			/*清除框架自带的内边距样式*/
+			/*清除每组输入框下面的线*/
+			
+			#processes_info li {
+				display: inline-block;
+				list-style: none;
+				text-align: center;
+				vertical-align: top;
+			}
+			#processes_info {
+				margin-top: 10px;
+				padding-left: 10px;
+				padding-right: 10px;
+			}
+		</style>
+
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav mui-bar-primary">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<h1 class="mui-title" id="title">品检报工统计</h1>
+		</header>
+
+		<nav class="mui-bar mui-bar-footer">
+			<div class="mui-content-padded">
+				<ul class="mui-pager">
+					<li>
+						<a href="#" id="pre">
+							上一页
+						</a>
+					</li>
+					<li>
+						<a href="#" id="next">
+							下一页
+						</a>
+					</li>
+					<li id="pagers"></li>
+				</ul>
+			</div>
+			<center style="clear: both;">		
+				<div class="total">
+					<p>检验数量：<span id="check_num" style="color: red;"></span></p>
+				</div>		
+				<div class="total">
+					<p>不良数检出：<span id="total_num" style="color: red;"></span></p>
+				</div>
+				<br />
+				<div class="total">
+					<p>良品数量：<span id="pass_num" style="color: red;"></span></p>
+				</div>
+				<div class="total">
+					<p>不良率：<span id="no_rate" style="color: red;"></span></p>
+				</div>
+			</center>
+		</nav>
+		<div class="mui-content">
+			<form class="mui-input-group">
+				<div class="mui-input-row head-search">
+					<button type="button" id="btnscan" class="mui-icon iconfont icon-saoma1 mui-pull-left" style=""></button>
+					<!--扫描资产条码-->
+					<input type="text" id="barcode" autofocus="autofocus" class="mui-input" placeholder="扫描二维码" />
+					<!--资产条码输入框-->
+					<button style="font-weight: bolder;" id='showQrPicker' class="mui-icon mui-icon-plusempty mui-pull-right" type='button'></button>
+				</div>
+				<div id="processes_info">
+					<ul>
+						<li style="width: 30%;">
+							<p class="processes-title">工单号</p>
+							<p id="div_code" class="processes-value"></p>
+						</li>
+						<li style="width: 1px;background-color: lightgrey;height: 40px;"></li>
+						<li style="width: 30%;">
+							<p class="processes-title">款号</p>
+							<p id="sp_code" class="processes-value"></p>
+						</li>
+						<li style="width: 1px;background-color: lightgrey;height: 40px;"></li>
+						<li style="width: 30%;">
+							<p class="processes-title">品名</p>
+							<p id="sp_name" class="processes-value"></p>
+						</li>
+						<p id="div_num" class="mui-hidden"></p>
+					</ul>
+					<hr />
+					<ul>
+						<li style="width: 30%;">
+							<p class="processes-title">组别</p>
+							<p id="group_name" class="processes-value"></p>
+						</li>
+						<li style="width: 1px;background-color: lightgrey;height: 40px;"></li>
+						<li style="width: 30%;">
+							<p class="processes-title">颜色</p>
+							<p id="color_name" class="processes-value"></p>
+						</li>
+						<li style="width: 1px;background-color: lightgrey;height: 40px;"></li>
+						<li style="width: 30%;"> 
+							<p class="processes-title">日期</p>
+							<p id="date" class="processes-value"></p>
+						</li>
+					</ul>
+				</div>
+				<div class="data-table" style="overflow: auto;">
+					<div class="t_r" style="margin-left: 0px;">
+						<div class="t_r_t" style="margin-top: 0.5%;">
+							<table id="tableOne" style="width: 150%;">
+								<tbody>
+									<tr id="tableOneTh">
+										<th rowspan="2" class="s1"><span class='mspan'>序号</span></th>
+										<th rowspan="2" class="s2"><span class='mspan'>不良描述</span></th>
+										<th colspan="3" class="s8"><span class='mspan'>检验数据及不良等级</span></th>
+										<th rowspan="2" class="s6"><span class='mspan'>数量</span></th>
+										<th rowspan="2" class="s7"><span class='mspan'>不良率</span></th>
+									</tr>
+									<tr>
+										<th class="s3"><span class='mspan'>Cri.致命</span></th>
+										<th class="s4"><span class='mspan'>Maj.嚴重</span></th>
+										<th class="s5"><span class='mspan'>Min.輕微</span></th>
+									</tr>
+								</tbody>
+							</table>
+						</div>
+						<div class="t_r_content">
+							<table id="tabOnesub" style="width: 150%;">
+							</table>
+						</div>
+					</div>
+				</div>
+			</form>
+		</div>
+
+		<script src="../../../mui/js/mui.min.js"></script>
+		<script src="../../../jxm/js/jxm.js"></script>
+		<script src="../../../jxm/js/jxm-image-input.js"></script>
+		<script src="../../util/jxm-util.js"></script>
+		<script src="../../../Resources/js/jquery-3.3.1.min.js"></script>
+		<script src="../../../jxm/js/iscroll-probe.min.js"></script>
+		<script src="../../../jxm/js/main.js"></script>
+		<script src="../../../Resources/js/juicer-min.js"></script>
+		<script src="../../../Resources/js/juicerUtil.js"></script>
+		<script type="text/javascript" charset="UTF-8">
+			mui.init({
+				swipeBack: false //关闭-右滑关闭功能
+			});
+			document.getElementById("barcode").focus();
+			//页面初始化完成加载此方法
+			mui.plusReady(function() {
+				//dateFormat(jxm.getTimeStamp());
+				var opts = mui.currentWebview.selectParams;
+				getSize();
+				if(opts != undefined) {
+					if(opts.plan_id != null && opts.plan_id != undefined && opts.plan_id != "") {
+						appendTable(opts.plan_id);
+						loadpage(opts.plan_id);
+					}
+				}
+			});
+			var datas = []; //所有数据
+			var now_datas = []; //当前页面数据
+			var page_size = 8; //每一页显示的数据量
+			var page_index = 0; //当前页码
+			var page_count = 1; //总页数
+			/**
+			 * 获取当前页面数据
+			 */
+			var getNowDatas = function() {
+				now_datas = []; //先清空当前数据
+				var dataIndex = (page_index-1) * page_size; //从第几条数据开始显示
+				for(var i = dataIndex; i <= (dataIndex + page_size); i++) {
+					console.log(JSON.stringify(datas));
+					if(datas[i] != undefined) {
+						now_datas.push(datas[i]);
+					}
+				}
+				console.log(JSON.stringify(now_datas));
+				//设置总页数
+				page_count = Math.ceil(datas.length / page_size);
+				if (datas.length==undefined   || datas.length==0) {
+					page_count=1;
+				}
+				console.log(dataIndex+":"+page_count+":"+page_index+":"+datas.length)
+				$("#pagers").html(page_index + "/" + page_count + "页");
+				//设置数据
+				appendTable(now_datas);
+				checkPage();
+			}
+			/**
+			 * 上一页
+			 */
+			$("#pre").on("tap", function() {
+				//getValue();
+				if(page_index != 1) {
+					page_index = page_index - 1;
+				}
+				getNowDatas();
+			});
+			/**
+			 * 下一页
+			 */
+			$("#next").on("tap", function() {
+				//	getValue();
+				if(page_index != page_count) {
+					page_index = page_index + 1;
+				}
+				getNowDatas();
+			});
+			var loadpage=function (plan_id) {
+				var params = "funid=app_full&eventcode=qryQCListMes&plan_id=" + plan_id;
+				jxm.post(params, function(data) {
+					datas=data;
+					page_index = 1;
+					getNowDatas();
+				});
+			};
+			/**
+			 * 获取分页数量
+			 */
+			function getSize() {
+				var params ="funid=queryevent&eventcode=query_data&query_funid=sys_var&limit=10&start=0&where_sql=sys_var.var_code='app.page.count_forwork'";
+				jxm.post(params, function(e) {
+					//var data = JSON.parse(e).data.root;
+					console.log(JSON.stringify(e.root));
+					$.each(e.root,function (i,rs) {
+						if (rs.sys_var__var_code=="app.page.count_forwork") {
+							page_size=parseInt(rs.sys_var__var_value);
+						}
+					});
+				});
+			}
+			/**
+			 * 验证页码
+			 */
+			var checkPage = function() {
+				if(page_index >= page_count || page_count==0) {
+					$("#next").attr("disabled", true).css("pointer-events", "none").parent().attr("class", "mui-disabled");
+				}
+				if(page_index <= 1) {
+					$("#pre").attr("disabled", true).css("pointer-events", "none").parent().attr("class", "mui-disabled");
+				}
+			};
+			/*扫描工单号*/
+			document.getElementById('btnscan').addEventListener('tap', function() {
+				jxm.open('../../util/barcode_scan.html');
+			});
+
+			//扫描工单号完成
+			var scanSucess = function(result) {
+				$('#barcode').data("code", result);
+				loadpage(result);
+				setPlanInfo(result);
+			};
+			//回车后根据工单号读取信息
+			document.getElementById('barcode').addEventListener('keypress', function(event) {
+				if(event.keyCode == 13) {
+					//阻止默认回车键事件
+					var barcode = document.getElementById('barcode').value;
+					$('#barcode').data("code", barcode);
+					$('#barcode').val('');
+					setPlanInfo(barcode);
+					loadpage(barcode);
+				}
+				return false;
+			});
+			/**
+			 * 选择工单
+			 */
+			$("#showQrPicker").on('click', function(e) {
+				var href = "../../util/select-process-forfqc.html";
+				var param = {
+					callbackWinId: mui.currentWebview.id,
+					callbackEvent: "selectprocess",
+					dept_id: jxm.getDeptId(),
+					mutilsel: false //不需要多选
+				};
+				jxm.open(href, {
+					extras: {
+						selectParams: param
+					}
+				});
+			});
+			/**
+			 * 选择工单回调函数
+			 */
+			window.addEventListener("selectprocess", function(e) {
+				var obj = e.detail;
+				console.log(JSON.stringify(obj.dataid));			
+				setPlanInfo(obj.dataid);
+				loadpage(obj.dataid);
+			});
+			/**
+			 * 格式化返回的数据并追加到表格
+			 * @param {Object} plan_id
+			 */
+			var appendTable = function(data) {
+				$("#tabOnesub").children().remove();
+				$("#pre").removeAttr("disabled").css("pointer-events", "auto").parent().removeAttr("class");
+				$("#next").removeAttr("disabled").css("pointer-events", "auto").parent().removeAttr("class");
+					console.log(JSON.stringify(data));
+					$.each(data, function(i, obj) {
+						var html='<tr>'+
+									'<td class="s1"><span class="mspan date">'+(i+1)+'</span></td>'+
+									'<td class="s2"><span class="mspan">'+obj.bad_desc+'</span></td>'+
+									'<td class="s3"><span class="mspan">'+(obj.num1==0?"":obj.num1)+'</span></td>'+
+									'<td class="s4"><span class="mspan">'+(obj.num2==0?"":obj.num2)+'</span></td>'+
+									'<td class="s5"><span class="mspan">'+(obj.num3==0?"":obj.num3)+'</span></td>'+
+									'<td class="s6"><span class="mspan badness">'+(parseInt(obj.num1)+parseInt(obj.num2)+parseInt(obj.num3))+'</span></td>'+
+									'<td class="s7"><span class="mspan" >'+(((parseInt(obj.num1)+parseInt(obj.num2)+parseInt(obj.num3))/parseInt($("#check_num").html()))*100).toFixed(2)+'%</span></td>'+
+								'</tr>';
+						$("#tabOnesub").append(html);
+					});
+					$("#tabOnesub tr:even").css("background-color","#ffffff")
+			}
+			/**
+			 * 设置排产单信息
+			 * @param {Object} plan_id
+			 */
+			var setPlanInfo = function(plan_id) {
+				var params = "funid=app_full&eventcode=selQCWorkPlan&plan_id=" + plan_id;
+				jxm.post(params, function(data) {
+					console.log(JSON.stringify(data));
+					$("#date").html(data.date);//日期
+					$("#div_code").html(data.div_code);//工单编号
+					$("#group_name").html(data.group_name);//组别
+					$("#sp_code").html(data.sp_code);//款号
+					$("#div_num").html(data.div_num);//工单数量
+					$("#color_name").html(data.color_name);//颜色
+					$("#sp_name").html(data.sp_name);//品名
+					//计算不良率
+					var rate="0";
+					if (data.ng_num!="0"&&data.ng_num!=null&&data.ng_num!=undefined&&data.work_num!="0"&&data.work_num!=null&&data.work_num!=undefined) {
+						rate=(parseInt(data.ng_num)/parseInt(data.work_num)*100).toFixed(2)
+					}
+					$("#no_rate").html(rate+"%");//不良率
+					$("#check_num").html(data.work_num);//检验数量
+					$("#pass_num").html(data.pass_num);//良品数量
+					$("#total_num").html(data.ng_num);//不良合计
+				});
+			};
+		</script>
+	</body>
+
+</html>

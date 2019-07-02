@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+    <title></title>
+    <link rel="stylesheet" href="../../mui/css/mui.min.css"/>
+    <link rel="stylesheet" href="../../jxm/css/jxm.css">
+    <style type="text/css">
+    	.mui-bar {
+			-webkit-box-shadow: none;
+			box-shadow: none;
+		}
+		
+		.iconfont {
+			color: #0099CC;
+		}
+		
+	</style>
+</head>
+<body>
+	<header class="mui-bar mui-bar-nav mui-bar-primary">
+		<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+		<h1 class="mui-title">流程中心</h1>
+	</header>
+	
+	<div class="mui-content">
+		<ul class="mui-table-view">
+			<li class="mui-table-view-cell" type="db">
+				<a class="mui-navigate-right" id="daibanwf" >
+					 <div class="mui-media-object mui-pull-left">
+						<i class="iconfont icon-gongdan"></i>
+					</div>
+				    <div class="mui-media-body ">待办任务</div>
+				</a>
+			</li>
+			<li class="mui-table-view-cell" type="zb">
+				<a class="mui-navigate-right" id="zaibanwf">
+					 <div class="mui-media-object mui-pull-left">
+						<i class="iconfont icon-taizhang"></i>
+					</div>
+				    <div class="mui-media-body ">在办任务</div>
+				</a>
+			</li>
+			<li class="mui-table-view-cell" type="yb">
+				<a class="mui-navigate-right" id="yibanwf">
+					 <div class="mui-media-object mui-pull-left">
+						<i class="iconfont icon-shengpi"></i>
+					</div>
+				    <div class="mui-media-body ">已办任务</div>
+				</a>
+			</li>
+		</ul>
+		
+	</div>
+	
+	<script src="../../mui/js/mui.min.js"></script>
+	<script src="../../jxm/js/jxm.js"></script>
+	<script type="text/javascript" charset="UTF-8">
+	  	mui.init();
+	  	mui.plusReady(function(){
+	  		//insertNum();
+	  	});
+	  	
+      	//点击申请类型弹出对应的流程选择界面
+      	mui('.mui-table-view').on('tap', 'li', function(){
+  			href = '../util/pullrefresh_main.html';
+      		if (this.type == 'db') {
+      			data = {title:'待办任务',url:'../oa/oa-pro-list.html',data:'db'};
+      		} else if (this.type == 'zb') {
+      			data = {title:'在办任务',url:'../oa/oa-pro-list.html',data:'zb'};
+      		} else {
+      			data = {title:'已办任务',url:'../oa/oa-pro-list.html',data:'yb'};
+      		}
+      		jxm.open(href,{extras:data});
+      		
+      	});
+      	
+    </script>
+</body>
+</html>

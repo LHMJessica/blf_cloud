@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<title>我</title>
+		<link rel="stylesheet" href="../../mui/css/mui.min.css" />
+		<link rel="stylesheet" href="../../jxm/css/jxm.css">
+		<style>
+			.mui-table-view:before,
+			.mui-table-view:after {
+				height: 0;
+			}
+			/* app line */
+			
+			.mui-media-object {
+				margin: 0 !important;
+				margin-right: 12px !important;
+			}
+			
+			.mui-media-object .mui-icon {
+				color: #00AAEF;
+			}
+			
+			.mui-media-icon .mui-media-body {
+				padding-top: 4px;
+			}
+			/* me photo */
+			
+			.photo {
+				height: 80px !important;
+				line-height: 80px !important;
+				width: 80px !important;
+				max-width: 80px !important;
+				border-radius: 100px;
+				margin-right: 20px !important;
+			}
+			
+			.photo-title {
+				padding: 20px 0;
+				font-size: 20px;
+			}
+			
+			.photo-title p {
+				color: #333;
+				font-size: 15px;
+			}
+		</style>
+
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav1 mui-bar-primary mui-hidden">
+			<h1 class="mui-title">我</h1>
+		</header>
+		<div class="mui-content">
+			<ul class="mui-table-view">
+				<li class="mui-table-view-cell mui-media mui-media-icon" pageid="self-info">
+					<a class="mui-navigate-right" href="#">
+						<img class="mui-media-object mui-pull-left photo" src="../../jxm/img/face-set.png" id="userphoto">
+						<div class="mui-media-body photo-title noline">
+							<span id="username">我</span>
+							<p class='mui-ellipsis' id="deptname"></p>
+						</div>
+					</a>
+				</li>
+			</ul>
+			<div style="height: 10px;"></div>
+			<ul class="mui-table-view">
+				<!--    <li class="mui-table-view-cell mui-media mui-media-icon" pageid="community">
+	        	<a class="mui-navigate-right" href="#">
+		            <div class="mui-media-object mui-pull-left">
+						<i class="mui-icon mui-icon-chatboxes"></i>
+					</div>
+		            <div class="mui-media-body">社区</div>
+	        	</a>
+	        </li>
+	      <li class="mui-table-view-cell mui-media mui-media-icon" pageid="invitation">
+	        	<a class="mui-navigate-right" href="#">
+		            <div class="mui-media-object mui-pull-left">
+						<i class="mui-icon mui-icon-personadd"></i>
+					</div>
+		            <div class="mui-media-body">邀请同事</div>
+	        	</a>
+	        </li>
+	        <li class="mui-table-view-cell mui-media mui-media-icon" pageid="secretary">
+	        	<a class="mui-navigate-right" href="#">
+	            	<div class="mui-media-object mui-pull-left">
+	            		<i class="mui-icon mui-icon-chatbubble"></i>
+	            	</div>
+	            	<div class="mui-media-body">智维小秘</div>
+	        	</a>
+	        </li>
+	        <li class="mui-table-view-cell mui-media mui-media-icon" pageid="feedback">
+	        	<a class="mui-navigate-right" href="#">
+	            	<div class="mui-media-object mui-pull-left">
+	            		<i class="mui-icon mui-icon-email"></i>
+	            	</div>
+	            	<div class="mui-media-body noline">反馈</div>
+	        	</a>
+	        </li>-->
+			</ul>
+			<div style="height: 10px;"></div>
+			<ul class="mui-table-view noline">
+				<li class="mui-table-view-cell mui-media mui-media-icon" pageid="setup">
+					<a class="mui-navigate-right" href="#">
+						<div class="mui-media-object mui-pull-left">
+							<i class="mui-icon mui-icon-gear"></i>
+						</div>
+						<div class="mui-media-body noline" id="tmp_last">设置</div>
+					</a>
+				</li>
+				<li class="mui-table-view-cell mui-media mui-media-icon mui-hidden" id="qhgs">
+					<a class="mui-navigate-right" href="#">
+						<div class="mui-media-object mui-pull-left">
+							<i class="mui-icon mui-icon-flag"></i>
+						</div>
+						<div class="mui-media-body noline">切换</div>
+					</a>
+				</li>
+				<li class="mui-table-view-cell mui-media mui-media-icon mui-hidden" id="qhuse">
+					<a class="mui-navigate-right" href="#">
+						<div class="mui-media-object mui-pull-left">
+							<i class="mui-icon mui-icon-flag"></i>
+						</div>
+						<div class="mui-media-body noline">切换账户</div>
+					</a>
+				</li>
+			</ul>
+			<div style="height: 10px;"></div>
+			<ul class="mui-table-view">
+				<li class="mui-table-view-cell mui-media mui-media-icon">
+					<a class="mui-navigate-right" id="login_btn">
+						<div class="mui-media-object mui-pull-left">
+							<i class="mui-icon mui-icon-navigate"></i>
+						</div>
+						<div class="mui-media-body noline">退出</div>
+					</a>
+				</li>
+			</ul>
+
+		</div>
+
+		<script src="../../mui/js/mui.min.js"></script>
+		<script src="../../jxm/js/jxm.js"></script>
+		<script type="text/javascript" charset="UTF-8">
+			mui.init();
+
+			mui.plusReady(function() {
+				var self = plus.webview.currentWebview();
+				// 监听后台运行
+				/*document.addEventListener('pause',function(){
+					var url=localStorage.getItem("server_url");
+					//清除所有本地数据
+					localStorage.clear();
+						//只保留服务器地址信息
+					if(url && url.length > 0) {
+						localStorage.setItem("server_url", url);
+					}
+					plus.runtime.quit();//退出
+				});*/
+			});
+
+			mui.ready(function() {
+				var session = jxm.getSession();
+				var userid = session.user_id;
+				document.getElementById("username").innerHTML = session.user_name;
+				document.getElementById("deptname").innerHTML = session.dept_name;
+				var hdcall = function(data) {
+					if(data.root[0].sys_user__user_photo.length != 0) {
+						var params = 'funid=sys_attach&eventcode=qryatt&attachfield=user_photo';
+						params += '&tablename=sys_user&dataid=' + userid;
+						jxm.post(params, function(data) {
+							if(data && data.attachId) {
+								var url = jxm.getURL() + '?funid=sys_attach&eventcode=downPhoto&keyid=' + data.attachId;
+								url += '&dataType=byte&image_small_use=0&nousercheck=1&dc=' + (new Date()).getTime();
+								document.getElementById("userphoto").src = url;
+							}
+						});
+					}
+				};
+
+				//发送请求
+				var params = 'funid=queryevent&eventcode=query_data&query_funid=sys_user&query_type=0&has_page=0';
+				params += '&where_sql=sys_user.user_id = ?';
+				params += '&where_type=string';
+				params += '&where_value=' + userid;
+				jxm.post(params, hdcall, {
+					hasmask: false
+				});
+
+				chgs(); //处理公司切换
+
+				qhuse(); //处理账户切换
+			});
+
+			var chgs = function() {
+				var tenants = localStorage.getItem('select_tenants');
+				if(tenants && tenants.length > 0) {
+					document.getElementById("tmp_last").classList.remove("noline");
+
+					var elem = document.getElementById("qhgs");
+					elem.classList.remove("mui-hidden");
+					elem.addEventListener("tap", function() {
+						var iskeep = localStorage.getItem('is_keep');
+						var userpwd = localStorage.getItem('user_and_pwd');
+						var surl = localStorage.getItem("server_url");
+						localStorage.clear();
+						localStorage.setItem('is_keep', iskeep);
+						localStorage.setItem('select_tenants', tenants);
+						localStorage.setItem('user_and_pwd', userpwd);
+						localStorage.setItem('server_url', surl);
+
+						var wm = plus.webview.getLaunchWebview();
+						wm.loadURL("/app/util/login-tenant.html")
+						var ws = plus.webview.all();
+						console.log('window num = ' + ws.length + '; main window id=' + wm.id);
+						mui.each(ws, function(i, obj) {
+							if(obj.id != wm.id) {
+								console.log('close window id = ' + obj.id);
+								obj.close();
+							}
+						});
+					});
+				}
+			};
+
+			var qhuse = function() {
+				var qhuse = jxm.getSession().app_qhuse;
+				if(qhuse != '1') return;
+
+				var elem = document.getElementById("qhuse");
+				elem.classList.remove("mui-hidden");
+				elem.addEventListener("tap", function() {
+					var surl = localStorage.getItem("server_url");
+					localStorage.clear();
+					localStorage.setItem('server_url', surl);
+
+					var wm = plus.webview.getLaunchWebview();
+					wm.loadURL("/app/util/login-user.html")
+					var ws = plus.webview.all();
+					console.log('window num = ' + ws.length + '; main window id=' + wm.id);
+					mui.each(ws, function(i, obj) {
+						if(obj.id != wm.id) {
+							console.log('close window id = ' + obj.id);
+							obj.close();
+						}
+					});
+				});
+			};
+
+			document.getElementById("login_btn").addEventListener("tap", function() {
+				jxm.confirm('确认退出登录？', function() {
+					var hdcall = function() {
+						var url = localStorage.getItem("server_url");
+						var cur_user_code = JSON.parse(localStorage.getItem("cur_user")).user_code;
+						//清楚所有本地数据
+						localStorage.clear();
+						//只保留服务器地址信息
+						if(url && url.length > 0) {
+							localStorage.setItem("server_url", url);
+						}
+						if(cur_user_code && cur_user_code.length > 0) {
+							localStorage.setItem("cur_user_code", cur_user_code);
+						}
+						var os = plus.os.name.toLowerCase();
+						if(os == 'ios') {
+							var wm = plus.webview.getLaunchWebview();
+							wm.loadURL("/index.html");
+							var ws = plus.webview.all();
+							mui.each(ws, function(i, obj) {
+								if(obj.id != wm.id) {
+									obj.close();
+								}
+							});
+						} else {
+							plus.runtime.quit();
+						}
+
+						//添加im用户的退出
+
+					};
+					var params = 'funid=login&pagetype=login&eventcode=logout&appid=jxm';
+					jxm.post(params, hdcall, {
+						timeout: 2000,
+						hasmask: false,
+						errorcall: function(m) {
+							mui.toast(m.message);
+							hdcall();
+						}
+					});
+				});
+			});
+			mui.back=function () {
+				var url=localStorage.getItem("server_url");
+					//清除所有本地数据
+					localStorage.clear();
+					//只保留服务器地址信息
+					if(url && url.length > 0) {
+					localStorage.setItem("server_url", url);
+					}
+					plus.runtime.quit();//退出
+			}
+			mui(".mui-content").on('tap', 'li', function() {
+				var pageid = this.getAttribute('pageid');
+				if(!pageid || pageid.length == 0) {
+					return;
+				}
+				jxm.open(pageid + '.html');
+			});
+		</script>
+	</body>
+
+</html>

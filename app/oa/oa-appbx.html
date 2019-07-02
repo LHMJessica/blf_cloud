@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+    <title></title>
+    <link rel="stylesheet" href="../../mui/css/mui.min.css"/>
+    <link rel="stylesheet" href="../../jxm/css/jxm.css">
+    <style type="text/css">
+    	.mui-bar {
+			-webkit-box-shadow: none;
+			box-shadow: none;
+		}
+		h5 {
+	    	font-size: 14px;
+	    	padding: 8px 5px 6px;
+	    	background-color: #efeff4;
+	    }
+	    .spare-det {
+			width: 100%;
+			background-color: #FFFFFF;
+		}
+		.spare-det li:nth-of-type(odd) {
+			background-color:#f7f7f7;
+		}
+		.spare-det .mui-row{
+			background-color:inherit;
+		}
+		.listtip {
+			padding-top: 20px;
+			text-align: center;
+			background-color: white;
+			height: 90px;
+			color: #CCCCCC;
+		}
+		#addPopover {
+			position: absolute;
+			left: 15px;
+			top:46%;
+			z-index: 999;
+			display: none;
+			width:90%;
+			padding: 2px;
+			border-radius: 7px;
+			background-color: #f7f7f7;
+			border: 1px solid #D8D8D8;
+		}
+		#addPopover h5{
+			font-size: 14px;
+			padding: 5px;	
+		}
+		#addPopover .mui-input-row label,input {
+			font-size: 14px;
+		}
+	</style>
+</head>
+<body>
+	<header class="mui-bar mui-bar-nav mui-bar-primary">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<h1 class="mui-title">报销</h1>
+			<a class="mui-icon mui-pull-right mui-icon-minus mui-hidden"></a>
+	</header>
+	<nav class="mui-bar mui-bar-footer">
+		<button type="button" id="btnquery" class="mui-btn mui-btn-primary mui-btn-outlined mui-pull-left" style="width: 30%;" >查询</button>
+		<button type="button" id="btncommit" class="mui-btn mui-btn-primary mui-pull-right" style="width: 30%;">提交</button>
+	</nav>
+	
+	<div class="mui-content">
+		<h5>报销摘要 <span style="color:red">*</span></h5>
+		<form class="mui-input-group">
+			<textarea id="summary" rows="6" placeholder="填写报销摘要"></textarea>
+		</form>
+	   <h5 class="mui-row">
+	   		<span  class="mui-col-xs-6"> 报销项目</span>
+	    	<span class="mui-col-xs-4"> 金额(元)</span>
+	    	<a class="mui-icon mui-pull-right" id="add">
+				<i class="iconfont icon-xinjian1"  style="color:black;font-size: 24px;"></i>
+			</a>
+	   </h5>
+		<form class="mui-input-group">
+			<div class="listtip">请点击“+”添加报销项目，左滑可以删除</div>
+			<ul class="mui-table-view spare-det"  id="bxContent">
+			</ul>
+		</form>
+		
+		<div id="addPopover">
+				<form class="mui-input-group">
+					<div class="mui-input-row">
+						<label>项目名称<span class="label-red">*</span></label>
+						<input id='sp_name' type="text" class="mui-input-clear" placeholder="请输入项目名称">
+					</div>
+					<div class="mui-input-row">
+						<label>金额(元)<span class="label-red">*</span></label>
+						<input id='sp_money' type="text" class="mui-input-clear" placeholder="请输入金额">
+					</div>
+					<div style="background-color: #f7f7f7;">
+					<center>
+						<button type="button" id="btnok" class=" mui-btn-blue" style="width:30%;margin: 10px 10px;">确定</button>
+						<button type="button" id="btncancel" class=" mui-btn-blue" style="width:30%;margin: 10px 10px;">取消</button>
+					</center>
+					</div>
+				</form>
+			</div>
+		
+		<h5>上传图片</h5>
+		<div class="jxm-image-input">
+			<div id='image-list' class="image-list"></div>
+		</div>
+	</div>
+	
+	<script src="../../mui/js/mui.min.js"></script>
+	<script src="../../jxm/js/jxm.js"></script>
+	<script src="../../jxm/js/jxm-image-input.js"></script>
+	<script src="../util/jxm-util.js"></script>
+	<script type="text/javascript" charset="UTF-8">
+      	mui.init();
+      	
+      	mui.ready(function(){
+      		var self = plus.webview.currentWebview();
+      		var keyid = self.keyid;
+      		if(keyid){
+      			showData(keyid);//将数据显示到表单上
+      			document.body.querySelectorAll(".mui-icon-minus")[0].classList.remove("mui-hidden");
+      			//删除申请表
+      			document.body.querySelectorAll(".mui-icon-minus")[0].addEventListener('tap',function(){
+      				var params = "funid=oa_appbx&eventcode=delete&keyid="+keyid;
+      				jxm.post(params,function(){
+      					mui.toast("删除成功.");
+      					var wf_free = plus.webview.getWebviewById("oa-app-wf-free.html");
+      					var wf_dyn = plus.webview.getWebviewById("oa-app-wf-dyn.html");
+      					if(wf_free){
+      						wf_free.close();
+      					}
+      					if(wf_dyn){
+      						wf_dyn.close();
+      					}
+      					self.close();
+      					var listPage = plus.webview.getWebviewById("oa-appbx-list.html");
+      					if(listPage){
+      						mui.fire(listPage,"load-data",{});
+      					}
+      					jxm.backHome("oa");
+      				})
+      			});
+      			document.getElementById('btncommit').removeEventListener('tap',commitApply);
+      			//更新数据并提交
+      			document.getElementById('btncommit').addEventListener('tap',function(){
+      				var summary = document.getElementById('summary').value;
+		  			var sp_nameClasses = document.body.querySelectorAll('.sp_name');
+		  			var sp_names = '';
+		  			var sp_moneys = '';
+		  			var det_ids = '';
+					mui.each(sp_nameClasses, function(n, obj){
+						sp_names += obj.innerText+',';
+					});
+					var sp_moneyClasses = document.body.querySelectorAll('.sp_money');
+					mui.each(sp_moneyClasses, function(n, obj){
+						sp_moneys += obj.innerText+',';
+					});
+					var det_idClasses = document.body.querySelectorAll('.det_id');
+					mui.each(det_idClasses, function(n, obj){
+						det_ids += obj.innerText+',';
+					});
+					
+		  			if (!summary || summary.length == 0) {
+		  				mui.alert('请输入报销摘要！');
+		  				return false;
+		  			}
+      				
+      				
+      				var hdcall = function(){
+      					mui.toast("提交成功，已进入审批流程");
+      					var wf_free = plus.webview.getWebviewById("oa-app-wf-free.html");
+      					var wf_dyn = plus.webview.getWebviewById("oa-app-wf-dyn.html");
+      					if(wf_free){
+      						wf_free.close();
+      					}
+      					if(wf_dyn){
+      						wf_dyn.close();
+      					}
+      					jxm.backHome("oa");
+      					self.close();
+      				}
+      				
+      				var e = encodeURIComponent;
+		  			var params = 'funid=oa_appbx&eventcode=saveInfo&apply_type=bx';
+		  			params += '&summary='+ e(summary);
+		  			params += '&sp_names='+ e(sp_names.substring(0,sp_names.length-1));
+		  			params += '&sp_moneys='+ sp_moneys.substring(0,sp_moneys.length-1);
+		  			params += '&det_ids='+ det_ids.substring(0,det_ids.length-1);
+		  			params += '&keyid='+ keyid;
+		  			jxm.post(params, hdcall);
+      			});
+      		}
+      	});
+      	
+      	//提交出差申请
+  		var commitApply = function() {
+  			var summary = document.getElementById('summary').value;
+  			var sp_nameClasses = document.body.querySelectorAll('.sp_name');
+  			var sp_names = '';
+  			var sp_moneys = '';
+			mui.each(sp_nameClasses, function(n, obj){
+				sp_names += obj.innerText+',';
+			});
+			var sp_moneyClasses = document.body.querySelectorAll('.sp_money');
+			mui.each(sp_moneyClasses, function(n, obj){
+				sp_moneys += obj.innerText+',';
+			});
+  			if (!summary || summary.length == 0) {
+  				mui.alert('请输入报销摘要！');
+  				return false;
+  			}
+  			
+  			var hdcall = function(data) {
+				var submitForm = function(){
+					//提交表单
+					if(data.type == "none"){
+						var url = "funid=oa_appbx&eventcode=appaudit&keyid="+data.apply_id;
+						jxm.post(url,function(){
+							mui.toast("提交成功");
+							jxm.backHome('oa');
+						});
+					}else if(data.type =="dyn"){
+						jxm.open("oa-app-wf-dyn.html",{extras:{page:"oa-appbx.html",data:data}});
+					}else if(data.type == "free"){
+						jxm.open("oa-app-wf-free.html",{extras:{page:"oa-appbx.html",data:data}});
+					}else {
+						mui.toast("提交表单出错。");
+					}
+				}
+  				var params = {
+					dataid:data.apply_id,
+					datafunid:'oa_appsx',
+					callback:function(){
+  						newApply();
+  						jxm.imgUI.clearImage();
+  						submitForm();
+					}
+				};
+				
+				jxm.imgUI.uploadImages(params);
+				
+  			};
+  			var e = encodeURIComponent;
+  			var params = 'funid=oa_appbx&eventcode=submit&apply_type=bx';
+  			params += '&summary='+ e(summary);
+  			params += '&sp_names='+ e(sp_names.substring(0,sp_names.length-1));
+  			params += '&sp_moneys='+ sp_moneys.substring(0,sp_moneys.length-1);
+  			jxm.post(params, hdcall);
+  		};
+  		
+  		var newApply = function(){
+			document.getElementById('summary').value = '';
+			var bxContent = document.getElementById("bxContent");
+			document.body.querySelector('.listtip').classList.remove('mui-hidden');
+			bxContent.innerHTML = '';
+			//弹出添加报销内容DIV
+	      	document.getElementById('add').addEventListener('tap', function(){
+	      		document.getElementById('addPopover').style.display = 'block';
+	      	});
+  		};
+      	
+      	//打开报销列表页面
+  		var queryBX = function(){
+  			if (plus) {
+  				var targetWin = plus.webview.getWebviewById('oa-appbx-list.html');
+				if (targetWin) mui.fire(targetWin, 'load-data', {});
+			}
+  			jxm.open('oa-appbx-list.html');
+  		};
+      	
+      	//点击提交按钮后提交报销申请
+		document.getElementById('btncommit').addEventListener('tap', commitApply);
+		
+		//点击查询按钮跳转到报销列表页面
+		document.getElementById('btnquery').addEventListener('tap', queryBX);
+    
+    
+    	jxm.imgUI.newImageDiv();
+      	
+      	
+      	//弹出添加报销内容DIV
+      	document.getElementById('add').addEventListener('tap', function(){
+      		document.getElementById('addPopover').style.display = 'block';
+      	});
+      	
+      	
+      	//确认添加报销内容
+      	document.getElementById('btnok').addEventListener('tap', function(){
+      		var sp_name = document.getElementById('sp_name').value;
+      		var sp_money = document.getElementById('sp_money').value;
+      		
+      		if (!sp_name || sp_name.length == 0) {
+  				mui.alert('请输入项目名称！');
+  				return false;
+  			}
+      		if (!sp_money || sp_money.length == 0) {
+  				mui.alert('请输入金额！');
+  				return false;
+  			}
+      		var bxContent = document.getElementById("bxContent");
+      		var html = '<li class="mui-table-view-cell" >';
+      		html +='<div class="mui-slider-right mui-disabled">';
+      		html += '<a class="mui-btn mui-btn-red">删除</a></div>';
+      		html += '<div class="mui-slider-handle mui-row">';
+			html += '<span class="mui-col-xs-6 sp_name">'+sp_name+'</span>';
+			html +='<span class="mui-col-xs-4 sp_money" >'+sp_money+'</span>';
+			html +=	'</div></li>';	
+			bxContent.innerHTML +=html;    
+			document.getElementById('addPopover').style.display = 'none';
+      		var textinputs = document.body.querySelectorAll('#addPopover input');
+			mui.each(textinputs, function(n, obj){
+				obj.value = '';
+			});
+			document.body.querySelector('.listtip').classList.add('mui-hidden');
+      	});
+      	//左滑删除
+      	var btnArray = ['确认', '取消'];
+  		mui('#bxContent').on('slideleft', '.mui-table-view-cell', function(event) {
+				var elem = this;
+				mui.confirm('确认删除该条记录？', '提示', btnArray, function(e) {
+					if (e.index == 0) {
+						elem.parentNode.removeChild(elem);
+						var length = mui("#bxContent > li").length;
+						if(length == 0){
+							document.body.querySelector('.listtip').classList.remove('mui-hidden');
+						}
+					} else {
+						setTimeout(function() {
+							mui.swipeoutClose(elem);
+						}, 0);
+					}
+				});
+			});
+      	
+      	//取消
+      	document.getElementById('btncancel').addEventListener('tap', function(){
+      		document.getElementById('addPopover').style.display = 'none';
+      		var textinputs = document.body.querySelectorAll('#addPopover input');
+			mui.each(textinputs, function(n, obj){
+				obj.value = '';
+			});
+      	});
+      	
+      	
+      	var showData = function(keyid){
+      		var params ="eventcode=query_data&funid=queryevent&pagetype=grid&query_funid=oa_appbx&limit=50&start=0";
+			params +="&where_sql=oa_apply.apply_id=?";
+			params +="&where_type=string";
+			params +="&where_value="+keyid;
+			jxm.post(params,function(data){
+				if(data&&data.root.length>0){
+					var obj = data.root[0];
+		  			document.getElementById('summary').value =obj.oa_apply__app_desc; 
+		  			
+		  			var url = "eventcode=query_data&funid=queryevent&pagetype=grid&query_funid=oa_appbx_det&limit=50&start=0";
+		  			url +="&where_sql=oa_appbx_det.apply_id=?";
+					url +="&where_type=string";
+					url +="&where_value="+keyid;
+		  			
+		  			jxm.post(url,function(data){
+		  				if(data &&data.root.length>0){
+		  					mui.each(data.root,function(i,obj){
+		  						var bxContent = document.getElementById("bxContent");
+					      		var html = '<li class="mui-table-view-cell" >';
+					      		html +='<div class="mui-slider-right mui-disabled">';
+					      		html += '<a class="mui-btn mui-btn-red">删除</a></div>';
+					      		html += '<div class="mui-slider-handle mui-row">';
+					      		html += '<span class="mui-hidden det_id">'+obj.oa_appbx_det__det_id+'</span>';
+								html += '<span class="mui-col-xs-6 sp_name">'+obj.oa_appbx_det__appbx_project+'</span>';
+								html +='<span class="mui-col-xs-4 sp_money" >'+obj.oa_appbx_det__money+'</span>';
+								html +=	'</div></li>';	
+								bxContent.innerHTML +=html;  
+		  					});
+		  					document.body.querySelector('.listtip').classList.add('mui-hidden');
+		  				}
+		  			});
+		  			  
+		  			//加载图片
+					jxm.imgUI.downImages({dataid:keyid, tablename:'oa_apply', callback:function(datas){
+						var cnt = datas.length;
+						var ds = (cnt == 0)?'none':'';
+						document.querySelector(".jxm-image-input").setAttribute('style', 'display: '+ds+';');
+					}});
+					//加载图片查看控件
+					setTimeout(function(){
+						jxm.imgUI.newImageDiv();
+					}, 1000);
+		  			
+				}
+			});
+      	}
+    </script>
+</body>
+</html>

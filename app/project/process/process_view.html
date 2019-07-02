@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+    <title>工序流程图</title>
+    <link rel="stylesheet" href="../../../mui/css/mui.min.css"/>
+    <link rel="stylesheet" href="../../../jxm/css/jxm.css">
+    <link rel="stylesheet" href="../../../mui/css/main.css">
+	<link rel="stylesheet" type="text/css" href="../../../Resources/css/bootstrap.min.css" />
+	<link rel="stylesheet" type="text/css" href="../../../Resources/css/step.css" />
+    <style type="text/css">
+    	.mui-bar {
+			-webkit-box-shadow: none;
+			box-shadow: none;
+		}
+		.head-search {
+			padding-top: 1px;
+			height: 50px !important; 
+		}
+		.head-search button {
+			height: 48px; 
+			width: 18%;
+			border: none;
+			border-radius: 0 !important;
+			background-color:#f7f7f7;
+		}
+		.head-search input {
+			width:62%; 
+			height: 50px; 
+			border: none;
+		}
+    	.label-red {
+			padding-left: 5px;
+			color:red !important;
+		}
+		.text-disabled {
+			background-color: #EEEEEE;
+		}
+		.iconfont{
+			font-size:24px;
+		}
+		h5 {
+	    	font-size: 14px;
+	    	padding: 8px 5px 6px;
+	    	background-color: #efeff4;
+	    }
+		/* 自定义表格tr */
+		.gird_tr{
+			text-align: center;
+			font:  13px;
+			border-left: 1px solid #ffffff !important;
+		    border-right: 1px solid #eeeeee !important;
+			border-top: 1px solid #eeeeee !important;
+			border-bottom: 1px solid #eeeeee !important;
+			font-family: "Microsoft YaHei",tahoma,sans-serif;
+			width: 20px;
+		}
+	    .gird_list_fon{
+	    	text-align: center;
+	    	font:  13px;
+	    	border-left: 1px solid #ffffff !important;
+	    	border-right: 1px solid #eeeeee !important;
+	    	border-top: 1px solid #eeeeee !important;
+	    	border-bottom: 1px solid #eeeeee !important;
+	    	font-family: "Microsoft YaHei",tahoma,sans-serif;
+	    	width: 40px;
+	    }
+	    .gird_list_one{
+	    	background-color: #ededed;
+	    }
+    </style>
+
+</head>
+<body>
+	<header class="mui-bar mui-bar-nav mui-bar-primary">
+		    <a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<h1 class="mui-title" id="title">工序流程图</h1>
+			<a class="mui-icon mui-pull-right icon-header" id="print_setting">
+			<i class="iconfont icon-icon-test"></i>
+			</a>
+	</header>
+	
+	<nav class="mui-bar mui-bar-footer">
+		<button type="button" id="btnback" onclick="mui.back();" class="mui-btn mui-btn-primary mui-pull-left" style="width:30%;margin-left: 30%;">返回</button>
+	</nav>
+	
+	<div class="mui-content">
+		<form class="mui-input-group">
+		   <div class="mui-input-row">
+			  <label>单据编号：<span class="label-red">*</span></label>
+			  <input type="text" id="bui_doc_tex" class="mui-input"  placeholder="请选择单据编号"/><!--商品编码输入框--> 
+			  <input type="hidden" id="doc_id"/>
+		   </div>
+		</form>
+		
+		<ul id="nav_list" class="nav nav-pills nav-justified step step-arrow">
+				
+		</ul>
+		<div class="data-table">
+			<div class="t_r"  style="margin-left: 0px;">
+				<div class="t_r_t"  style="margin-top: 0.5%;">
+					<table id="tableOne" style="width: 400%;">
+						<tbody >
+						<tr id="tableOneTh">
+							<th><span  class='mspan' >报工日期</span></th>
+							<th><span  class='mspan' >工序</span></th>
+							<th><span  class='mspan' >报工数量</span></th>
+							<th><span  class='mspan' >生产员</span></th>
+							<th><span  class='mspan' >订单编号</span></th>
+							<th><span  class='mspan' >客户名称</span></th>
+							<th><span  class='mspan' >制品名称</span></th>
+						</tr>
+						</tbody>
+					</table>
+				</div>
+				<div class="t_r_content">
+					<table id="tabOnesub" style="width: 400%;" >
+						
+					</table>
+				</div>
+			</div>
+		</div>    
+	   <!-- 分页插件 -->
+	</div>
+	 
+	<script src="../../../mui/js/mui.min.js"></script>
+	<script src="../../../jxm/js/jxm.js"></script>
+	<script src="../../../jxm/js/JxDao.js"></script>
+	<script src="../../../Resources/js/jquery-3.3.1.min.js"></script>
+	<script src="../../../jxm/js/iscroll-probe.min.js"></script>
+    <script src="../../../jxm/js/main.js"></script>
+	<script src="../../util/jxm-util.js"></script>
+	<script></script>
+	
+	<script type="text/javascript" charset="UTF-8">
+      	mui.init({
+      		swipeBack:false //关闭-右滑关闭功能
+      	});
+		(function($) {
+			$('#scroll').scroll({
+				indicators: true //是否显示滚动条
+			});
+			mui('.mui-scroll-wrapper').scroll({
+				deceleration: 0.0005 //flick 减速系数，系数越大，滚动速度越慢，滚动距离越小，默认值0.0006
+			});
+		})(mui);
+		/*查询订单号按钮点击事件*/
+	    $('#bui_doc_tex').on('keydown',function(e){
+	      if (event.keyCode == 13) { 
+		  			//阻止默认回车键事件
+					event.preventDefault();
+			  var bui_doc_tex = $('#bui_doc_tex').val();
+			  if(bui_doc_tex==''){
+				  return;
+			  }
+			  var param ='funid=pojd_query&eventcode=qryOrder&order_code='+bui_doc_tex;
+			  //发送请求
+			  jxm.post(param,function(data){
+					if(data!=''){
+						var html ='';
+						for(var i=0;i<data.length;i++){
+							html +='<li class="nav_item '+isColor(data[i].product_capacity)+'" data-cache='+toJson(data[i])+' >'+
+							  '<a>'+data[i].process_name+''+isNum(data[i].product_capacity)+'</a>'+
+							'</li>';
+						}
+						$('#nav_list').html(html);
+						document.getElementById('bui_doc_tex').blur();
+						$('#doc_id').val(bui_doc_tex); //联合查询时启用防止用户删掉单号
+					    qryRegmx(bui_doc_tex);//查询订单明细
+					}	
+			  });
+		  }
+		   /*ajax请求*/
+	    });
+	   //查询订单明细
+	    var qryRegmx = function(order_code){
+		   var param ='funid=pojd_query&eventcode=qryRegmx&order_code='+order_code;
+		    /*ajax请求*/
+		   jxm.post(param,function(data){
+				if(data!=''){
+					var html ='';
+					for(var i=0;i<data.length;i++){
+						html += '<tr class="refund_app_item" data-cache='+toJson(data[i])+'>'+
+							'<td><span class="mspan">'+isNull(data[i].reg_date)+'</span></td>'+
+							'<td><span class="mspan">'+data[i].process_name+'</span></td>'+
+							'<td><span class="mspan">'+parseInt(data[i].product_capacity)+'</span></td>'+
+							'<td><span class="mspan">'+data[i].producer+'</span></td>'+
+							'<td><span class="mspan">'+data[i].order_code+'</span></td>'+
+							'<td><span class="mspan">'+data[i].customer_name+'</span></td>'+
+							'<td><span class="mspan">'+data[i].product_name+'</span></td>'+
+						'</tr>';
+					}
+					$('#tabOnesub').html(html);
+				}	
+				
+		  });
+		   /*ajax请求*/
+	    };
+	   /*工序选择事件*/
+	    $('#nav_list').on('click','.nav_item',function(e){
+		   //获取自身class
+		   var cls = $(this).prop('class');
+		   //判断自身是否有明细数据
+		   if(cls.indexOf('active')!=-1){
+			  $(this).addClass('nacative');
+			  var cache = $(this).data('cache');
+			  var order_code = $('#doc_id').val();//订单号
+			  var param ='funid=pojd_query&eventcode=qryPrmx&order_code='+order_code+'&process_id='+cache.process_id;
+			  console.log(param);
+			  /*ajax请求*/
+			  jxm.post(param,function(data){
+					if(data!=''){
+						var html ='';
+						for(var i=0;i<data.length;i++){
+							html += '<tr class="refund_app_item" data-cache='+toJson(data[i])+'>'+
+							'<td><span class="mspan">'+isNull(data[i].reg_date)+'</span></td>'+
+							'<td><span class="mspan">'+data[i].process_name+'</span></td>'+
+							'<td><span class="mspan">'+parseInt(data[i].product_capacity)+'</span></td>'+
+							'<td><span class="mspan">'+data[i].producer+'</span></td>'+
+							'<td><span class="mspan">'+data[i].order_code+'</span></td>'+
+							'<td><span class="mspan">'+data[i].customer_name+'</span></td>'+
+							'<td><span class="mspan">'+data[i].product_name+'</span></td>'+
+						'</tr>';
+					}
+					$('#tabOnesub').html(html);
+					}	
+					
+			  });
+			   /*ajax请求*/
+		   }else{
+		   	
+		   }
+	    });
+	    /*自定义方法*/
+	    var isColor = function(str){
+			if(str=='' || str==undefined || parseInt(str)==0){
+				return '';
+			}else{
+				return ' active ';
+			}
+		};
+		var toJson = function(str) {
+			return JSON.stringify(str);
+		};
+		var isNull = function(str){
+			if(str=='' || str==undefined){
+				return '无';
+			}else{
+				return str;
+			}
+		};
+		var isNum = function(str){
+			if(str=='' || str==undefined || parseInt(str)==0){
+				return '';
+			}else{
+				return '('+parseInt(str)+')';
+			}
+		};
+		/*自定义方法*/
+    </script>
+</body>
+</html>

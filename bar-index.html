@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html>
+	<!--微信公众号注册页面，需要绑定OpenID与user_code-->
+	<head>
+		<meta charset="utf-8">
+		<title>移动办公</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1,user-scalable=no">
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black">
+
+		<!--标准mui.css-->
+		<link rel="stylesheet" href="Resources/css/iconfont.css" />
+		<link rel="stylesheet" href="mui/css/mui.min.css">
+		<link rel="stylesheet" href="jxm/css/jxm.css">
+		
+		<style>
+			body,
+			.mui-content,
+			.mui-table-view {
+				background-color:#fff !important;
+				padding-bottom: 0px;
+			}
+			.mui-table-view .mui-media-body {
+				height: 40px !important;
+				padding: 10px;
+				margin-top: 0px !important;
+				white-space: normal !important;
+				overflow: visible !important;
+			}
+			
+			.mui-grid-view.mui-grid-9 {
+				border-top-width: 0;
+			    border-left-width: 0;
+			}
+			.mui-grid-view.mui-grid-9 .mui-table-view-cell {
+				border-right-width: 0;
+			    border-bottom-width: 0;
+			    padding: 2px;
+			}
+			
+			.mui-table-view-cell a {
+				text-align: center;
+			}
+			
+			.mui-slider-item a img {
+				height: 150px;
+			}
+			
+			.bar-title {
+				background-color: #F7F7F7 !important;
+				color: #929292; 
+				padding: 8px;
+				border-top: 1px solid #EEEEEE; 
+				border-bottom: 1px solid #EEEEEE; 
+			}
+			.bar-footer {
+				margin-top: 10px;
+				margin-bottom: 5px;
+				height: 50px;
+			    bottom: 0;
+			    -webkit-box-shadow: 0 1px 6px #ccc;
+			    box-shadow: 0 1px 6px #ccc;
+			}
+			
+			/*  icon-bg  */
+			.icon-bg {
+				width: 50px;
+				height: 50px;
+				border-radius: 25px;
+				color: #FFFFFF;
+				padding-top: 10px;
+				margin: 0 auto;
+			}
+			.icon-bg-blue {
+				background-color:deepskyblue;
+			}
+			.icon-bg-coral {
+				background-color:coral;
+			}
+			.icon-bg-quoise {
+				background-color:darkturquoise;
+			}
+			.icon-bg-green {
+				background-color:limegreen;
+			}
+			.icon-bg-mato {
+				background-color:tomato;
+			}
+			.icon-bg-orange {
+				background-color:orange;
+			}
+			
+			.icon-line {
+				width: 50px;
+				height: 50px;
+				border: 2px solid #00CED1 
+				border-radius: 5px;
+				color: #FFFFFF;
+				padding-top: 10px;
+				margin: 0 auto;
+			}
+			.icon-line-blue {
+				color:deepskyblue;
+			}
+			.icon-line-coral {
+				color:coral;
+			}
+			.icon-line-quoise {
+				color:darkturquoise;
+			}
+			.icon-line-green {
+				color:limegreen;
+			}
+			.icon-line-mato {
+				color:tomato;
+			}
+			.icon-line-orange {
+				color:orange;
+			}
+		</style>
+	</head>
+
+	<body>
+		
+		<div class="mui-content" id="bus_content">
+		<script id='tpl_fun' type="text/template">
+        	<% for(var i in record) {
+				var funs = record[i].funs;
+				if(funs.length < 1) continue;
+				%>
+			<div class="mui-content bar-title">
+				<h5><%= record[i].pack_name %><h5>
+			</div>
+	        <ul class="mui-table-view mui-grid-view mui-grid-9">
+				<% for(var j in funs) {
+					var item  = funs[j];
+					if(item.is_show == "0")continue;
+				%>
+	            <li class="mui-table-view-cell mui-media mui-col-xs-4 mui-col-sm-3">
+	            	<a id="<%= item.fun_code %>" href="<%= item.page_url%>">
+	            		<% 
+	            		    var bg = i%2, ys = j%6, cls;
+	            		    if (bg == 0) {
+	            				cls = "icon-bg " + iconbgs[ys];
+	            		    } else {
+	            		    	cls = "icon-line " + iconlines[ys];
+	            		    }
+	            		    var c1 = item.fun_icon, c2 = '';
+	            		    if (c1.length == 0) {
+	            		    	c2 = "mui-icon mui-icon-" + iconcls[ys];
+	            		    }
+	            		%>
+	            		<div class="<%= cls %>">
+	            			<% if (c1.length > 0) { %>
+	            				<i class="<%= c1 %>"></i>
+	            			<% } else { %>
+	                    		<span class="<%= c2 %>"></span>
+	                    	<% } %>
+	                    </div>
+	                    <div class="mui-media-body"><%= item.fun_name %></div>
+	            	</a>
+	            </li>
+	            <% } %>
+	        </ul>
+	        <% } %>
+	    </script>
+		</div>
+		
+	</body>
+	<script src="mui/js/mui.min.js"></script>
+    <script src="mui/js/arttmpl.js"></script>
+    <script src="jxm/js/jxm.js"></script>
+	<script src="jxm/js/jxwx-upate.js"></script>
+    <script type="text/javascript">
+      	var iconbgs = ['icon-bg-coral','icon-bg-quoise','icon-bg-green','icon-bg-orange','icon-bg-blue','icon-bg-mato'];
+		var iconlines = ['icon-line-coral', 'icon-line-quoise', 'icon-line-green', 'icon-line-orange', 'icon-line-blue', 'icon-line-mato'];
+      	var iconcls = ['chatboxes','email','settings','upload','chatbubble','compose'];
+			
+		//加载授权功能菜单
+		var loadMenu = function() {
+  			var str = localStorage.getItem('cur_user_menu');
+  			if (!str || str.length == 0) return;
+  			
+  			var data = JSON.parse(str);
+  			var html = template('tpl_fun', {"record":data, "iconbgs":iconbgs, "iconlines":iconlines, "iconcls":iconcls});
+			document.getElementById("bus_content").innerHTML = html;
+  			
+  			mui(".mui-table-view").on('tap','li',function(e){
+	      		var href = this.getElementsByTagName('a')[0].getAttribute('href');
+	      		var funid = this.getElementsByTagName('a')[0].id;
+	      		if (href.toLowerCase().substr(0, 5) == 'http:') {
+	      			var usercode = 'admin';
+	      			var cur_user = localStorage.getItem('cur_user');
+					if (cur_user && cur_user.length > 0) {
+						var data = JSON.parse(cur_user);
+						usercode = data.user_code;
+					}
+	      			if (href.indexOf('?') > 0) {
+	      				href += "&usercode="+usercode;
+	      			} else {
+	      				href += "?usercode="+usercode;
+	      			}
+	      			var url = "app/util/new-page.html";
+	      			if (href.indexOf('page.jsp') > 0) {
+	      				url = "app/util/new-window.html";
+	      			}
+	      			var title = this.querySelector('a div.mui-media-body').innerHTML;
+					jxm.open(url, {extras:{fileurl:href,wintitle:title}});
+	      		} else {
+	      			jxm.open(href+'?fun_code='+funid, {});
+	      		}
+	      	});
+	      	
+	      	document.querySelector('.bar-footer').classList.remove('mui-hidden');
+      	};
+
+		//先确定是否已经绑定微信与账号
+		var curuser = localStorage.getItem("cur_user");
+		if (!curuser || curuser.length == 0) {
+			/*alert('nologin!');*/
+		} else {
+			//加载微信菜单
+			jxm.updateWxFun(loadMenu);
+	      	//每次都重新加载，避免授权后看不到新的菜单。
+	      	/*
+	      	var str = localStorage.getItem('cur_user_menu');
+	  		if (!str || str.length == 0) {
+	  			jxm.updateWxFun(loadMenu);
+	  		} else {
+	  			loadMenu();
+	  		}*/
+		}
+		
+	</script>
+</html>
