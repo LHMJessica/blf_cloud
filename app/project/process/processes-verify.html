@@ -354,20 +354,22 @@
 				var year = parseInt(jxm.getToday().substr(0, 4));
 				var day = parseInt(jxm.getToday().substr(8, 10));
 				var month = parseInt(jxm.getToday().substr(5, 7));
+				var nowmonth=(parseInt(jxm.getToday().substr(5, 7))+"").length<=1?"0"+parseInt(jxm.getToday().substr(5, 7)):parseInt(jxm.getToday().substr(5, 7));
+				var nowday =(parseInt(jxm.getToday().substr(8, 10))+"").length<=1?"0"+parseInt(jxm.getToday().substr(5, 7)):parseInt(jxm.getToday().substr(5, 7));
 				if("threemonth" == temporal) {
 					month = (month - 2) + "";
 					month = month.length == 1 ? "0" + month : month;
 					day = day + "";
 					day = day.length == 1 ? "0" + day : day;
 					$("#start_date").val(year + "-" + month + "-01");
-					$("#end_date").val(year + "-" + month + "-" + day);
+					$("#end_date").val(year + "-" + nowmonth + "-" + day);
 				} else if("twomonth" == temporal) {
 					month = (month - 1) + "";
 					month = month.length == 1 ? "0" + month : month;
 					day = day + "";
 					day = day.length == 1 ? "0" + day : day;
 					$("#start_date").val(year + "-" + month + "-01");
-					$("#end_date").val(year + "-" + month + "-" + day);
+					$("#end_date").val(year + "-" + nowmonth + "-" + day);
 				} else if("today" == temporal) {
 					month = month + "";
 					month = month.length == 1 ? "0" + month : month;
@@ -385,7 +387,7 @@
 				} else if("currmonth" == temporal) {
 					month = month + "";
 					month = month.length == 1 ? "0" + month : month;
-					$("#start_date").val(year + "-" + month + "-" + "01");
+					$("#start_date").val(year + "-" + nowmonth + "-" + "01");
 					$("#end_date").val(year + "-" + month + "-" + day);
 				} else if("qiantian" == temporal) {
 					day = (day - 2) + "";
@@ -397,7 +399,7 @@
 				} else if("beforemonth" == temporal) {
 					month = (month - 1) + "";
 					month = month.length == 1 ? "0" + month : month;
-					$("#start_date").val(year + "-" + month + "-01");
+					$("#start_date").val(year + "-" + nowmonth + "-01");
 					$("#end_date").val(year + "-" + month +"-"+getCurrentMonthLast(year + "-" + month));
 				}else if("beforeyear" == temporal) {
 					$("#start_date").val(year + "-01-01");

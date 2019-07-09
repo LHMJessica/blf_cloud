@@ -20,7 +20,7 @@ var jxm = (function(document, mui) {
 	};
 
 	//当前应用服务器地址
-	$.SERVER_URL = 'http://47.112.203.42:8088/blf_cloud/';
+	$.SERVER_URL = 'http://47.106.135.46/blf_cloud/';
 	//Jxstar-IM的注册信息
 	$.IM_APPID = '8a216da85aac13ff015ab6f6b42604ed';
 	$.IM_APPTOKEN = 'b840540005635000fd10182d93526665';
