@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title>裁床领料详情</title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link rel="stylesheet" href="../../../mui/css/mui.min.css" />
+		<link rel="stylesheet" href="../../../jxm/css/jxm.css">
+		<link rel="stylesheet" type="text/css" href="../../../mui/css/icons-extra.css" />
+		<style>
+			body,
+			html {
+				height: 100%;
+				width: 100%;
+				overflow: hidden;
+				margin: 0;
+			}
+			
+			.mui-content {
+				height: 100%;
+			}
+			
+			.processes-title {
+				font-size: 14px;
+				color: #000000;
+			}
+			
+			.processes-value {
+				font-size: 12px;
+				color: #555555;
+				word-break: break-all;
+			}
+			/*清除浏览器自带的内边距样式*/
+			
+			ul,
+			menu,
+			dir,
+			p {
+				-webkit-margin-before: 0em;
+				-webkit-margin-after: 0em;
+				-webkit-margin-start: 0px;
+				-webkit-margin-end: 0px;
+				-webkit-padding-start: 0px;
+			}
+			
+			#cu_out_info li {
+				display: inline-block;
+				list-style: none;
+				text-align: center;
+				vertical-align: top;
+			}
+			
+			#cu_out_info {
+				padding: 10px 0px;
+				text-align: center;
+			}
+			
+			.s1 {
+				width: 13%;
+			}
+			
+			.s2 {
+				width: 21%;
+			}
+			
+			.s3 {
+				width: 10%;
+			}
+			
+			.s4 {
+				width: 8%;
+			}
+			
+			.s5 {
+				width: 6%;
+			}
+			
+			td.s6 {
+				width: 10%;
+				color: green;
+			}
+			th.s6 {
+				width: 10%;
+				color: #FFFFFF;
+				background-color: green;
+			}
+			.s7 {
+				width: 10%;
+			}
+			.s8{
+				width: 10%;
+			}
+			td.s9 {
+				width: 10%;
+				color: orange;
+			}
+			th.s9 {
+				width: 10%;
+				color: #FFFFFF;
+				background-color: orange;
+			}
+			.mui-content {
+				background-color: #FFFFFF;
+			}
+			.mui-content-header{
+				height: 8%;
+			}
+			.mui-content-body{
+				height: 81%;
+			}
+		</style>
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav mui-bar-primary">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<h1 class="mui-title" id="title">裁床领料详情</h1>
+		</header>
+		<div class="mui-content">
+			<div class="mui-content-header">
+				<div id="cu_out_info">
+					<ul>
+						<li style="width: 15.5%;">
+							<p class="processes-title">领料单号</p>
+							<p id="out_code" class="processes-value" style="font-size: 9.5px;"></p>
+						</li>
+						<li style="width: 1px;background-color: lightgrey;height: 40px;"></li>
+						<li style="width: 15.5%;">
+							<p class="processes-title">工单号</p>
+							<p id="div_code" class="processes-value" style="font-size: 10px;"></p>
+						</li>
+						<li style="width: 1px;background-color: lightgrey;height: 40px;"></li>
+						<li style="width: 15.5%;">
+							<p class="processes-title">制单日期</p>
+							<p id="out_date" class="processes-value"></p>
+						</li>
+						<li style="width: 1px;background-color: lightgrey;height: 40px;"></li>
+						<li style="width: 12%;">
+							<p class="processes-title">款号</p>
+							<p id="sp_code" class="processes-value"></p>
+						</li>
+						<li style="width: 1px;background-color: lightgrey;height: 40px;"></li>
+						<li style="width: 12%;">
+							<p class="processes-title">颜色</p>
+							<p id="color_name" class="processes-value"></p>
+						</li>
+						<li style="width: 1px;background-color: lightgrey;height: 40px;"></li>
+						<li style="width: 15.5%;">
+							<p class="processes-title">工单数量</p>
+							<p id="div_num" class="processes-value"></p>
+						</li>
+					</ul>
+				</div>
+			</div>
+			<div class="mui-content-body">
+				<table cellspacing="0" cellpadding="0" style="width: 230%;overflow-x:scroll;overflow-y: scroll;">
+					<thead>
+						<tr>
+							<th class="s2">物料名称</th>
+							<th class="s9">未领数量</th>
+							<th class="s6">领料数量</th>
+							<th class="s7">总数量</th>
+							<th class="s8">已领数量</th>
+							<th class="s1">物料编码</th>
+							<th class="s3">颜色</th>
+							<th class="s4">用量</th>
+							<th class="s5">单位</th>
+						</tr>
+					</thead>
+					<tbody id="datas">
+						<!--<tr>
+							<td class="s1">物料编码</td>
+							<td class="s2">物料名称</td>
+							<td class="s3">颜色</td>
+							<td class="s4">件数</td>
+							<td class="s5">单位</td>
+							<td class="s6">领料数量</td>
+							<td class="s7">总数量</td>
+						</tr>-->
+					</tbody>
+				</table>
+			</div>
+		</div>
+		<script src="../../../mui/js/mui.min.js"></script>
+		<script src="../../../jxm/js/jxm.js"></script>
+		<script src="../../../jxm/js/jxm-image-input.js"></script>
+		<script src="../../util/jxm-util.js"></script>
+		<script src="../../../Resources/js/jquery-3.3.1.min.js"></script>
+		<script type="text/javascript">
+			mui.init({
+				swipeBack: false //关闭-右滑关闭功能
+			});
+			var pick_id = null;
+			mui.plusReady(function() {
+				pick_id = mui.currentWebview.selectParams.pick_id;
+				setData(pick_id);
+				setTable(pick_id);
+			})
+			var setData = function(pick_id) {
+				var params = "funid=queryevent&eventcode=query_data&query_funid=cut_pick&limit=50&start=0&where_sql=cut_pick.pick_id='" + pick_id + "'";
+				jxm.post(params, function(data) {
+					$.each(data.root, function(i, obj) {
+						$("#out_code").html(obj.cut_pick__pick_code);
+						$("#div_code").html(obj.cut_pick__div_code);
+						$("#out_date").html(obj.cut_pick__pick_date.substr(5,6));
+						$("#sp_code").html(obj.cut_pick__sp_code);
+						$("#color_name").html(obj.cut_pick__color_name);
+						$("#div_num").html(parseFloat(obj.cut_pick__div_num).toFixed(0));
+					});
+				});
+			};
+			var setTable = function(pick_id) {
+				var params = "funid=queryevent&eventcode=query_data&query_funid=cut_pick_det&limit=50&start=0&where_sql=cut_pick_det.pick_id='" + pick_id + "'";
+				jxm.post(params, function(data) {
+					var html='';
+					$.each(data.root,function (i,obj) {
+						html += '<tr>'+
+							'<td class="s2">'+obj.cut_pick_det__spare_name+'</td>'+
+							'<td class="s9">'+parseFloat(obj.cut_pick_det__un_num).toFixed(0)+'</td>'+
+							'<td class="s6">'+parseFloat(obj.cut_pick_det__pick_num).toFixed(0)+'</td>'+
+							'<td class="s7">'+obj.cut_pick_det__unit_all+'</td>'+
+							'<td class="s8">'+parseFloat(obj.cut_pick_det__is_num).toFixed(0)+'</td>'+
+							'<td class="s1">'+obj.cut_pick_det__spare_code+'</td>'+
+							'<td class="s3">'+obj.cut_pick_det__color_name+'</td>'+
+							'<td class="s4">'+obj.cut_pick_det__unit_use+'</td>'+
+							'<td class="s5">'+obj.cut_pick_det__unit_name+'</td>'+
+						'</tr>'; 
+					});
+					$("#datas").html(html);
+				$("#datas tr:odd").css({"background-color":"#f2f2f2"}).children("td").css({"border-top":"none","border-bottom":"none"});
+				});
+			}
+		</script>
+	</body>
+
+</html>

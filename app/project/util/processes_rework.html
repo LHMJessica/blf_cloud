@@ -7,6 +7,7 @@
 		<title>工序报工</title>
 		<link rel="stylesheet" href="../../../mui/css/mui.min.css" />
 		<link rel="stylesheet" href="../../../jxm/css/jxm.css">
+		<link rel="stylesheet" type="text/css" href="../../../mui/css/mui.picker.min.css"/>
 		<style type="text/css">
 			.mui-bar {
 				-webkit-box-shadow: none;
@@ -209,7 +210,7 @@
 			</center>
 		</nav>
 		<div class="mui-content">
-			<form class="mui-input-group" style="padding-bottom: 20px;">
+			<form class="mui-input-group" style="padding:20px 0px 20px 0px;">
 				<!--第一个框-->
 				<div id="order_info" class="info_box">
 					<ul>
@@ -248,6 +249,10 @@
 						<input style="width: 60%;" type="text" id="standard" readonly="readonly"></input>
 					</div>
 				</div>
+				<div class="mui-input-row">
+					<label style="width: 40%;">报工时间：</label>
+					<input style="width: 60%;" type="text" id="work_date" readonly="readonly"></input>
+				</div>
 				<!--完成数量-->
 				<div class="mui-input-row" style="padding-bottom: 25px;margin-top: 25px;">
 					<label style="width: 30%;color: #000000;text-align: left;">完成数量</label>
@@ -258,13 +263,10 @@
 
 		<script src="../../../mui/js/mui.min.js"></script>
 		<script src="../../../jxm/js/jxm.js"></script>
-		<script src="../../../jxm/js/JxDao.js"></script>
-		<script src="../../../jxm/js/json2.js"></script>
 		<script src="../../../jxm/js/jxm-image-input.js"></script>
 		<script src="../../util/jxm-util.js"></script>
 		<script src="../../../Resources/js/jquery-3.3.1.min.js"></script>
-		<script src="../../../Resources/js/juicer-min.js"></script>
-		<script src="../../../Resources/js/juicerUtil.js"></script>
+		<script src="../../../mui/js/mui.picker.min.js" type="text/javascript" charset="utf-8"></script>
 		<script type="text/javascript" charset="UTF-8">
 			mui.init({
 				swipeBack: false //关闭-右滑关闭功能
@@ -286,12 +288,22 @@
 					$("#process_price").val(data.process_cost);
 					$("#standard").val(data.work_hours);
 					$("#accomplish").val(data.work_num);
+					$("#work_date").val(data.work_date);
 				});
 			}
+			$("#work_date").on("tap", function() {
+				plus.nativeUI.pickDate(function(e) {
+					var d = e.date;
+					var month = d.getMonth() + 1 + "";
+					month = month.length == 1 ? "0" + month : month;
+					$("#work_date").val(d.getFullYear() + "-" + month + "-" + d.getDate())
+				}, function(e) {}, {});
+			});
 			//上报按钮点击事件
 			$('#btncommit').on('click', function(e) {
 				var accomplish = $('#accomplish').val(); //完成数量
 				var det_id = $('#order_id').attr("dataid");
+				var work_date=$("#work_date").val();
 				var params = "funid=app_full&eventcode=upReturnWork";
 				if(accomplish == '' || accomplish == 0) {
 					mui.toast("您有参数未填写完整");
@@ -299,7 +311,7 @@
 					return;
 				}
 				//拼接参数
-				params += "&det_id=" + det_id + "&work_num=" + accomplish;
+				params += "&det_id=" + det_id + "&work_num=" + accomplish+"&work_date="+work_date;
 				jxm.post(params, function(data) {
 					if(data.type == 'sucess') {
 						pageClear();

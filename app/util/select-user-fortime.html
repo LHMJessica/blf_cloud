@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+    <title>选择用户</title>
+    
+	<link href="../../mui/css/mui.min.css" rel="stylesheet" />
+	<link href="../../mui/css/mui.indexedlist.css" rel="stylesheet" />
+	<link href="../../jxm/css/jxm.css" rel="stylesheet" />
+	<style>
+		html,
+		body {
+			height: 100%;
+			overflow: hidden;
+		}
+		.mui-bar {
+			-webkit-box-shadow: none;
+			box-shadow: none;
+		}
+		/* 因为indexlist控件有个bug，隐藏的list不能选择，所以把外部list改为overflow:auto
+		 * 外部search、index-bar都要改为fixed模式
+		 * */
+		/*.mui-indexed-list-bar {
+			top: 90px;
+			position: fixed;
+		}
+		.mui-indexed-list {
+			top: 45px;
+			overflow-y: auto;
+			overflow-x: hidden;
+		}
+		.mui-search {
+			position: fixed;
+			left: 0;
+			right: 0;
+			background-color:#fafafa;
+		}
+		.mui-checkbox .mui-media-body:after {
+			left: 0px !important;
+		}*/
+		.mui-search,
+		.mui-search .mui-icon-clear,
+		.mui-search .mui-placeholder {
+			padding-top: 5px;
+			padding-bottom: 5px;
+		}
+		/****************/
+		.mui-media-object {
+			margin: 0 !important;
+			margin-right: 10px !important;
+			height:48px !important;
+			line-height:48px !important;
+			width:48px !important;
+			max-width:48px !important;
+		}
+		.mui-table-view .mui-table-view-cell.mui-media-icon .mui-media-body:after {
+			left: 70px;
+			background-color:#D8D8D8;
+		}
+		.mui-media-grey {
+			background-color:lavender;
+		}
+		.mui-media-grey .mui-icon {
+			padding: 10px;
+		}
+		.mui-media-grey .iconfont {
+			color: #fff;
+			font-size: 28px;
+		}
+	</style>
+</head>
+<body>
+	<header class="mui-bar mui-bar-nav mui-bar-primary">
+		<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+		<h1 class="mui-title">选择用户</h1>
+	</header>
+	<!--<footer class="mui-bar mui-bar-footer mui-hidden">
+		<center>
+		<button type="button" id="btn-select" class="mui-btn mui-btn-primary" style="width: 60%;">确定</button>
+		</center>
+	</footer>-->
+	<div class="mui-content">
+		<div id='main-list' class="mui-indexed-list mui-hidden">
+			<div class="mui-indexed-list-search mui-input-row mui-search">
+				<input type="search" class="mui-input-clear mui-indexed-list-search-input" placeholder="搜索">
+			</div>
+			<div class="mui-indexed-list-alert"></div>
+			<div class="mui-indexed-list-inner">
+				<div class="mui-indexed-list-empty-alert">没有数据</div>
+				<ul id="data-list" class="mui-table-view"></ul>
+			</div>
+		</div>
+		
+		<div class="mui-loader">加载中...</div>
+	</div>
+	
+    <script src="../../mui/js/mui.min.js"></script>
+	<script src="../../mui/js/mui.indexedlist.js"></script>
+	<script src="../../jxm/js/jxm.js"></script>
+	<script type="text/javascript" charset="utf-8">
+		mui.init();
+		
+		//是否需要多选
+		var ms = true;
+		//传递目标窗口ID、触发事件名称 {callbackWinId:mui.currentWebview.id, callbackEvent:cbe, notback:true}
+		mui.plusReady(function(){
+			var opts = mui.currentWebview.selectParams;
+			console.log('callbackWinId='+opts.callbackWinId+';callbackEvent='+opts.callbackEvent+';mutilsel='+opts.mutilsel);
+			
+			if (!opts.mutilsel) ms = false;
+		//});
+		//mui.ready(function(){
+			
+			var mainList = document.getElementById('main-list');
+			var dataList = document.getElementById("data-list");
+			//计算数据区域的高度
+			var calheight = function(){
+				var header_h = document.querySelector('header.mui-bar').offsetHeight;
+				mainList.style.height = (document.body.offsetHeight - header_h) + 'px';
+			};
+			
+			var params = "funid=queryevent&eventcode=query_data&query_funid=app_checkuser&limit=900&start=0";
+			//从后台加载用户数据
+			jxm.post(params, function(data){
+				console.log(JSON.stringify(data));
+				var str = "";
+				mui.each(data.root, function(i, item){
+					str += '<li id="'+item.check_user__user_id+'" data-ext="'+item.check_user__user_code+'" data-code="'+item.check_user__user_code+'" data-name="'+item.check_user__user_name+'"'+
+								'class="mui-table-view-cell mui-indexed-list-item '+ (ms?'mui-checkbox mui-left':'') +'">'+
+								(ms ?'<input type="checkbox" />': '')+
+								'<div class="mui-media-body">'+
+									item.check_user__user_name
+								'</div>'+
+							'</li>';
+				});
+				dataList.innerHTML = str;
+				jxm.loadhint(mainList, (str.length > 0));
+				
+				//calc hieght
+				calheight();
+				//加载完页面后构建，查询才能生效；如果带index-bar的控件必须用searchFixed:true
+				var wlist = new mui.IndexedList(mainList,{selectParams:opts,searchFixed:true});
+				//绑定选择事件
+				(ms ? wlist.doMutilSelect() : wlist.doSingleSelect());
+			});
+		});
+	</script>
+</body>
+</html>

@@ -307,7 +307,8 @@
 			//改造后的控件，解决隐藏的list不能选择的问题
 			var calheight = function(hidden) {
 				//calc hieght
-				self.box.style.height = (self.box.offsetHeight + (hidden ? 60 : -60)) + 'px';
+				//self.box.style.height = (self.box.offsetHeight + (hidden ? 60 : -60)) + 'px';
+				//self.box.style.height = self.box.offsetHeight + 'px';
 			};
 			mui('.mui-indexed-list-inner').on('change', 'input', function() {
 				var count = dataList.querySelectorAll('input[type="checkbox"]:checked').length;

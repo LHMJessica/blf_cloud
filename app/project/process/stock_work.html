@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1,user-scalable=no">
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black">
+		<title>备料报工</title>
+		<link rel="stylesheet" href="../../../mui/css/mui.min.css" />
+		<link rel="stylesheet" href="../../../jxm/css/jxm.css">
+		<style type="text/css">
+			.mui-bar {
+				-webkit-box-shadow: none;
+				box-shadow: none;
+			}
+			
+			.head-search {
+				padding-top: 1px;
+				height: 50px !important;
+			}
+			
+			.head-search button {
+				height: 48px;
+				width: 18%;
+				border: none;
+				border-radius: 0 !important;
+				background-color: #f7f7f7;
+			}
+			
+			.head-search input {
+				width: 62%;
+				height: 40px;
+				border: none;
+			}
+			
+			.label-red {
+				padding-left: 5px;
+				color: red !important;
+			}
+			
+			.text-disabled {
+				background-color: #EEEEEE;
+			}
+			
+			.iconfont {
+				font-size: 24px;
+			}
+			
+			h5 {
+				font-size: 14px;
+				padding: 8px 5px 6px;
+				background-color: #efeff4;
+			}
+			
+			.d {
+				height: 32px;
+				width: 100%;
+				margin-top: 2%;
+			}
+			
+			.d5 {
+				margin-left: 5%;
+			}
+			
+			.d10 {
+				margin-left: 10%;
+			}
+			
+			.d11 {
+				margin-left: 12%;
+			}
+			
+			#addPopover {
+				position: fixed;
+				top: 0;
+				right: 0;
+				bottom: 0;
+				left: 0%;
+				z-index: 998;
+				background-color: rgba(0, 0, 0, .4);
+			}
+			
+			.listtip {
+				padding-top: 20px;
+				text-align: center;
+				background-color: white;
+				height: 140px;
+				color: #CCCCCC;
+			}
+			
+			.addContent {
+				position: absolute;
+				left: 0;
+				top: 20px;
+			}
+			
+			.info_box {
+				border-bottom: 1px solid #C8C8C8;
+				margin: 2% 2%;
+				/*border-radius: 10px 10px;*/
+			}
+			/*清除每组输入框下面的线*/
+			
+			.mui-input-group .mui-input-row:after {
+				height: 0px;
+			}
+			
+			#performance {
+				line-height: 45px;
+				margin: 15px 25px;
+				height: 80px;
+			}
+			
+			#performance-info {
+				color: #FFFFFF;
+				font-size: 16px;
+				text-align: center;
+				border-radius: 10px 10px;
+			}
+			/*达标*/
+			
+			.achieved {
+				background-color: #00B050;
+			}
+			
+			.noachieved {
+				background-color: #FF0000;
+			}
+			
+			.info_box label {
+				font-size: 14px;
+			}
+			/*覆盖框架默认样式*/
+			
+			.mui-input-row label {
+				/*padding: 7px 0px 5px 10px;*/
+				height: 30px;
+				vertical-align: middle;
+			}
+			
+			.mui-input-group .mui-input-row {
+				height: 30px;
+			}
+			
+			.mui-input-row label~input,
+			.mui-input-row label~select,
+			.mui-input-row label~textarea {
+				padding: 5px 10px 5px 2px;
+				height: 30px;
+				font-size: 14px;
+				text-align: left;
+				vertical-align: middle;
+			}			
+			.mui-input-row label {
+				padding: 8px 15px;
+			}
+			
+			#order_info ul {
+				padding-left: 0px;
+			}
+			
+			.processes-title {
+				font-size: 14px;
+				color: #000000;
+			}
+			
+			.processes-value,
+			#process_info input {
+				font-size: 14px;
+				color: #555555;
+			}
+			/*清除框架自带的内边距样式*/
+			/*清除每组输入框下面的线*/
+			
+			#order_info li {
+				display: inline-block;
+				list-style: none;
+				text-align: center;
+				vertical-align: top;
+			}
+		</style>
+
+	</head>
+
+	<body>
+		<section class="mui-bar mui-bar-nav mui-bar-primary">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<h1 class="mui-title" id="title">备料报工</h1>
+		</section>
+
+		<nav class="mui-bar mui-bar-footer">
+			<center>
+				<button type="button" id="btnback" onclick="mui.back();" class="mui-btn mui-btn-primary mui-pull-left" style="width:30%;">返回</button>
+				<button type="button" id="btncommit" class="mui-btn mui-btn-primary mui-pull-right" style="width:30%;">提交</button>
+			</center>
+		</nav>
+		<div class="mui-content">
+			<form class="mui-input-group" style="padding-bottom: 20px;">
+				<div class="mui-input-row head-search">
+					<!--扫描-->
+					<button type="button" id="btnscan" class="mui-icon iconfont icon-saoma1 mui-pull-left" style=""></button>
+					<!--输入框-->
+					<input readonly="readonly" type="text" id="barcode" autofocus="autofocus" class="mui-input" placeholder="扫描二维码" />
+				</div>
+				<!--第一个框-->
+				<div id="order_info" class="info_box">
+					<ul>
+						<li style="width: 30%;">
+							<p class="processes-title">工单号</p>
+							<p id="order_id" class="processes-value"></p>
+						</li>
+						<li style="width: 1px;background-color: lightgrey;height: 40px;"></li>
+						<li style="width: 30%;">
+							<p class="processes-title">产品编号</p>
+							<p id="product_id" class="processes-value"></p>
+						</li>
+						<li style="width: 1px;background-color: lightgrey;height: 40px;"></li>
+						<li style="width: 30%;">
+							<p class="processes-title">产品名称</p>
+							<p id="product_name" class="processes-value"></p>
+						</li>
+					</ul>
+				</div>
+				<!--第二个框-->
+				<div id="process_info" class="info_box">
+					<div class="mui-input-row">
+						<label style="width: 40%;">工序号</label>
+						<input style="width: 60%;" type="text" id="process_code" readonly="readonly"></input>
+					</div>
+					<div class="mui-input-row">
+						<label style="width: 40%;">工序名称</label>
+						<input style="width: 60%;" type="text" id="process_name" readonly="readonly"></input>
+					</div>
+					<div class="mui-input-row">
+						<label style="width: 40%;">工价</label>
+						<input style="width: 60%;" type="text" id="process_price" readonly="readonly"></input>
+					</div>
+					<div class="mui-input-row">
+						<label style="width: 40%;font-size: 14px;">标准件/小时</label>
+						<input style="width: 60%;" type="text" id="standard" readonly="readonly"></input>
+					</div>
+				</div>
+				<!--完成数量-->
+				<div class="mui-input-row" style="padding-bottom: 25px;margin-top: 25px;">
+					<label style="width: 30%;color: #000000;text-align: left;">完成数量</label>
+					<input style="width: 30%;border: 1px solid #959595;float: left;border-radius: 5px 5px;margin-right: 15px;" type="number" id="accomplish"></input>
+					<input style="width: 30%;background-color:#00AAEF;color:#FFFFFF;text-align:center;float: left;border-radius: 5px 5px;" type="button" value="查看报表" id="showstatement"></input>
+				</div>
+				<div id="performance" style="display: none;">
+					<div id="performance-info" class="achieved">
+						<span>达成率</span>&nbsp;&nbsp;&nbsp;
+						<span id="achieving_rate">90%</span>&nbsp;&nbsp;&nbsp;
+						<span id="achieving_info">恭喜你！</span>
+					</div>
+				</div>
+			</form>
+		</div>
+
+		<script src="../../../mui/js/mui.min.js"></script>
+		<script src="../../../jxm/js/jxm.js"></script>
+		<script src="../../../jxm/js/jxm-image-input.js"></script>
+		<script src="../../../Resources/js/jquery-3.3.1.min.js"></script>
+		<script src="../../../jxm/js/iscroll-probe.min.js" type="text/javascript"></script>
+		<script src="../../../jxm/js/main.js" type="text/javascript"></script>
+		<script type="text/javascript" charset="UTF-8">
+			mui.init({
+				swipeBack: false //关闭-右滑关闭功能
+			});
+			jxm.wxinit();
+			document.getElementById("barcode").focus();
+			//页面初始化完成加载此方法
+			mui.plusReady(function() {
+			});
+			/**
+			 * 格式化日期  参数格式 YYYYMMddHHmmss 
+			 * @param {Object} date
+			 */
+			var dateFormat = function(date) {
+				var year = date.substr(0, 4);
+				var month = date.substr(4, 2);
+				var day = date.substr(6, 2);
+				var hh = date.substr(8, 2);
+				var mm = date.substr(10, 2);
+				var str = year + "-" + month + "-" + day + "&nbsp;<span style='font-size: 14px;'>" + hh + ":" + mm + "</span>";
+				$("#now_date").html(str);
+			}
+			/*扫描工单号*/
+			//绑定扫码方法
+			/*扫描工单号*/
+			document.getElementById('btnscan').addEventListener('tap', function() {
+				jxm.open('../../util/barcode_scan.html');
+			});
+
+			//扫描工单号完成
+			var scanSucess = function(result) {
+				$('#barcode').data("code", result);
+				console.log(result);
+				addAsset(result);
+			};
+
+			//回车后根据工单号读取信息
+			document.getElementById('barcode').addEventListener('keypress', function(event) {
+				if(event.keyCode == 13) {
+					//阻止默认回车键事件
+					var barcode = document.getElementById('barcode').value;
+					$('#barcode').data("code", barcode);
+					$('#barcode').val('');
+					addAsset(barcode);
+				}
+				return false;
+			});
+			var selpro = "selpro";
+			/*选择工单信息方法*/
+			var addAsset = function(barcode) {
+				var href = "../../util/select-process-forstock.html";
+				var param = {
+					callbackWinId: mui.currentWebview.id,
+					callbackEvent: selpro,
+					qrcode: barcode,
+					mutilsel: false //不需要多选
+				};
+				jxm.open(href, {
+					extras: {
+						selectParams: param
+					}
+				});
+			};
+			/**
+			 * 选择工单回调函数
+			 */
+			window.addEventListener(selpro, function(e) {
+				var obj = e.detail;
+				var params = "funid=app_full&eventcode=selWorkPlan&qrcode=" + obj.dataext+"&plan_id="+obj.dataid;
+				jxm.post(params, function(data) {
+					console.log(JSON.stringify(data));
+					if(data.type != "") {
+						$('#order_id').html(data.div_code); //订单号
+						$('#product_id').html(data.sp_code); //产品编号
+						$('#product_name').html(data.sp_name); //产品名称
+						$('#process_code').val(data.process_code); //工序代码
+						$('#process_name').val(data.process_name); //工序名称
+						$('#standard').val(data.capacity); //标准件/小时
+						$('#process_price').val(data.process_cost); //工价
+						$('#process_info').attr("qrcode", obj.dataext);
+						$('#order_id').attr("plan",obj.dataid);
+						$('#accomplish').focus(); //给完成数量添加焦点
+					} else {
+						mui.toast("扫描失败！");
+					}
+				});
+			});
+			$('#showstatement').on("tap", function() {
+				//jxm打开另一页面
+				jxm.open('processes_staff_view.html', {});
+			});
+			//上报按钮点击事件
+			$('#btncommit').on('click', function(e) {
+				var user_id = jxm.getUserId(); //当前用户ID
+				var user_name = jxm.getUserName() //当前用户名
+				var dept_id = jxm.getDeptId(); //部门ID
+				var dept_name = jxm.getDeptName(); //部门名
+				var accomplish = $('#accomplish').val(); //完成数量
+				var plan_id = $('#order_id').attr("plan");
+				var qrcode = $('#process_info').attr("qrcode");
+				console.log(plan_id);
+				var params = "funid=app_full&eventcode=upWork";
+				if(accomplish == '' || accomplish == 0) {
+					mui.toast("您有参数未填写完整");
+					$('#accomplish').focus();
+					return;
+				}
+				//凭借参数
+				params += "&qrcode=" + qrcode + "&user_id=" + user_id + "&user_name=" + user_name + "&dept_id=" + dept_id + "&dept_name=" + dept_name + "&pass_num=" + accomplish + "&plan_id=" + plan_id;
+				jxm.post(params, function(data) {
+					if(data.type == 'sucess') {
+						mui.toast("报工成功！");
+						pageClear();
+						//根据完成率判断
+						if(parseFloat(data.day_rate) >= 90) {
+
+							console.log(JSON.stringify(data));
+							//大于或等于90时
+							$("#achieving_rate").html(data.day_rate + "%");
+							$("#achieving_info").html("恭喜你！");
+							$("#performance-info").addClass("achieved").show();
+						} else {
+							console.log(data.day_rate);
+							$("#achieving_rate").html(data.day_rate + "%");
+							$("#achieving_info").html("继续努力哦！");
+							$("#performance-info").addClass("noachieved");
+						}
+						$('#performance').show();
+						document.getElementById("barcode").focus();
+					}
+				});
+			});
+			//清空当前页面控件值
+			var pageClear = function() {
+				$('#order_id').html(''); //订单号
+				$('#product_id').html(''); //产品编号
+				$('#product_name').html(''); //产品名称
+				$('#process_code').val(''); //工序代码
+				$('#process_name').val(''); //工序名称
+				$('#standard').val(''); //标准件/小时
+				$('#accomplish').val(''); //完成数量
+				$('#barcode').val(''); //工单号
+				$('#process_price').val(''); //工价
+			}
+		</script>
+	</body>
+
+</html>

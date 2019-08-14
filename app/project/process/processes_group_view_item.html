@@ -3,8 +3,10 @@
 
 	<head>
 		<meta charset="UTF-8">
-		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
-		<title>组长看板</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1,user-scalable=no">
+	<meta name="apple-mobile-web-app-capable" content="yes">
+	<meta name="apple-mobile-web-app-status-bar-style" content="black">
+	<title>组长看板</title>
 		<link rel="stylesheet" href="../../../mui/css/mui.min.css" />
 		<link rel="stylesheet" href="../../../jxm/css/jxm.css">
 		<link rel="stylesheet" href="../../../mui/css/main.css">
@@ -128,6 +130,7 @@
 									<tr id="tableOneTh">
 										<th><span class='mspan'>员工</span></th>
 										<th><span class='mspan'>完成数量</span></th>
+										<th><span class='mspan'>完成时间</span></th>
 									</tr>
 								</tbody>
 							</table>
@@ -142,15 +145,11 @@
 
 		<script src="../../../mui/js/mui.min.js"></script>
 		<script src="../../../jxm/js/jxm.js"></script>
-		<script src="../../../jxm/js/JxDao.js"></script>
-		<script src="../../../jxm/js/json2.js"></script>
 		<script src="../../../jxm/js/jxm-image-input.js"></script>
 		<script src="../../util/jxm-util.js"></script>
 		<script src="../../../Resources/js/jquery-3.3.1.min.js"></script>
 		<script src="../../../jxm/js/iscroll-probe.min.js"></script>
 		<script src="../../../jxm/js/main.js"></script>
-		<script src="../../../Resources/js/juicer-min.js"></script>
-		<script src="../../../Resources/js/juicerUtil.js"></script>
 		<script type="text/javascript" charset="UTF-8">
 			mui.init({
 				swipeBack: false //关闭-右滑关闭功能
@@ -178,6 +177,7 @@
 						html+='<tr class="tabOnesub_list">'+
 									'<td><span class="mspan">'+rs.edit_user+'</span></td>'+
 									'<td><span class="mspan">'+rs.work_num+'</span></td>'+
+									'<td><span class="mspan">'+rs.work_date+'</span></td>'+
 								'</tr>';
 					});
 				}

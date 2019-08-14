@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title>成品入库</title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link rel="stylesheet" href="../../../mui/css/mui.min.css" />
+		<link rel="stylesheet" href="../../../jxm/css/jxm.css">
+		<link rel="stylesheet" type="text/css" href="../../../mui/css/icons-extra.css" />
+		<style>
+			body,
+			html {
+				height: 100%;
+				width: 100%;
+				overflow: hidden;
+				margin: 0;
+			}
+			
+			.mui-content {
+				height: 100%;
+			}
+			
+			.processes-title {
+				font-size: 14px;
+				color: #000000;
+			}
+			
+			.processes-value {
+				font-size: 12px;
+				color: #555555;
+			}
+			/*清除浏览器自带的内边距样式*/
+			
+			ul,
+			menu,
+			dir,
+			p {
+				-webkit-margin-before: 0em;
+				-webkit-margin-after: 0em;
+				-webkit-margin-start: 0px;
+				-webkit-margin-end: 0px;
+				-webkit-padding-start: 0px;
+			}
+			
+			#cu_pick_info {
+				text-align: center;
+			}
+			
+			.s1 {
+				width: 22%;
+			}
+			
+			.s2 {
+				width: 14%;
+			}
+			
+			.s3 {
+				width: 16%;
+			}
+			
+			.s4 {
+				width: 12%;
+			}
+			
+			th.s5 {
+				width: 15%;
+				background-color: green;
+				color: #FFF;
+			}
+			td.s5 {
+				width: 15%;
+				color: green;
+			}
+			
+			th.s6 {
+				width: 15%;
+				background-color: orange;
+				color: #FFF;
+			}
+			td.s6 {
+				width: 15%;
+				color: orange;
+			}
+			.mui-content-header{
+				height: 8%;
+			}
+			.mui-content-body{
+				height: 90%;
+			}
+		</style>
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav mui-bar-primary">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<h1 class="mui-title" id="title">成品入库</h1>
+			<a class="mui-icon mui-icon-download mui-pull-right" style="font-weight: bold;" id="import"></a>
+		</header>
+		<nav class="mui-bar mui-bar-footer">
+			<center>
+				<button type="button" id="btncommit" class="mui-btn mui-btn-primary mui-pull-right" style="width:30%;">提交</button>
+			</center>
+		</nav>
+		<div class="mui-content">
+			<form class="mui-input-group">
+				<div class="mui-input-row">
+					<label style="width: 40%;">入库仓库：</label>
+					<select style="width: 60%;" id="in_store" required="required">
+					</select>
+				</div>
+			</form>
+			<div class="mui-content-body">
+				<table cellspacing="0" cellpadding="0" style="width: 100%;overflow-x:scroll;overflow-y: scroll;">
+					<thead>
+						<tr>
+							<th class="s1">工单号</th>
+							<th class="s2">款号</th>
+							<th class="s3">品名</th>
+							<th class="s4">颜色</th>
+							<th class="s5">入仓数量</th>
+							<th class="s6">剩余数量</th>
+						</tr>
+					</thead>
+					<tbody id="datas">
+					</tbody>
+				</table>
+			</div>
+		</div>
+		<script src="../../../mui/js/mui.min.js"></script>
+		<script src="../../../jxm/js/jxm.js"></script>
+		<script src="../../../jxm/js/jxm-image-input.js"></script>
+		<script src="../../util/jxm-util.js"></script>
+		<script src="../../../Resources/js/jquery-3.3.1.min.js"></script>
+		<script type="text/javascript">
+			mui.init({
+				swipeBack: false //关闭-右滑关闭功能
+			});
+			var pick_id = null;
+			mui.plusReady(function() {
+				setStores();
+			})
+			var setStores = function() {
+				var param = "funid=queryevent&eventcode=query_data&query_funid=sp_house&limit=50&start=0";
+				jxm.post(param, function(data) {
+					var html = '';
+					$.each(data.root, function(i, obj) {
+						html += '<option value="' + obj.sp_house__house_id + '" ' + (obj.sp_house__house_name === "成品仓" ? "selected='selected'" : "") + '>' + obj.sp_house__house_name + '</option>';
+					});
+					$("#in_store").html(html);
+				});
+			}
+			/**
+			 * 选择工单
+			 */
+			$("#import").on('click', function(e) {
+				var href = "../../util/select-process-forstore.html";
+				var list="";
+				$.each($("#datas tr"),function (i,obj) {
+					list += $(obj).attr("dataid")+",";
+				});
+				var param = {
+					callbackWinId: mui.currentWebview.id,
+					callbackEvent: "STOREIN",
+					mutilsel: true ,
+					plist:list//需要多选,
+					
+				};
+				jxm.open(href, {
+					extras: {
+						selectParams: param
+					}
+				});
+			});
+			/**
+			 * 选择工单回调函数
+			 */
+			window.addEventListener("STOREIN", function(e) {
+				var obj = e.detail.selectdata;
+				$.each(obj, function(i,rs) {
+					var ext=JSON.parse(rs.dataext);
+						var html = '<tr dataid="'+ext.plan_id+'" class="plan_item">'+
+							'<td class="s1">'+ext.div_code+'</td>'+
+							'<td class="s2">'+ext.sp_code+'</td>'+
+							'<td class="s3">'+ext.sp_name+'</td>'+
+							'<td class="s4">'+ext.color_name+'</td>'+
+							'<td class="s5"><input type="number" class="table-input" value="'+(parseFloat(ext.div_num)-parseFloat(ext.done_num))+'" /></td>'+
+							'<td class="s6" datanum="'+(parseFloat(ext.div_num)-parseFloat(ext.done_num))+'">'+(parseFloat(ext.div_num)-parseFloat(ext.done_num))+'</td>'+
+						'</tr>';
+					$("#datas").append(html);
+				});
+				$("#datas tr:odd").css({"background-color":"#f2f2f2"}).children("td").css({"border-top":"none","border-bottom":"none"})
+			});
+			//全局绑定
+			$("#datas").on("blur", ".table-input", function(){
+				var out_num=$(this).val();
+				var number=$(this).parent().parent().find(".s6").attr("datanum");
+				if (isNaN(out_num) ||parseInt(out_num)<=0 || out_num =="") {
+					$(this).focus();
+					mui.toast("入库数量填写有误！");
+				}
+				$(this).parent().parent().find(".s6").html(parseFloat(number)-parseFloat(out_num));
+			});
+			$("#btncommit").on("click", function() {
+				var doms = document.getElementsByClassName("plan_item");
+				var inList = [];
+				var house_name = $("#in_store").find("option:selected").text();
+				var house_id = $("#in_store").find("option:selected").val();
+				if(house_id == undefined || house_id == "" || house_id == null) {
+					mui.toast("仓库未选择，不能提交");
+					return;
+				}
+				var user_id = jxm.getUserId();
+				var user_name = jxm.getUserName();
+				var sum = 0;
+				$.each(doms, function(i, obj) {
+					var plan_id = $(obj).attr("dataid");
+					var in_num = $(obj).find(".s8").find("input").val();
+					var item = {
+						"plan_id": plan_id,
+						"in_num": parseInt(in_num)
+					};
+					inList.push(item);
+				});
+				console.log("inList" + JSON.stringify(inList));
+				console.log("house_name" + house_name);
+				console.log("house_id" + house_id);
+				console.log("user_id" + user_id);
+				console.log("user_name" + user_name);
+				var params = "funid=app_full&eventcode=spIn&&user_id=" + user_id+"&user_name="+user_name;
+				params += "&inList=" + JSON.stringify(inList) + "&house_id=" + house_id + "&house_name=" + house_name;
+				jxm.post(params, function(data) {
+					mui.toast("提交成功");
+					mui.back();
+				});
+			});
+		</script>
+		</script>
+	</body>
+
+</html>

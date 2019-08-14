@@ -1,241 +1,320 @@
 {
-  "home.html": {
-    "resources": [
-      "app/im/im.html"
-    ],
-    "refer": [
-      "app/set/set.html",
-      "bar-index.html",
-      "app/im/im.html",
-      "index.html"
-    ]
-  },
-  "bar-index.html": {
-    "refer": [
-      "app/eam/process/process_flow.html",
-      "app/eam/process/abnormal_view.html",
-      "app/eam/process/process_view.html",
-      "app/eam/process/excp_view.html",
-      "app/oa/oa-app-seltype.html",
-      "app/eam/process/abnormal_tance.html",
-      "app/eam/process/processes_work.html",
-      "app/project/process/abnormal_view.html",
-      "app/project/process/Demo.html",
-      "index.html",
-      "app/project/quality/pdf_quality.html",
-      "app/project/process/processes_work.html",
-      "app/project/process/excp_view.html",
-      "app/project/process/abnormal_tance.html",
-      "app/project/process/userProcess.html",
-      "app/oa/oa-users.html",
-      "app/oa/oa-docs.html",
-      "app/oa/oa-news-list.html",
-      "app/project/process/processes_check.html",
-      "app/project/process/timing_apply.html",
-      "app/project/process/pro_managment_view.html",
-      "app/project/process/pro_management_view.html",
-      "app/project/process/processes_view.html",
-      "app/project/process/rest_apply.html",
-      "app/project/process/processes_group_view.html",
-      "app/project/process/storage_in.html",
-      "app/project/process/processes-verify.html",
-      "app/project/process/processes_staff_view.html",
-      "app/project/process/processes_fqc_view.html",
-      "app/project/process/back_work_order.html"
-    ],
-    "resources": []
-  },
-  "index.html": {
-    "refer": [
-      "home.html",
-      "app/util/login-set.html",
-      "app/set/set.html",
-      "bar-index.html"
-    ],
-    "resources": [
-      "bar-index.html"
-    ]
-  },
-  "app/eam/process/abnormal_view.html": {
-    "refer": [
-      "app/util/barcode_scan.html"
-    ],
-    "resources": []
-  },
-  "app/util/login-set.html": {
-    "refer": [
-      "index.html"
-    ],
-    "resources": [
-      "index.html"
-    ]
-  },
-  "app/eam/process/excp_view.html": {
-    "refer": [
-      "app/eam/process/excp_view_chk.html",
-      "app/eam/util/excp_view_chk.html"
-    ],
-    "resources": []
-  },
-  "app/eam/util/excp_view_chk.html": {
-    "refer": [
-      "app/eam/util/select-user.html"
-    ],
-    "resources": []
-  },
-  "app/eam/process/abnormal_tance.html": {
-    "refer": [
-      "app/util/barcode_scan.html",
-      "app/eam/util/abnormal_tance_chk.html"
-    ],
-    "resources": []
-  },
-  "app/eam/process/processes_work.html": {
-    "refer": [
-      "app/util/barcode_scan.html",
-      "app/eam/util/select-user.html"
-    ],
-    "resources": []
-  },
-  "app/eam/process/process_view.html": {
-    "refer": [
-      "app/eam/process/process_view.html"
-    ],
-    "resources": []
-  },
-  "app/project/process/abnormal_view.html": {
-    "refer": [
-      "app/util/barcode_scan.html",
-      "app/project/pdf/PdfView.html",
-      "app/project/pdf/web/viewer.html",
-      "app/project/quality/pdf_quality.html",
-      "app/util/select-process-forfqc.html",
-      "app/util/select-user.html"
-    ],
-    "resources": []
-  },
-  "app/im/im.html": {
-    "refer": [
-      "index.html",
-      "app/oa/oa-news-list.html",
-      "app/im/check-msg.html",
-      "app/im/notify-list.html"
-    ],
-    "resources": []
-  },
-  "app/project/process/processes_work.html": {
-    "refer": [
-      "app/project/util/select-user.html",
-      "app/util/barcode_scan.html",
-      "index.html",
-      "app/project/process/processes_view.html",
-      "app/util/select-process.html",
-      "app/util/select-process-forwork.html",
-      "app/project/process/processes_staff_view.html"
-    ],
-    "resources": []
-  },
-  "app/project/process/excp_view.html": {
-    "refer": [
-      "app/project/util/excp_view_chk.html",
-      "app/project/util/abnormal_tance_chk.html",
-      "app/project/process/abnormal_tance.html",
-      "index.html"
-    ],
-    "resources": []
-  },
-  "app/project/util/excp_view_chk.html": {
-    "refer": [
-      "app/project/util/select-user.html"
-    ],
-    "resources": []
-  },
-  "app/project/process/abnormal_tance.html": {
-    "refer": [
-      "app/project/util/abnormal_tance_chk.html",
-      "index.html"
-    ],
-    "resources": []
-  },
-  "app/set/set.html": {
-    "refer": [
-      "app/set/setup.html",
-      "app/set/self-info.html",
-      "index.html"
-    ],
-    "resources": []
-  },
-  "app/project/process/processes_check.html": {
-    "refer": [
-      "app/util/barcode_scan.html",
-      "index.html",
-      "app/util/select-process.html",
-      "app/util/select-process-forcheck.html",
-      "app/project/process/processes_fqc_view.html"
-    ],
-    "resources": []
-  },
-  "app/project/process/timing_apply.html": {
-    "refer": [
-      "app/project/util/select-user.html"
-    ],
-    "resources": []
-  },
-  "app/project/process/rest_apply.html": {
-    "refer": [
-      "app/project/util/select-user1.html"
-    ],
-    "resources": []
-  },
-  "app/project/process/processes_group_view.html": {
-    "refer": [
-      "app/util/barcode_scan.html",
-      "app/project/process/processes_group_view.html",
-      "app/project/process/processes_group_view_item.html",
-      "app/project/process/processes_group_qrcode.html",
-      "app/util/select-process.html"
-    ],
-    "resources": []
-  },
-  "app/project/process/processes_view.html": {
-    "refer": [
-      "index.html",
-      "app/util/select-dept.html",
-      "app/util/select-user.html",
-      "app/project/util/select-user1.html"
-    ],
-    "resources": []
-  },
-  "app/util/select-process.html": {
-    "refer": [
-      "index.html"
-    ],
-    "resources": []
-  },
-  "app/project/process/processes-verify.html": {
-    "refer": [
-      "app/util/select-user.html",
-      "app/util/select-dept.html",
-      "index.html"
-    ],
-    "resources": []
-  },
-  "app/project/process/processes_fqc_view.html": {
-    "refer": [
-      "app/util/select-process-forcheck.html",
-      "app/util/barcode_scan.html",
-      "app/util/select-process-forfqc.html"
-    ],
-    "resources": []
-  },
-  "app/set/self-info.html": {
-    "refer": [
-      "index.html"
-    ]
-  },
-  "app/project/process/back_work_order.html": {
-    "refer": [
-      "app/project/util/processes_rework.html"
-    ]
-  }
+	"home.html": {
+		"resources": [
+			"app/im/im.html"
+		],
+		"refer": [
+			"app/set/set.html",
+			"bar-index.html",
+			"app/im/im.html",
+			"index.html"
+		]
+	},
+	"bar-index.html": {
+		"refer": [
+			"app/eam/process/process_flow.html",
+			"app/eam/process/abnormal_view.html",
+			"app/eam/process/process_view.html",
+			"app/eam/process/excp_view.html",
+			"app/oa/oa-app-seltype.html",
+			"app/eam/process/abnormal_tance.html",
+			"app/eam/process/processes_work.html",
+			"app/project/process/abnormal_view.html",
+			"app/project/process/Demo.html",
+			"index.html",
+			"app/project/quality/pdf_quality.html",
+			"app/project/process/processes_work.html",
+			"app/project/process/excp_view.html",
+			"app/project/process/abnormal_tance.html",
+			"app/project/process/userProcess.html",
+			"app/oa/oa-users.html",
+			"app/oa/oa-docs.html",
+			"app/oa/oa-news-list.html",
+			"app/project/process/processes_check.html",
+			"app/project/process/timing_apply.html",
+			"app/project/process/pro_managment_view.html",
+			"app/project/process/pro_management_view.html",
+			"app/project/process/processes_view.html",
+			"app/project/process/rest_apply.html",
+			"app/project/process/processes_group_view.html",
+			"app/project/process/storage_in.html",
+			"app/project/process/processes-verify.html",
+			"app/project/process/processes_staff_view.html",
+			"app/project/process/processes_fqc_view.html",
+			"app/project/process/back_work_order.html",
+			"app/project/asset/cut_out_list.html",
+			"app/project/asset/cut_pick_list.html",
+			"app/project/asset/storage_in.html",
+			"app/project/asset/plant_out_list.html",
+			"app/project/asset/spare_pick_list.html",
+			"app/project/asset/plant_pick_list.html",
+			"app/project/asset/plant_process_pick_list.html",
+			"app/project/asset/plant_process_out_list.html",
+			"app/project/asset/spare_process_pick_list.html",
+			"app/project/process/fqc_report_list.html"
+		],
+		"resources": []
+	},
+	"index.html": {
+		"refer": [
+			"home.html",
+			"app/util/login-set.html",
+			"app/set/set.html",
+			"bar-index.html"
+		],
+		"resources": [
+			"bar-index.html"
+		]
+	},
+	"app/eam/process/abnormal_view.html": {
+		"refer": [
+			"app/util/barcode_scan.html"
+		],
+		"resources": []
+	},
+	"app/util/login-set.html": {
+		"refer": [
+			"index.html"
+		],
+		"resources": [
+			"index.html"
+		]
+	},
+	"app/eam/process/excp_view.html": {
+		"refer": [
+			"app/eam/process/excp_view_chk.html",
+			"app/eam/util/excp_view_chk.html"
+		],
+		"resources": []
+	},
+	"app/eam/util/excp_view_chk.html": {
+		"refer": [
+			"app/eam/util/select-user.html"
+		],
+		"resources": []
+	},
+	"app/eam/process/abnormal_tance.html": {
+		"refer": [
+			"app/util/barcode_scan.html",
+			"app/eam/util/abnormal_tance_chk.html"
+		],
+		"resources": []
+	},
+	"app/eam/process/processes_work.html": {
+		"refer": [
+			"app/util/barcode_scan.html",
+			"app/eam/util/select-user.html"
+		],
+		"resources": []
+	},
+	"app/eam/process/process_view.html": {
+		"refer": [
+			"app/eam/process/process_view.html"
+		],
+		"resources": []
+	},
+	"app/project/process/abnormal_view.html": {
+		"refer": [
+			"app/util/barcode_scan.html",
+			"app/project/pdf/PdfView.html",
+			"app/project/pdf/web/viewer.html",
+			"app/project/quality/pdf_quality.html",
+			"app/util/select-process-forfqc.html",
+			"app/util/select-user.html"
+		],
+		"resources": []
+	},
+	"app/im/im.html": {
+		"refer": [
+			"index.html",
+			"app/oa/oa-news-list.html",
+			"app/im/check-msg.html",
+			"app/im/notify-list.html"
+		],
+		"resources": []
+	},
+	"app/project/process/processes_work.html": {
+		"refer": [
+			"app/project/util/select-user.html",
+			"app/util/barcode_scan.html",
+			"index.html",
+			"app/project/process/processes_view.html",
+			"app/util/select-process.html",
+			"app/util/select-process-forwork.html",
+			"app/project/process/processes_staff_view.html"
+		],
+		"resources": []
+	},
+	"app/project/process/excp_view.html": {
+		"refer": [
+			"app/project/util/excp_view_chk.html",
+			"app/project/util/abnormal_tance_chk.html",
+			"app/project/process/abnormal_tance.html",
+			"index.html"
+		],
+		"resources": []
+	},
+	"app/project/util/excp_view_chk.html": {
+		"refer": [
+			"app/project/util/select-user.html"
+		],
+		"resources": []
+	},
+	"app/project/process/abnormal_tance.html": {
+		"refer": [
+			"app/project/util/abnormal_tance_chk.html",
+			"index.html"
+		],
+		"resources": []
+	},
+	"app/set/set.html": {
+		"refer": [
+			"app/set/setup.html",
+			"app/set/self-info.html",
+			"index.html"
+		],
+		"resources": []
+	},
+	"app/project/process/processes_check.html": {
+		"refer": [
+			"app/util/barcode_scan.html",
+			"index.html",
+			"app/util/select-process.html",
+			"app/util/select-process-forcheck.html",
+			"app/project/process/processes_fqc_view.html"
+		],
+		"resources": []
+	},
+	"app/project/process/timing_apply.html": {
+		"refer": [
+			"app/project/util/select-user.html",
+			"app/util/select-user.html",
+			"app/util/select-user-fortime.html"
+		],
+		"resources": []
+	},
+	"app/project/process/rest_apply.html": {
+		"refer": [
+			"app/project/util/select-user1.html"
+		],
+		"resources": []
+	},
+	"app/project/process/processes_group_view.html": {
+		"refer": [
+			"app/util/barcode_scan.html",
+			"app/project/process/processes_group_view.html",
+			"app/project/process/processes_group_view_item.html",
+			"app/project/process/processes_group_qrcode.html",
+			"app/util/select-process.html"
+		],
+		"resources": []
+	},
+	"app/project/process/processes_view.html": {
+		"refer": [
+			"index.html",
+			"app/util/select-dept.html",
+			"app/util/select-user.html",
+			"app/project/util/select-user1.html"
+		],
+		"resources": []
+	},
+	"app/util/select-process.html": {
+		"refer": [
+			"index.html"
+		],
+		"resources": []
+	},
+	"app/project/process/processes-verify.html": {
+		"refer": [
+			"app/util/select-user.html",
+			"app/util/select-dept.html",
+			"index.html"
+		],
+		"resources": []
+	},
+	"app/project/process/processes_fqc_view.html": {
+		"refer": [
+			"app/util/select-process-forcheck.html",
+			"app/util/barcode_scan.html",
+			"app/util/select-process-forfqc.html",
+			"app/project/process/fqc_report_item.html",
+			"app/project/process/processes_fqc_view_item.html"
+		],
+		"resources": []
+	},
+	"app/set/self-info.html": {
+		"refer": [
+			"index.html"
+		]
+	},
+	"app/project/process/back_work_order.html": {
+		"refer": [
+			"app/project/util/processes_rework.html"
+		]
+	},
+	"app/project/asset/cut_out_list.html": {
+		"refer": [
+			"app/project/asset/cut_out_item.html",
+			"app/project/asset/cut_pick_item.html"
+		]
+	},
+	"app/project/asset/cut_pick_list.html": {
+		"refer": [
+			"app/project/asset/cut_pick_item.html"
+		]
+	},
+	"app/project/asset/storage_in.html": {
+		"refer": [
+			"app/util/select-process-forcheck.html",
+			"app/util/select-process-forstore.html"
+		]
+	},
+	"app/project/asset/plant_out_list.html": {
+		"refer": [
+			"app/project/asset/plant_out_item.html",
+			"index.html"
+		]
+	},
+	"app/project/asset/spare_pick_list.html": {
+		"refer": [
+			"app/project/asset/spare_pick_item.html"
+		]
+	},
+	"app/project/asset/plant_pick_list.html": {
+		"refer": [
+			"app/project/asset/plant_pick_item.html"
+		]
+	},
+	"app/project/asset/plant_out_item.html": {
+		"refer": [
+			"app/util/select-user.html",
+			"app/util/select-user-forstore.html"
+		]
+	},
+	"app/project/asset/spare_process_pick_list.html": {
+		"refer": [
+			"app/project/asset/spare_process_pick_item.html"
+		]
+	},
+	"app/project/asset/plant_process_out_list.html": {
+		"refer": [
+			"app/project/asset/plant_process_out_item.html"
+		]
+	},
+	"app/project/asset/plant_process_pick_list.html": {
+		"refer": [
+			"app/project/asset/plant_process_pick_item.html"
+		]
+	},
+	"app/project/asset/plant_process_out_item.html": {
+		"refer": [
+			"app/util/select-user.html",
+			"app/util/select-user-forstore.html"
+		]
+	},
+	"app/project/process/fqc_report_list.html": {
+		"refer": [
+			"app/project/process/fqc_report_item.html"
+		]
+	}
 }

@@ -3,8 +3,10 @@
 
 	<head>
 		<meta charset="UTF-8">
-		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
-		<title>工序报工</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1,user-scalable=no">
+	<meta name="apple-mobile-web-app-capable" content="yes">
+	<meta name="apple-mobile-web-app-status-bar-style" content="black">
+	<title>工序报工</title>
 		<link rel="stylesheet" href="../../../mui/css/mui.min.css" />
 		<link rel="stylesheet" href="../../../jxm/css/jxm.css">
 		<style type="text/css">
@@ -276,12 +278,6 @@
 			document.getElementById("barcode").focus();
 			//页面初始化完成加载此方法
 			mui.plusReady(function() {
-				//初始化1秒后扫描工单号获取焦点
-				//$('#barcode').focus();
-				//$("#now_time").html(jxm.shortTime(jxm.getTimeStamp(), false));设置时间
-				dateFormat(jxm.getTimeStamp());
-				$("#user_nameandcode").html(jxm.getUserName());
-				/*设置用户图片*/
 
 			});
 			/**
@@ -297,11 +293,6 @@
 				var str = year + "-" + month + "-" + day + "&nbsp;<span style='font-size: 14px;'>" + hh + ":" + mm + "</span>";
 				$("#now_date").html(str);
 			}
-			/*jQuery事件，每秒执行一次，更新当前时间*/
-			setInterval(function() {
-				//$("#now_time").html(jxm.shortTime(jxm.getTimeStamp(), false));
-				dateFormat(jxm.getTimeStamp());
-			}, 1000);
 			/*扫描工单号*/
 			document.getElementById('btnscan').addEventListener('tap', function() {
 				jxm.open('../../util/barcode_scan.html');

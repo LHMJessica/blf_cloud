@@ -67,6 +67,7 @@
 						        plus.nativeUI.closeWaiting();
 						        console.log("安装apk文件结束！");
 						        plus.nativeUI.alert("安装结束！",function(){
+						        	localStorage.clear();
 						            plus.runtime.restart();
 						        });
 						    },function(e){
@@ -93,8 +94,10 @@
 					        plus.nativeUI.closeWaiting();
 					        console.log("安装wgt结束！");
 					        setTimeout(function () {
-					        	mui.toast("更新完成，3秒后重启应用")
+					        	mui.toast("更新完成，3秒后重启应用");
 					        },1000*3);
+					        localStorage.clear();
+					        plus.runtime.restart();
 					     	 /*plus.nativeUI.alert("升级完成！",function(){
 					            alert("开始重启");
 					            plus.runtime.restart();

@@ -3,17 +3,20 @@
 
 	<head>
 		<meta charset="UTF-8">
-		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
-		<title>计时报工申请</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1,user-scalable=no">
+	<meta name="apple-mobile-web-app-capable" content="yes">
+	<meta name="apple-mobile-web-app-status-bar-style" content="black">
+	<title>计时报工申请</title>
 		<link rel="stylesheet" href="../../../mui/css/mui.min.css" />
 		<link rel="stylesheet" href="../../../jxm/css/jxm.css">
-		<link rel="stylesheet" href="../../../ddcg/css/ddcgIcon.css">
 		<style type="text/css">
 			.mui-bar {
 				-webkit-box-shadow: none;
 				box-shadow: none;
 			}
-			
+			.mui-btn{
+				padding:7px 0px;
+			}
 			.head-search {
 				padding-top: 1px;
 				height: 50px !important;
@@ -93,14 +96,6 @@
 		<div class="mui-content">
 			<div class="mui-input-group">
 				<h5>基本信息</h5>
-				<!--<div class="input-row">
-					<label style="width: 35%;">申请人：</label>
-					<input style="width: 65%;" type="text" id="user_name" readonly="readonly"></input>
-				</div>
-				<div class="input-row">
-					<label style="width: 35%;">申请部门：</label>
-					<input style="width: 60%;" type="text" id="dept_name" readonly="readonly"></input>
-				</div>-->
 				<div class="input-row">
 					<label style="width: 35%;">申请日期</label>
 					<input style="width: 79%;" type="date" id="apply_date" required="required"></input>
@@ -130,6 +125,12 @@
 				<div class="input-row" style="height: auto;">
 					<label style="width: 35%;">申请原因</label>
 					<textarea style="width:79%;height: 100px;vertical-align: top;" id="apply_desc" required="required"></textarea>
+				</div>
+				<div class="input-row">
+					<label style="width: 35%;">审核人：</label>
+					<input style="width: 68%;" type="text" id="repair_user" readonly="readonly"></input>
+					<button type="button" class="mui-btn" id="resetseluser" style="width: 10%;">
+							<span class="mui-icon mui-icon-close"></span></button>
 				</div>
 			</div>
 		</div>
@@ -175,6 +176,8 @@
 				var apply_desc = $('#apply_desc').val();
 				var hour = $('#hour').val();
 				var minuts = $('#minuts').val();
+				var edit_user = $("#repair_user").val();
+				var edit_userid = $("#repair_user").attr("userid");
 				var apply_date = $('#apply_date').val();
 				if(apply_desc ==''){
 					mui.toast("申请原因必填");
@@ -184,18 +187,49 @@
 					return;
 				}				
 				var params = "funid=app_full&eventcode=timingApply&user_name=" + user_name + "&user_id=" + user_id + "&dept_name=" + dept_name + "&dept_id=" + dept_id;
-				params += "&apply_desc=" + apply_desc + "&work_hours=" + (parseInt(hour)+parseFloat(minuts)) + "&apply_date=" + apply_date;
+				params += "&apply_desc=" + apply_desc + "&work_hours=" + (parseInt(hour)+parseFloat(minuts)) + "&apply_date=" + apply_date + "&edit_user=" + edit_user + "&edit_userid=" + edit_userid;
 				jxm.post(params, function(data) {
 						console.log("提交申请返回的参数"+data);
 						mui.toast("提交完成");
 						pageClear();
 				});
 			});
+			/**
+			 * 选择用户
+			 */
+			var select_user = "select_user";
+			$("#repair_user").on("click", function() {
+				var deptid = $("#seldep").attr("deptid");
+				var href = "../../util/select-user-fortime.html";
+				var param = {
+					callbackWinId: mui.currentWebview.id,
+					callbackEvent: select_user,
+					deptid: deptid,
+					mutilsel: false //不需要多选
+				};
+				jxm.open(href, {
+					extras: {
+						selectParams: param
+					}
+				});
+
+			});
+			window.addEventListener(select_user, function(e) {
+				var obj = e.detail;
+				$("#repair_user").val(obj.dataname);
+				$("#repair_user").attr("userid", obj.dataid);
+			});
+			$('#resetseluser').on("click", function() {
+				$("#repair_user").val('');
+				$("#repair_user").removeAttr("userid");
+			});
 			//清空当前页面控件值
 			var pageClear = function() {
 				$('#apply_desc').val('');
 				$('#hour').val('0');
 				$("#minuts").html('0');
+				$("#repair_user").val('');
+				$("#repair_user").removeAttr("userid");
 			}
 		</script>
 	</body>

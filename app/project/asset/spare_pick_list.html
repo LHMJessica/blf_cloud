@@ -1,0 +1,130 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title>原材料领料列表</title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link rel="stylesheet" href="../../../mui/css/mui.min.css" />
+		<link rel="stylesheet" href="../../../jxm/css/jxm.css">
+		<link rel="stylesheet" type="text/css" href="../../../mui/css/icons-extra.css" />
+		<style>
+			.mui-table h4,
+			.mui-table h5,
+			.mui-table .mui-h5,
+			.mui-table .mui-h6,
+			.mui-table p {
+				margin-top: 0;
+			}
+			
+			.mui-table h4 {
+				line-height: 21px;
+				font-weight: 500;
+			}
+			
+			.mui-table .oa-icon {
+				position: absolute;
+				right: 0;
+				bottom: 0;
+			}
+			
+			.mui-table .oa-icon-star-filled {
+				color: #f14e41;
+			}
+		</style>
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav mui-bar-primary">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<h1 class="mui-title" id="title">原材料领料列表</h1>
+		</header>
+		<div class="mui-content">
+			<ul class="mui-table-view mui-table-view-striped mui-table-view-condensed" id="datas">
+				<!--<li class="mui-table-view-cell">
+					<div class="mui-table">
+						<div class="mui-table-cell mui-col-xs-12">
+							<h4 class="mui-ellipsis">工单编号：PC190032-C</h4>
+							<div class="mui-table">
+								<p class="mui-h5 mui-ellipsis mui-table-cell mui-col-xs-12">领料单号：CP19070022</p>
+							</div>
+							<div class="mui-table">
+								<p class="mui-h5 mui-ellipsis mui-table-cell mui-col-xs-6">款号：P1158</p>
+								<p class="mui-h5 mui-ellipsis mui-table-cell mui-col-xs-6">品名：相机包</p>
+							</div class="mui-table">
+							<div class="mui-table">
+								<p class="mui-h5 mui-ellipsis mui-table-cell mui-col-xs-6">工单数量：10000</p>
+								<p class="mui-h5 mui-ellipsis mui-table-cell mui-col-xs-6">领料日期：2019-07-01</p>
+							</div>
+						</div>
+					</div>
+				</li>-->
+			</ul>
+		</div>
+		<script src="../../../mui/js/mui.min.js"></script>
+		<script src="../../../jxm/js/jxm.js"></script>
+		<script src="../../../jxm/js/jxm-image-input.js"></script>
+		<script src="../../util/jxm-util.js"></script>
+		<script src="../../../Resources/js/jquery-3.3.1.min.js"></script>
+		<script src="../../../Resources/js/juicer-min.js"></script>
+		<script src="../../../Resources/js/juicerUtil.js"></script>
+		<script type="text/javascript">
+			mui.init({
+				swipeBack: false //关闭-右滑关闭功能
+			});
+			mui.plusReady(function() {
+				appendData();
+			})
+			mui("#datas").on("tap", "li", function() {
+				var pick_id=$(this).attr("dataid");
+				var href = "spare_pick_item.html";
+				var param = {
+					callbackWinId: mui.currentWebview.id,
+					callbackEvent: "view_item",
+					pick_id: pick_id
+				};
+				jxm.open(href, {
+					extras: {
+						selectParams: param
+					}
+				});
+			});
+			/**
+			 * 行选择事件回调函数
+			 */
+			window.addEventListener("view_item", function(e) {
+
+			});
+			var appendData = function() {
+				var params = "funid=queryevent&eventcode=query_data&query_funid=spare_pick&limit=50&start=0&where_sql=spare_pick.status ='0' and spare_pick.auditing='1'";
+				jxm.post(params, function(data) {
+					//console.log("kjk" + JSON.stringify(data));
+					var html = '';
+					$.each(data.root, function(i, obj) {
+						html += '<li class="mui-table-view-cell" dataid="'+obj.spare_pick__pick_id+'">' +
+							'<div class="mui-table">' +
+							'<div class="mui-table-cell mui-col-xs-12">' +
+							'<h4 class="mui-ellipsis">工单编号：'+obj.spare_pick__div_code+'</h4>' +
+							'<div class="mui-table">' +
+							'<p class="mui-h5 mui-ellipsis mui-table-cell mui-col-xs-12">领料单号：'+obj.spare_pick__pick_code+'</p>' +
+							'</div>' +
+							'<div class="mui-table">' +
+							'<p class="mui-h5 mui-ellipsis mui-table-cell mui-col-xs-6">款号：'+obj.spare_pick__sp_code+'</p>' +
+							'<p class="mui-h5 mui-ellipsis mui-table-cell mui-col-xs-6">品名：'+obj.spare_pick__sp_name+'</p>' +
+							'</div class="mui-table">' +
+							'<div class="mui-table">' +
+							'<p class="mui-h5 mui-ellipsis mui-table-cell mui-col-xs-6">工单数量：'+parseFloat(obj.spare_pick__div_num).toFixed(0)+'</p>' +
+							'<p class="mui-h5 mui-ellipsis mui-table-cell mui-col-xs-6">制单日期：'+obj.spare_pick__pick_date.substr(0,10)+'</p>' +
+							'</div>' +
+							'</div>' +
+							'</div>' +
+							'</li>';
+					});
+					$("#datas").html(html);
+				})
+			}
+		</script>
+
+	</body>
+
+</html>

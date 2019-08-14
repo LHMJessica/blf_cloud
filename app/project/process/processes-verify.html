@@ -3,8 +3,10 @@
 
 	<head>
 		<meta charset="UTF-8">
-		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
-		<title>报工核对</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1,user-scalable=no">
+	<meta name="apple-mobile-web-app-capable" content="yes">
+	<meta name="apple-mobile-web-app-status-bar-style" content="black">
+	<title>报工核对</title>
 		<link rel="stylesheet" href="../../../mui/css/mui.min.css" />
 		<link rel="stylesheet" href="../../../jxm/css/jxm.css">
 		<link rel="stylesheet" type="text/css" href="../../../mui/css/icons-extra.css" />
@@ -254,7 +256,7 @@
 					<td class="qiantian" status="3"><span class="title">已核对：</span><span class="yesked" id="yesyes-check"></span></td>
 				</tr>
 			</table>
-		</section>
+		</section><!--
 		<footer class="mui-bar mui-bar-footer">
 			<div class="mui-content-padded">
 				<ul class="mui-pager">
@@ -271,7 +273,7 @@
 					<li id="pagers"></li>
 				</ul>
 			</div>
-		</footer>
+		</footer>-->
 
 		<div class="mui-content">
 			<div id="works" style="padding: 10px 10px; margin-top: 160px;">
@@ -438,8 +440,8 @@
 			var deptid = '';
 			var start_date = ''
 			var end_date = '';
-			var page_num = 1;
-			var last = 1;
+			/*var page_num = 1;
+			var last = 1;*/
 			var getValue = function() {
 				radioindex = $("input[type=radio]:checked").val(); //获取被选中的单选按钮的值
 				userid = $("#useres").attr("userId");
@@ -463,35 +465,16 @@
 			 */
 			var getAllData = function() {
 				var params = "funid=app_full&eventcode=pageInit&start_date=" + start_date + "&end_date=" + end_date + "&edit_userid=" + userid + "&dept_id=" + deptid + "&check_type=" + radioindex;
-				params += "&page_num=" + page_num;
+				//params += "&page_num=" + page_num;
 				jxm.post(params, function(data) {
+					console.log(JSON.stringify(data))
 					setDays(data); //设置今天前天昨天的数据
 					setCard(data); //设置报工卡片资料
 				});
 			};
 			$("#search").on("tap", function() {
 				//getValue();
-				page_num = 1;
-				loadPage();
-			});
-			/**
-			 * 上一页
-			 */
-			$("#pre").on("tap", function() {
-				//getValue();
-				if(page_num != 1) {
-					page_num = page_num - 1;
-				}
-				loadPage();
-			});
-			/**
-			 * 下一页
-			 */
-			$("#next").on("tap", function() {
-				//	getValue();
-				if(page_num != last) {
-					page_num = page_num + 1;
-				}
+				//page_num = 1;
 				loadPage();
 			});
 			/**
@@ -522,14 +505,14 @@
 			/**
 			 * 验证页码
 			 */
-			var checkPage = function() {
+			/*var checkPage = function() {
 				if(page_num >= last) {
 					$("#next").attr("disabled", true).css("pointer-events", "none").parent().attr("class", "mui-disabled");
 				}
 				if(page_num <= 1) {
 					$("#pre").attr("disabled", true).css("pointer-events", "none").parent().attr("class", "mui-disabled");
 				}
-			};
+			};*/
 			/**
 			 * 设置报工数据卡片
 			 * @param {Object} data
@@ -537,18 +520,8 @@
 			var setCard = function(data) {
 				if(data != '') {
 					$("#works").children().remove();
-					$("#pre").removeAttr("disabled").css("pointer-events", "auto").parent().removeAttr("class");
-					$("#next").removeAttr("disabled").css("pointer-events", "auto").parent().removeAttr("class");
-					for(var i = 0; i < data.length; i++) {
-						data[i]
-					}
 					$.each(data, function(i, rs) {
-
-						if(i == data.length - 4) {
-							last = rs.cnt;
-							$("#pagers").html(page_num + "/" + last + "页");
-							checkPage();
-						} else if(i < data.length - 4) {
+						if(i < data.length - 3) {
 						//	console.log(JSON.stringify(rs))
 							var ext={"edit_user":rs.edit_user,"edit_userid":rs.edit_userid,"div_code":rs.div_code,"process_name":rs.process_name,"process_code":rs.process_code,"det_id":rs.det_id};
 							var html = '<div class="mui-card">' +

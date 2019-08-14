@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1,user-scalable=no">
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black">
+		<title>工单检验详情</title>
+
+		<link rel="stylesheet" href="../../../mui/css/mui.min.css" />
+		<link rel="stylesheet" href="../../../jxm/css/jxm.css">
+		<link rel="stylesheet" type="text/css" href="../../../mui/css/icons-extra.css" />
+		<style>
+			body,
+			html {
+				height: 100%;
+				width: 100%;
+				overflow: hidden;
+				margin: 0;
+			}
+			
+			.mui-content {
+				height: 100%;
+			}
+			
+			.processes-title {
+				font-size: 14px;
+				color: #000000;
+			}
+			
+			.processes-value {
+				font-size: 12px;
+				color: #555555;
+			}
+			/*清除浏览器自带的内边距样式*/
+			
+			ul,
+			menu,
+			dir,
+			p {
+				-webkit-margin-before: 0em;
+				-webkit-margin-after: 0em;
+				-webkit-margin-start: 0px;
+				-webkit-margin-end: 0px;
+				-webkit-padding-start: 0px;
+			}
+			
+			#cu_pick_info li {
+				display: inline-block;
+				list-style: none;
+				text-align: center;
+				vertical-align: top;
+			}
+			
+			#cu_pick_info {
+				padding: 10px 0px;
+				text-align: center;
+				height: 100%;
+			}
+			
+			.s1 {
+				width: 28%;
+			}
+			
+			.s2 {
+				width: 14%;
+			}
+			
+			.s3 {
+				width: 14%;
+			}
+			
+			.s4 {
+				width: 14%;
+			}
+			
+			.s5 {
+				width: 14%;
+			}
+			
+			.s6 {
+				width: 16%;
+			}
+			td.s6{
+				color: red;
+			}
+			.mui-content-header {
+				height: 20%;
+			}
+			
+			.mui-content-body {
+				height: 78%;
+			}
+		</style>
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav mui-bar-primary">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<h1 class="mui-title" id="title">FQC检验报告详情</h1>
+		</header>
+		<div class="mui-content">
+			<div class="mui-content-header">
+				<div id="cu_pick_info">
+					<ul>
+						<li style="width: 24%;">
+							<p class="processes-title">工单号</p>
+							<p id="div_code" class="processes-value"></p>
+						</li>
+						<li style="width: 1px;background-color: lightgrey;height: 40px;"></li>
+						<li style="width: 24%;">
+							<p class="processes-title">生产组</p>
+							<p id="group_name" class="processes-value"></p>
+						</li>
+						<li style="width: 1px;background-color: lightgrey;height: 40px;"></li>
+						<li style="width: 24%;">
+							<p class="processes-title">款号</p>
+							<p id="sp_code" class="processes-value"></p>
+						</li>
+						<li style="width: 1px;background-color: lightgrey;height: 40px;"></li>
+						<li style="width: 20%;">
+							<p class="processes-title">颜色</p>
+							<p id="color_name" class="processes-value"></p>
+						</li>
+					</ul>
+					<hr />
+					<ul>
+						<li style="width: 24%;">
+							<p class="processes-title">检验数量</p>
+							<p id="qc_num" class="processes-value"></p>
+						</li>
+						<li style="width: 1px;background-color: lightgrey;height: 40px;"></li>
+						<li style="width: 24%;">
+							<p class="processes-title">不良</p>
+							<p id="ng_num" class="processes-value"></p>
+						</li>
+						<li style="width: 1px;background-color: lightgrey;height: 40px;"></li>
+						<li style="width: 24%;">
+							<p class="processes-title">良品数量</p>
+							<p id="pass_num" class="processes-value"></p>
+						</li>
+						<li style="width: 1px;background-color: lightgrey;height: 40px;"></li>
+						<li style="width: 20%;">
+							<p class="processes-title">不良率</p>
+							<p id="ng_rate" class="processes-value"></p>
+						</li>
+					</ul>
+				</div>
+			</div>
+			<div class="mui-content-body">
+				<table cellspacing="0" cellpadding="0" style="width: 100%;overflow-x:scroll;overflow-y: scroll;">
+					<thead>
+						<tr>
+							<th class="s1">不良描述</th>
+							<th class="s2">致命</th>
+							<th class="s3">嚴重</th>
+							<th class="s4">輕微</th>
+							<th class="s5">数量</th>
+							<th class="s6">不良率</th>
+						</tr>
+					</thead>
+					<tbody id="datas">
+
+					</tbody>
+				</table>
+			</div>
+		</div>
+		<script src="../../../mui/js/mui.min.js"></script>
+		<script src="../../../jxm/js/jxm.js"></script>
+		<script src="../../../jxm/js/jxm-image-input.js"></script>
+		<script src="../../util/jxm-util.js"></script>
+		<script src="../../../Resources/js/jquery-3.3.1.min.js"></script>
+		<script type="text/javascript">
+			mui.init({
+				swipeBack: false //关闭-右滑关闭功能
+			});
+			var report_id = null;
+			mui.plusReady(function() {
+				report_id = mui.currentWebview.selectParams.report_id;
+				setData(report_id);
+				setTable(report_id);
+			})
+			var setData = function(report_id) {
+				var params = "funid=app_full&eventcode=selQCWorkPlan&plan_id=" + report_id;
+				jxm.post(params, function(obj) {
+					
+					$("#group_name").html(obj.group_name);
+					$("#div_code").html(obj.div_code);
+					$("#report_date").html(obj.date.substr(0, 10));
+					$("#sp_code").html(obj.sp_code);
+					$("#color_name").html(obj.color_name);
+					$("#ng_num").html(parseFloat(obj.ng_num).toFixed(0));
+					$("#qc_num").html(parseFloat(obj.work_num).toFixed(0));
+					$("#pass_num").html(parseFloat(obj.pass_num).toFixed(0));
+					//计算不良率
+					var rate = "0";
+					if(obj.ng_num != "0" && obj.ng_num != null && obj.ng_num != undefined && obj.work_num != "0" && obj.work_num != null && obj.work_num != undefined) {
+						rate = (parseInt(obj.ng_num) / parseInt(obj.work_num) * 100).toFixed(2)
+					}
+					$("#ng_rate").html(rate);
+				});
+			};
+			var setTable = function(report_id) {
+				var params = "funid=app_full&eventcode=qryQCListMes&plan_id=" + report_id;
+				jxm.post(params, function(data) {
+					var html = '';
+					$.each(data, function(i, obj) {
+						console.log(JSON.stringify(obj))
+						html += '<tr>' +
+							'<td class="s1">' + obj.bad_desc + '</td>' +
+							'<td class="s2">' + formatNumber(obj.num1) + '</td>' +
+							'<td class="s3">' + formatNumber(obj.num2) + '</td>' +
+							'<td class="s4">' + formatNumber(obj.num3) + '</td>' +
+							'<td class="s5">' + (parseInt(obj.num1) + parseInt(obj.num2) + parseInt(obj.num3)) + '</td>' +
+							'<td class="s6">' + (((parseInt(obj.num1) + parseInt(obj.num2) + parseInt(obj.num3)) / parseInt($("#qc_num").html())) * 100).toFixed(2) + '%</td>' +
+							'</tr>';
+					});
+					$("#datas").html(html);
+					$("#datas tr:odd").css({
+						"background-color": "#f2f2f2"
+					}).children("td").css({
+						"border-top": "none",
+						"border-bottom": "none"
+					});
+				});
+			}
+			/**
+			 * 去掉小数点，如果是0.00就不显示
+			 * @param {Object} number
+			 */
+			var formatNumber = function(number) {
+				var number = parseFloat(number).toFixed(0);
+				if(number == 0) {
+					return "";
+				}
+				return number.toString();
+			}
+		</script>
+	</body>
+
+</html>

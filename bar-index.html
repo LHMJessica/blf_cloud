@@ -3,11 +3,10 @@
 	<!--微信公众号注册页面，需要绑定OpenID与user_code-->
 	<head>
 		<meta charset="utf-8">
-		<title>移动办公</title>
 		<meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1,user-scalable=no">
 		<meta name="apple-mobile-web-app-capable" content="yes">
 		<meta name="apple-mobile-web-app-status-bar-style" content="black">
-
+		<title>移动办公</title>
 		<!--标准mui.css-->
 		<link rel="stylesheet" href="Resources/css/iconfont.css" />
 		<link rel="stylesheet" href="mui/css/mui.min.css">
@@ -143,7 +142,7 @@
 	            		    if (bg == 0) {
 	            				cls = "icon-bg " + iconbgs[ys];
 	            		    } else {
-	            		    	cls = "icon-line " + iconlines[ys];
+	            		    	cls = "icon-bg " + iconbgs[ys];
 	            		    }
 	            		    var c1 = item.fun_icon, c2 = '';
 	            		    if (c1.length == 0) {

@@ -211,7 +211,7 @@ body {
     color: #464b5e;
 }
 body th {
-    background-color: #f34c7b;
+   /* background-color: #f34c7b;*/
     color: #fff;
     border: 1px solid #e9ecf5;
     height: 45px;

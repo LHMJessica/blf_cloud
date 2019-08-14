@@ -3,7 +3,9 @@
 
 	<head>
 		<meta charset="UTF-8">
-		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1,user-scalable=no">
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black">
 		<title>休息申请</title>
 		<link rel="stylesheet" href="../../../mui/css/mui.min.css" />
 		<link rel="stylesheet" href="../../../jxm/css/jxm.css">
@@ -175,10 +177,10 @@
 								</tbody>
 							</table>
 						</div>
-						<ul id="check_user" style="width: 100%;" class="mui-table-view">
-						</ul>
 					</div>
 				</div>
+				<ul id="check_user" style="width: 100%;" class="mui-table-view">
+				</ul>
 			</div>
 		</div>
 
@@ -217,6 +219,7 @@
 			$("#select_user").click(function() {
 				var href = "../util/select-user1.html";
 				var param = {
+					callbackWinId: mui.currentWebview.id,
 					callbackEvent: select_user,
 					dept_id: jxm.getDeptId()
 				};
@@ -307,6 +310,7 @@
 					pageClear();
 				});
 			});
+
 			//清空当前页面控件值
 			var pageClear = function() {
 				$('#apply_desc').val('');

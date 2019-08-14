@@ -3,7 +3,9 @@
 
 	<head>
 		<meta charset="UTF-8">
-		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1,user-scalable=no">
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black">
 		<title>报工统计</title>
 		<link rel="stylesheet" href="../../../mui/css/mui.min.css" />
 		<link rel="stylesheet" href="../../../jxm/css/jxm.css">
@@ -33,15 +35,6 @@
 				border: none;
 			}
 			
-			.label-red {
-				padding-left: 5px;
-				color: red !important;
-			}
-			
-			.text-disabled {
-				background-color: #EEEEEE;
-			}
-			
 			.iconfont {
 				font-size: 24px;
 			}
@@ -52,34 +45,6 @@
 				background-color: #efeff4;
 			}
 			
-			.d {
-				height: 32px;
-				width: 100%;
-				margin-top: 2%;
-			}
-			
-			.d5 {
-				margin-left: 5%;
-			}
-			
-			.d10 {
-				margin-left: 10%;
-			}
-			
-			.d11 {
-				margin-left: 12%;
-			}
-			
-			#addPopover {
-				position: fixed;
-				top: 0;
-				right: 0;
-				bottom: 0;
-				left: 0%;
-				z-index: 998;
-				background-color: rgba(0, 0, 0, .4);
-			}
-			
 			.listtip {
 				padding-top: 20px;
 				text-align: center;
@@ -88,19 +53,14 @@
 				color: #CCCCCC;
 			}
 			
-			.addContent {
-				position: absolute;
-				left: 0;
-				top: 20px;
-			}
-			
 			.mspan {
-				margin-top: 2%;
 				overflow-x: scroll;
-				display: inline-block;
+				display: block;
 				width: 100%;
 				overflow-y: hidden;
 				white-space: pre-wrap;
+				word-break: break-all;
+				margin-top: 3%;
 			}
 			
 			.mui-bar-footer {
@@ -133,75 +93,76 @@
 				line-height: 30px;
 			}
 			
-			#tableOne th:nth-child(9),
-			#tabOnesub td:nth-child(9) {
+			table th:nth-child(9),
+			table td:nth-child(9) {
 				width: 9%;
 			}
 			
-			#tableOne th:nth-child(11),
-			#tabOnesub td:nth-child(11) {
+			table th:nth-child(11),
+			table td:nth-child(11) {
 				width: 16%;
 			}
 			
-			#tableOne th:nth-child(10),
-			#tabOnesub td:nth-child(10) {
+			table th:nth-child(10),
+			table td:nth-child(10) {
 				width: 8%;
 			}
 			
-			#tableOne th:nth-child(12),
-			#tabOnesub td:nth-child(12) {
+			table th:nth-child(12),
+			table td:nth-child(12) {
 				width: 6%;
 			}
 			
-			#tableOne th:nth-child(1),
-			#tabOnesub td:nth-child(1) {
+			table th:nth-child(1),
+			table td:nth-child(1) {
 				width: 8%;
 			}
 			
-			#tableOne th:nth-child(2),
-			#tabOnesub td:nth-child(2) {
+			table th:nth-child(2),
+			table td:nth-child(2) {
 				width: 4%;
 			}
 			
-			#tableOne th:nth-child(7),
-			#tabOnesub td:nth-child(7) {
+			table th:nth-child(7),
+			table td:nth-child(7) {
 				width: 9%;
 			}
 			
-			#tableOne th:nth-child(8),
-			#tabOnesub td:nth-child(8) {
+			table th:nth-child(8),
+			table td:nth-child(8) {
 				width: 7%;
 			}
 			
-			#tableOne th:nth-child(3),
-			#tabOnesub td:nth-child(3) {
+			table th:nth-child(3),
+			table td:nth-child(3) {
 				color: #00AAEF;
 				width: 5%;
 			}
 			
-			#tableOne th:nth-child(4),
-			#tabOnesub td:nth-child(4) {
+			table th:nth-child(4),
+			table td:nth-child(4) {
 				color: #00AAEF;
 				width: 5%;
 			}
 			
-			#tableOne th:nth-child(5),
-			#tabOnesub td:nth-child(5) {
+			table th:nth-child(5),
+			table td:nth-child(5) {
 				color: green;
 				width: 6%;
 			}
 			
-			#tableOne th:nth-child(6),
-			#tabOnesub td:nth-child(6) {
+			table th:nth-child(6),
+			table td:nth-child(6) {
 				color: green;
 				width: 5%;
 			}
 			
-			#tableOne th:nth-child(13),
-			#tabOnesub td:nth-child(13) {
+			table th:nth-child(13),
+			table td:nth-child(13) {
 				color: #00AAEF;
 				width: 6%;
 			}
+			
 			.radio_row {
 				display: inline-block;
 				width: 32%;
@@ -214,6 +175,7 @@
 				line-height: 30px;
 				text-align: right;
 			}
+			
 			.mui-input-row .mui-btn {
 				padding: 10px 10px;
 			}
@@ -222,10 +184,6 @@
 				border: none;
 			}
 			
-			.t_r_content {
-				height: 120% !important;
-				margin-bottom: 60px;
-			}
 			.radio_row {
 				display: inline-block;
 				width: 32%;
@@ -244,21 +202,6 @@
 		</header>
 
 		<nav class="mui-bar mui-bar-footer">
-			<div class="mui-content-padded">
-				<ul class="mui-pager">
-					<li>
-						<a href="#" id="pre">
-							上一页
-						</a>
-					</li>
-					<li>
-						<a href="#" id="next">
-							下一页
-						</a>
-					</li>
-					<li id="pagers"></li>
-				</ul>
-			</div>
 			<center>
 				<div class="mui-pull-right total">
 					<p>合计金额：<span id="total_money" style="color: red;"></span></p>
@@ -267,89 +210,80 @@
 			</center>
 		</nav>
 		<div class="mui-content">
-			<form class="mui-input-group">
-				<div id="search-box">
-					<div class="mui-input-row">
-						<label style="width: 30%;">起始时间：</label>
-						<input type="date" id="start_date" style="width: 70%;" />
-					</div>
-					<div class="mui-input-row">
-						<label style="width: 30%;">结束时间：</label>
-						<input type="date" id="end_date" style="width: 70%;" />
-					</div>
-					<div class="mui-input-row">
-						<label style="width: 30%;">选择部门：</label>
-						<button type="button" class="mui-btn" id="resetseldep" style="width: 10%;">
+			<div class="mui-content-header">
+				<form class="mui-input-group">
+					<div id="search-box">
+						<div class="mui-input-row">
+							<label style="width: 30%;">起始时间：</label>
+							<input type="date" id="start_date" style="width: 70%;" />
+						</div>
+						<div class="mui-input-row">
+							<label style="width: 30%;">结束时间：</label>
+							<input type="date" id="end_date" style="width: 70%;" />
+						</div>
+						<div class="mui-input-row">
+							<label style="width: 30%;">选择部门：</label>
+							<button type="button" class="mui-btn" id="resetseldep" style="width: 10%;">
 						<span class="mui-icon mui-icon-close"></span></button>
-						<input type="text" id="seldep" style="width: 60%;" />
-					</div>
-					<div class="mui-input-row">
-						<label style="width: 30%;">选择员工：</label>
-						<button type="button" class="mui-btn" id="resetseluser" style="width: 10%;">
+							<input type="text" id="seldep" style="width: 60%;" />
+						</div>
+						<div class="mui-input-row">
+							<label style="width: 30%;">选择员工：</label>
+							<button type="button" class="mui-btn" id="resetseluser" style="width: 10%;">
 						<span class="mui-icon mui-icon-close"></span></button>
-						<input type="text" id="select_user" style="width: 60%;" />
+							<input type="text" id="select_user" style="width: 60%;" />
+						</div>
+						<div class="mui-input-row">
+							<div class="radio_row mui-radio mui-left">
+								<label>全部</label>
+								<input name="radio1" type="radio" value="" checked="checked">
+							</div>
+							<div class="radio_row mui-radio mui-left">
+								<label>未核对</label>
+								<input name="radio1" type="radio" value="0">
+							</div>
+							<div class="radio_row mui-radio mui-left">
+								<label>已核对</label>
+								<input name="radio1" type="radio" value="1">
+							</div>
+						</div>
+						<div class="mui-input-row">
+							<input type="button" value="查询" id="dosearch" style="width: 80%;margin: 5px 10%;color: #FFFFFF;background-color: deepskyblue;border-radius:5px 5px ;" />
+						</div>
+
 					</div>
-					<div class="mui-input-row">
-						<div class="radio_row mui-radio mui-left">
-							<label>全部</label>
-							<input name="radio1" type="radio" value=""  checked="checked" >
-						</div>
-						<div class="radio_row mui-radio mui-left">
-							<label>未核对</label>
-							<input name="radio1" type="radio" value="0">
-						</div>
-						<div class="radio_row mui-radio mui-left">
-							<label>已核对</label>
-							<input name="radio1" type="radio" value="1">
-						</div>
-					</div>
-					<div class="mui-input-row">
-						<input type="button" value="查询" id="dosearch" style="width: 80%;margin: 5px 10%;color: #FFFFFF;background-color: deepskyblue;border-radius:5px 5px ;" />
-					</div>
-				</div>
-				<div class="data-table" style="overflow: scroll;">
-					<div class="t_r" style="margin-left: 0px;">
-						<div class="t_r_t" style="margin-top: 0.5%;">
-							<table id="tableOne" style="width: 300%;">
-								<tbody>
-									<tr id="tableOneTh">
-										<th><span class='mspan'>员工</span></th>
-										<th><span class='mspan'>日期</span></th>
-										<th style="background: #00AAEF;color: #ffffff;"><span class='mspan'>计件工资</span></th>
-										<th style="background: #00AAEF;color: #ffffff;"><span class='mspan'>日工资</span></th>
-										<th style="background: green;color: #ffffff;"><span class='mspan'>工序达成率</span></th>
-										<th style="background: green;color: #ffffff;"><span class='mspan'>日达成率</span></th>
-										<th><span class='mspan'>生产单号</span></th>
-										<th><span class='mspan'>产品代码</span></th>
-										<th><span class='mspan'>产品名称</span></th>
-										<th><span class='mspan'>工序代码</span></th>
-										<th><span class='mspan'>工序名称</span></th>
-										<th><span class='mspan'>数量</span></th>
-										<th style="background: #00AAEF;color: #ffffff;"><span class='mspan'>单价</span></th>
-									</tr>
-								</tbody>
-							</table>
-						</div>
-						<div class="t_r_content">
-							<table id="tabOnesub" style="width: 300%;">
-							</table>
-						</div>
-					</div>
-				</div>
-			</form>
+				</form>
+			</div>
+			<div class="mui-content-body">
+				<table cellspacing="0" cellpadding="0" style="width: 300%;overflow-x:scroll;overflow-y: scroll;">
+					<thead>
+						<tr>
+							<th><span class='mspan'>员工</span></th>
+							<th><span class='mspan'>日期</span></th>
+							<th style="background: #00AAEF;color: #ffffff;"><span class='mspan'>计件工资</span></th>
+							<th style="background: #00AAEF;color: #ffffff;"><span class='mspan'>日工资</span></th>
+							<th style="background: green;color: #ffffff;"><span class='mspan'>工序达成</span></th>
+							<th style="background: green;color: #ffffff;"><span class='mspan'>日达成率</span></th>
+							<th><span class='mspan'>生产单号</span></th>
+							<th><span class='mspan'>产品代码</span></th>
+							<th><span class='mspan'>产品名称</span></th>
+							<th><span class='mspan'>工序代码</span></th>
+							<th><span class='mspan'>工序名称</span></th>
+							<th><span class='mspan'>数量</span></th>
+							<th style="background: #00AAEF;color: #ffffff;"><span class='mspan'>单价</span></th>
+						</tr>
+					</thead>
+					<tbody id="datas">
+
+					</tbody>
+				</table>
+			</div>
 		</div>
 
 		<script src="../../../mui/js/mui.min.js"></script>
 		<script src="../../../jxm/js/jxm.js"></script>
-		<script src="../../../jxm/js/JxDao.js"></script>
-		<script src="../../../jxm/js/json2.js"></script>
-		<script src="../../../jxm/js/jxm-image-input.js"></script>
-		<script src="../../util/jxm-util.js"></script>
+		<script src="../../util/jxm-util.js" type="text/javascript" charset="utf-8"></script>
 		<script src="../../../Resources/js/jquery-3.3.1.min.js"></script>
-		<script src="../../../jxm/js/iscroll-probe.min.js"></script>
-		<script src="../../../jxm/js/main.js"></script>
-		<script src="../../../Resources/js/juicer-min.js"></script>
-		<script src="../../../Resources/js/juicerUtil.js"></script>
 		<script type="text/javascript" charset="UTF-8">
 			mui.init({
 				swipeBack: false //关闭-右滑关闭功能
@@ -357,55 +291,7 @@
 			//页面初始化完成加载此方法
 			mui.plusReady(function() {
 				dateFormat(jxm.getTimeStamp());
-				getSize();
-			});
-			var datas = []; //所有数据
-			var now_datas = []; //当前页面数据
-			var page_size = 8; //每一页显示的数据量
-			var page_index = 0; //当前页码
-			var page_count = 1; //总页数
-			/**
-			 * 获取当前页面数据
-			 */
-			var getNowDatas = function() {
-				now_datas = []; //先清空当前数据
-				console.log(page_size);
-				var dataIndex = (page_index - 1) * page_size; //从第几条数据开始显示
-				for(var i = dataIndex; i <= (dataIndex + page_size); i++) {
-					if(datas[i] != undefined) {
-						now_datas.push(datas[i]);
-					}
-				}
-				//设置总页数
-				page_count = Math.ceil((datas.length - 1) / page_size);
-				if(datas.length == undefined || datas.length == 0) {
-					page_count = 1;
-				}
-				console.log(dataIndex + ":" + page_count + ":" + page_index + ":" + datas.length)
-				$("#pagers").html(page_index + "/" + page_count + "页");
-				//设置数据
-				appendTable(now_datas);
-				checkPage();
-			}
-			/**
-			 * 上一页
-			 */
-			$("#pre").on("tap", function() {
-				//getValue();
-				if(page_index != 1) {
-					page_index = page_index - 1;
-				}
-				getNowDatas();
-			});
-			/**
-			 * 下一页
-			 */
-			$("#next").on("tap", function() {
-				//	getValue();
-				if(page_index != page_count) {
-					page_index = page_index + 1;
-				}
-				getNowDatas();
+				loadPage();
 			});
 			$("input[type=radio]").on("change", function() {
 				loadPage();
@@ -415,15 +301,13 @@
 			 * @param {Object} data
 			 */
 			var appendTable = function(data) {
-				$("#tabOnesub").children().remove();
-				$("#pre").removeAttr("disabled").css("pointer-events", "auto").parent().removeAttr("class");
-				$("#next").removeAttr("disabled").css("pointer-events", "auto").parent().removeAttr("class");
 				var item = "";
 				$.each(data, function(index, result) {
 					//console.log(JSON.stringify(data));
 					if(index == data.length - 1) {
-						/*$("#total_money").html("￥"+parseFloat(result.total_money).toFixed(2));
-						$("#total_rate").html((parseFloat(result.total_rate)).toFixed(2)+"%");*/
+						console.log(JSON.stringify(result))
+						$("#total_money").html("￥" + parseFloat(result.total_money).toFixed(2));
+						$("#total_rate").html((parseFloat(result.total_rate).toFixed(2)) + "%");
 					} else {
 						var dateStr = result["work_date"];
 						//console.log(dateStr);
@@ -435,7 +319,7 @@
 						}
 						item += '<tr class="tabOnesub_list">' +
 							'<td><span  class="mspan">' + result["edit_user"] + '</span></td>' +
-							'<td><span  class="mspan">' + dateStr + '</span><span class="mui-hidden">' +result["edit_user"] + '</span></td>' +
+							'<td><span  class="mspan">' + dateStr + '</span><span class="mui-hidden">' + result["edit_user"] + '</span></td>' +
 							'<td><span  class="mspan" >' + result["money"] + '</span></td>' +
 							'<td><span  class="mspan" >' + result["day_money"] + '</span><span class="mui-hidden">' + dateStr + result["edit_user"] + '</span></td>' +
 							'<td><span  class="mspan" >' + result["process_rate"] + '%</span></td>' +
@@ -450,34 +334,19 @@
 							'</tr>';
 					}
 				});
-				$('#tabOnesub').html(item);
-				_w_table_rowspan("#tabOnesub", 2);
-				_w_table_rowspan("#tabOnesub", 4);
-				_w_table_rowspan("#tabOnesub", 6);
+				$('#datas').html(item);				
+				_w_table_rowspan("#datas", 1);
+				_w_table_rowspan("#datas", 2);
+				_w_table_rowspan("#datas", 4);
+				_w_table_rowspan("#datas", 6);
 			};
-			/**
-			 * 获取分页数量
-			 */
-			function getSize() {
-				var params = "funid=queryevent&eventcode=query_data&query_funid=sys_var&limit=10&start=0&where_sql=sys_var.var_code='app.page.count_forwork'";
-				jxm.post(params, function(e) {
-					//var data = JSON.parse(e).data.root;
-					console.log(JSON.stringify(e.root));
-					$.each(e.root, function(i, rs) {
-						if(rs.sys_var__var_code == "app.page.count_forwork") {
-							page_size = parseInt(rs.sys_var__var_value);
-						}
-					});
-					loadPage();
-				});
-			}
 			//页面加载执行方法
 			var loadPage = function() {
 				var end_date = $("#end_date").val();
 				var start_date = $("#start_date").val();
 				var edit_userid = $("#select_user").attr("userid");
 				var dept_id = $("#seldep").attr("deptid");
-				var status=$("input[type=radio]:checked").val();
+				var status = $("input[type=radio]:checked").val();
 				if(start_date == "" || start_date == undefined) {
 					mui.toast("起始时间必填");
 					return;
@@ -495,17 +364,9 @@
 				if(edit_userid != undefined && dept_id != undefined && edit_userid != "" && dept_id != "") {
 					dept_id = "";
 				}
-				var params = "funid=app_full&eventcode=work_total&end_date=" + end_date + "&start_date=" + start_date + "&edit_userid=" + edit_userid + "&dept_id=" + dept_id+"&status="+status;
+				var params = "funid=app_full&eventcode=work_total&end_date=" + end_date + "&start_date=" + start_date + "&edit_userid=" + edit_userid + "&dept_id=" + dept_id + "&status=" + status;
 				jxm.post(params, function(data) {
-					datas = data;
-					page_index = 1;
-					getNowDatas();
-					$.each(datas, function(i, result) {
-						if(i == data.length - 1) {
-							$("#total_money").html("￥" + parseFloat(result.total_money).toFixed(2));
-							$("#total_rate").html((parseFloat(result.total_rate)).toFixed(2) + "%");
-						}
-					})
+					appendTable(data);
 				});
 			};
 			$('#resetseldep').on("click", function() {
@@ -534,7 +395,7 @@
 				$("#search-box").toggle();
 			});
 			$("#dosearch").on("click", function() {
-				var status=$("input[type=radio]:checked").val();
+				var status = $("input[type=radio]:checked").val();
 				var end_date = $("#end_date").val();
 				var start_date = $("#start_date").val();
 				var edit_userid = $("#select_user").attr("userid");
@@ -556,31 +417,11 @@
 				if(edit_userid != undefined && dept_id != undefined && edit_userid != "" && dept_id != "") {
 					dept_id = "";
 				}
-				var params = "funid=app_full&eventcode=work_total&end_date=" + end_date + "&start_date=" + start_date + "&edit_userid=" + edit_userid + "&dept_id=" + dept_id+"&status="+status;
+				var params = "funid=app_full&eventcode=work_total&end_date=" + end_date + "&start_date=" + start_date + "&edit_userid=" + edit_userid + "&dept_id=" + dept_id + "&status=" + status;
 				jxm.post(params, function(data) {
-					datas = data;
-					console.log(JSON.stringify(data));
-					page_index = 1;
-					getNowDatas();
-					$.each(datas, function(i, result) {
-						if(i == data.length - 1) {
-							$("#total_money").html("￥" + parseFloat(result.total_money).toFixed(2));
-							$("#total_rate").html((parseFloat(result.total_rate)).toFixed(2) + "%");
-						}
-					})
+					appendTable(data);
 				});
 			});
-			/**
-			 * 验证页码
-			 */
-			var checkPage = function() {
-				if(page_index >= page_count || page_count == 0) {
-					$("#next").attr("disabled", true).css("pointer-events", "none").parent().attr("class", "mui-disabled");
-				}
-				if(page_index <= 1) {
-					$("#pre").attr("disabled", true).css("pointer-events", "none").parent().attr("class", "mui-disabled");
-				}
-			};
 			/**
 			 * 选择用户
 			 */

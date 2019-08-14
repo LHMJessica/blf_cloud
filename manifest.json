@@ -7,7 +7,7 @@
 	"id": "H5AE5C751",/*应用的标识，创建应用时自动生成，勿手动修改*/
 	"name": "宝力方",/*应用名称，程序桌面图标名称*/
 	"version": {
-		"name": "1.4.6",/*应用版本名称*/
+		"name": "1.5.0",/*应用版本名称*/
 		"code": "84"
 	},
 	"description": "",/*应用描述信息*/
@@ -171,9 +171,9 @@
 					"iphone": {
 						 /*iPhone3启动图片选，分辨率：320x480*/
 						/*3.5英寸设备(iPhone4)启动图片，分辨率：640x960*/
-						"retina40": "unpackage/res/bg640x1136.png","retina47":"unpackage/res/bg750x1334.png","retina55":"unpackage/res/bg1242x2208.png","default":"unpackage/res/bg640x1136.png","retina35":"unpackage/res/bg640x1136.png","retina55l":"unpackage/res/bg2208x1242.png"
+						"default":"unpackage/res/bg640x1136.png"
 					},
-					"ipad": {"portrait":"unpackage/res/bg640x1136.png","portrait7":"unpackage/res/bg720x1242.png","landscape":"unpackage/res/bg2208x1242.png","landscape7":"unpackage/res/bg1024x768.png","portrait-retina":"unpackage/res/bg750x1334.png","portrait-retina7":"unpackage/res/bg1242x2208.png","landscape-retina":"unpackage/res/bg2208x1242.png","landscape-retina7":"unpackage/res/bg2208x1242.png"
+					"ipad": {
 						 /*iPad竖屏启动图片，分辨率：768x1004*/
 						/*iPad高分屏竖屏图片，分辨率：1536x2008*/
 						 /*iPad横屏启动图片，分辨率：1024x748*/
@@ -712,7 +712,17 @@
 					"app/project/process/processes-verify.html",
 					"app/project/process/processes_staff_view.html",
 					"app/project/process/processes_fqc_view.html",
-					"app/project/process/back_work_order.html"
+					"app/project/process/back_work_order.html",
+					"app/project/asset/cut_out_list.html",
+					"app/project/asset/cut_pick_list.html",
+					"app/project/asset/storage_in.html",
+					"app/project/asset/plant_out_list.html",
+					"app/project/asset/spare_pick_list.html",
+					"app/project/asset/plant_pick_list.html",
+					"app/project/asset/plant_process_pick_list.html",
+					"app/project/asset/plant_process_out_list.html",
+					"app/project/asset/spare_process_pick_list.html",
+					"app/project/process/fqc_report_list.html"
 				],
 				"priority": 0
 			},
@@ -944,7 +954,9 @@
 			"app/project/process/timing_apply.html": {
 				"resources": [],
 				"refer": [
-					"app/project/util/select-user.html"
+					"app/project/util/select-user.html",
+					"app/util/select-user.html",
+					"app/util/select-user-fortime.html"
 				],
 				"priority": 0
 			},
@@ -997,7 +1009,9 @@
 				"refer": [
 					"app/util/select-process-forcheck.html",
 					"app/util/barcode_scan.html",
-					"app/util/select-process-forfqc.html"
+					"app/util/select-process-forfqc.html",
+					"app/project/process/fqc_report_item.html",
+					"app/project/process/processes_fqc_view_item.html"
 				],
 				"priority": 0
 			},
@@ -1012,6 +1026,95 @@
 				"resources": [],
 				"refer": [
 					"app/project/util/processes_rework.html"
+				],
+				"priority": 0
+			},
+			"app/project/asset/cut_out_list.html": {
+				"resources": [],
+				"refer": [
+					"app/project/asset/cut_out_item.html",
+					"app/project/asset/cut_pick_item.html"
+				],
+				"priority": 0
+			},
+			"app/project/asset/cut_pick_list.html": {
+				"resources": [],
+				"refer": [
+					"app/project/asset/cut_pick_item.html"
+				],
+				"priority": 0
+			},
+			"app/project/asset/storage_in.html": {
+				"resources": [],
+				"refer": [
+					"app/util/select-process-forcheck.html",
+					"app/util/select-process-forstore.html"
+				],
+				"priority": 0
+			},
+			"app/project/asset/plant_out_list.html": {
+				"resources": [],
+				"refer": [
+					"app/project/asset/plant_out_item.html",
+					"index.html"
+				],
+				"priority": 0
+			},
+			"app/project/asset/spare_pick_list.html": {
+				"resources": [],
+				"refer": [
+					"app/project/asset/spare_pick_item.html"
+				],
+				"priority": 0
+			},
+			"app/project/asset/plant_pick_list.html": {
+				"resources": [],
+				"refer": [
+					"app/project/asset/plant_pick_item.html"
+				],
+				"priority": 0
+			},
+			"app/project/asset/plant_out_item.html": {
+				"resources": [],
+				"refer": [
+					"app/util/select-user.html",
+					"app/util/select-user-forstore.html"
+				],
+				"priority": 0
+			},
+			"app/project/asset/spare_process_pick_list.html": {
+				"resources": [],
+				"refer": [
+					"app/project/asset/spare_process_pick_item.html"
+				],
+				"priority": 0
+			},
+			"app/project/asset/plant_process_out_list.html": {
+				"resources": [],
+				"refer": [
+					"app/project/asset/plant_process_out_item.html"
+				],
+				"priority": 0
+			},
+			"app/project/asset/plant_process_pick_list.html": {
+				"resources": [],
+				"refer": [
+					"app/project/asset/plant_process_pick_item.html"
+				],
+				"priority": 0
+			},
+			"app/project/asset/plant_process_out_item.html": {
+				"resources": [],
+				"refer": [
+					"app/util/select-user.html",
+					"app/util/select-user-forstore.html"
+				],
+				"priority": 0
+			},
+			"app/project/process/fqc_report_list.html": {
+				"resources": [],
+				"refer": [
+					"app/project/process/fqc_report_item.html"
 				],
 				"priority": 0
 			}
