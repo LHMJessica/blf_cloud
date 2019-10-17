@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<title>签到</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1,user-scalable=no">
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black">
+		<!--标准mui.css-->
+		<link rel="stylesheet" type="text/css" href="../../../mui/css/mui.min.css" />
+		<style>
+			.mui-card .mui-control-content {
+				padding: 10px;
+			}
+			
+			.mui-control-content {
+				height: 300px;
+			}
+		</style>
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav mui-bar-primary">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<h1 class="mui-title">签到</h1>
+		</header>
+		<div class="mui-content">
+			<div style="padding: 10px 10px;">
+				<div id="segmentedControl" class="mui-segmented-control">
+					<a class="mui-control-item mui-active" href="#train">培训</a>
+					<a class="mui-control-item" href="#meeting">会议</a>
+				</div>
+			</div>
+			<div id="train" class="mui-control-content mui-active">
+				<ul id="trains" class="mui-table-view mui-table-view-striped mui-table-view-condensed">
+				</ul>
+			</div>
+			<div id="meeting" class="mui-control-content">
+				<ul id="meetings" class="mui-table-view mui-table-view-striped mui-table-view-condensed">
+				</ul>
+			</div>
+			<p class="mui-ellipsis mui-hidden" style="width: 100%;text-align: center;">没有数据</p>
+		</div>
+		<script src="../../../mui/js/mui.min.js"></script>
+		<script src="../../../jxm/js/jxm.js"></script>
+		<script src="../../../jxm/js/JxDao.js"></script>
+		<script src="../../../jxm/js/jxm-image-input.js"></script>
+		<script src="../../util/jxm-util.js"></script>
+		<script src="../../../Resources/js/jquery-3.3.1.min.js"></script>
+		<script>
+			var btnArray = ['取消', '确定'];
+			mui.init({
+				swipeBack: true //启用右滑关闭功能
+			});
+			//页面初始化完成加载此方法
+			mui.plusReady(function() {
+				loadTrains();
+			});
+			var loadMeetings = function() {
+				var params = "funid=queryevent&eventcode=query_data&query_funid=meeting_record&limit=50&start=0";
+				params += "&where_sql=meeting_record.record_usersid not like '%25" + jxm.getUserId() + "%25'";
+				jxm.post(params, function(data) {
+					//console.log(JSON.stringify(data))
+					if(data.root.length <= 0) {
+						$("p.mui-ellipsis").removeClass("mui-hidden")
+						return;
+					}
+					let html = "";
+					$.each(data.root, function(i, obj) {
+						html += '<li class="mui-table-view-cell" dataid="' + obj.meeting_record__record_id + '"> ' +
+							'<div class = "mui-slider-right mui-disabled" >' +
+							'<a class = "mui-btn mui-btn-green" > 签到 </a> </div> ' +
+							'<div class = "mui-table mui-slider-handle" >' +
+							'<div class = "mui-table-cell mui-col-xs-12" >' +
+							'<h4 class = "mui-ellipsis" >' + obj.meeting_record__record_content + '</h4> ' +
+							'<h5>开始时间：' + jxm.formatDate(new Date(obj.meeting_record__record_date), "yyyy-MM-dd HH:mm") + '</h5>' +
+							'<p class = "mui-h6 mui-ellipsis" >会议地点 ：' + obj.meeting_record__record_add + '</p> </div> </div> </li>';
+					});
+					$("#meetings").html(html);
+				})
+			}
+			var loadTrains = function() {
+				var params = "funid=queryevent&eventcode=query_data&query_funid=train_record&limit=50&start=0";
+				params += "&where_sql=train_record.record_id not in(select train_record_det.record_id from train_record_det where train_record_det.record_id=train_record.record_id and det_userid ='"+jxm.getUserId()+"')";
+				jxm.post(params, function(data) {
+					if(data.root.length <= 0) {
+						$("p.mui-ellipsis").removeClass("mui-hidden")
+						return;
+					}
+					let html = "";
+					$.each(data.root, function(i, obj) {
+						html += '<li class="mui-table-view-cell" dataid="' + obj.train_record__record_id + '"> ' +
+							'<div class = "mui-slider-right mui-disabled" >' +
+							'<a class = "mui-btn mui-btn-green" > 签到 </a> </div> ' +
+							'<div class = "mui-table mui-slider-handle" >' +
+							'<div class = "mui-table-cell mui-col-xs-12" >' +
+							'<h4 class = "mui-ellipsis" >' + obj.train_record__record_content + '</h4> ' +
+							'<h5>讲师 ：' + obj.train_record__record_teacher + '</h5>' +
+							'<p class = "mui-h6 mui-ellipsis" >培训地点 ：' + obj.train_record__record_add + '</p> </div> </div> </li>';
+					});
+					$("#trains").html(html);
+				})
+			}
+			//培训签到
+			mui("#trains").on("tap", ".mui-btn", function() {
+				let title = $(this).parent().parent().find("h4").html();
+				var li = this.parentNode.parentNode;
+				let dataid = $(li).attr("dataid");
+				mui.confirm('确认签到【' + title + '】培训吗？', '', btnArray, function(e) {
+					if(e.index == 0) {
+						mui.swipeoutClose(li);
+						return;
+					} else {
+						//提交签到信息
+						let det_user = jxm.getUserName();
+						let det_dept = jxm.getDeptName();
+						let det_userid = jxm.getUserId();
+						let det_deptid = jxm.getDeptId();
+						var params = "funid=app_full&eventcode=signInTrain&det_user=" + det_user + "&det_userid=" + det_userid + "&det_deptid=" + det_deptid + "&det_dept=" + det_dept + "&record_id=" + dataid;
+						jxm.post(params, function(data) {
+							mui.toast("签到成功");
+							loadTrains();
+						});
+						mui.swipeoutClose(li);
+					}
+				});
+			});
+			//会议签到
+			mui("#meetings").on("tap", ".mui-btn", function() {
+				let title = $(this).parent().parent().find("h4").html();
+				var li = this.parentNode.parentNode;
+				let dataid = $(li).attr("dataid");
+				mui.confirm('确认签到【' + title + '】会议吗？', '', btnArray, function(e) {
+					if(e.index == 0) {
+						mui.swipeoutClose(li);
+						return;
+					} else {
+						//提交签到信息
+						let user_name = jxm.getUserName();
+						let user_id = jxm.getUserId();
+						var params = "funid=app_full&eventcode=signInMeeting&user_id=" + user_id + "&user_name=" + user_name + "&record_id=" + dataid;
+						jxm.post(params, function(data) {
+							console.log(JSON.stringify(data))
+							mui.toast("签到成功");
+							loadMeetings();
+						});
+						mui.swipeoutClose(li);
+					}
+				});
+			});
+			mui("#segmentedControl").on("tap", ".mui-control-item", function() {
+				$("p.mui-ellipsis").addClass("mui-hidden");
+				if($(this).index() == 0) {
+					loadTrains();
+				} else if($(this).index() == 1) {
+					loadMeetings();
+				}
+			});
+		</script>
+
+	</body>
+
+</html>

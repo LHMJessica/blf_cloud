@@ -5,9 +5,9 @@
 		"iPad"
 	],
 	"id": "H5AE5C751",/*应用的标识，创建应用时自动生成，勿手动修改*/
-	"name": "宝力方",/*应用名称，程序桌面图标名称*/
+	"name": "宝立方",/*应用名称，程序桌面图标名称*/
 	"version": {
-		"name": "1.5.0",/*应用版本名称*/
+		"name": "1.5.9",/*应用版本名称*/
 		"code": "84"
 	},
 	"description": "",/*应用描述信息*/
@@ -441,7 +441,8 @@
 					"app/im/notify-list.html",
 					"app/oa/oa-news-list.html",
 					"app/im/im-chat.html",
-					"index.html"
+					"index.html",
+					"app/im/warning-list.html"
 				],
 				"priority": 5
 			},
@@ -722,7 +723,18 @@
 					"app/project/asset/plant_process_pick_list.html",
 					"app/project/asset/plant_process_out_list.html",
 					"app/project/asset/spare_process_pick_list.html",
-					"app/project/process/fqc_report_list.html"
+					"app/project/process/fqc_report_list.html",
+					"app/project/process/timing_apply_report.html",
+					"app/project/asset/no_storage_in.html",
+					"app/project/asset/product_in.html",
+					"app/project/asset/product_pick.html",
+					"app/project/process/stock_work.html",
+					"app/project/asset/product_in_list.html",
+					"app/project/process/sign_in_list.html",
+					"app/project/asset/process_out_list.html",
+					"app/project/asset/process_store_list.html",
+					"app/project/asset/process_in_list.html",
+					"app/project/asset/process_in.html"
 				],
 				"priority": 0
 			},
@@ -1115,6 +1127,65 @@
 				"resources": [],
 				"refer": [
 					"app/project/process/fqc_report_item.html"
+				],
+				"priority": 0
+			},
+			"app/project/asset/product_in.html": {
+				"resources": [],
+				"refer": [
+					"app/util/select-process-forstore.html",
+					"app/util/select-process-forproduct.html",
+					"app/util/select-forproductdet.html",
+					"app/util/select-process-forproductin.html",
+					"app/util/select-forproductindet.html"
+				],
+				"priority": 0
+			},
+			"app/project/asset/product_pick.html": {
+				"resources": [],
+				"refer": [
+					"app/util/select-user-forstore.html",
+					"app/util/select-process-forproduct.html",
+					"app/util/select-process-forproductpick.html",
+					"app/util/select-process-forproductpickdet.html"
+				],
+				"priority": 0
+			},
+			"app/project/asset/product_in_list.html": {
+				"resources": [],
+				"refer": [
+					"app/project/asset/product_in.html"
+				],
+				"priority": 0
+			},
+			"app/project/process/sign_in_list.html": {
+				"resources": [],
+				"refer": [
+					"index.html"
+				],
+				"priority": 0
+			},
+			"app/project/asset/process_store_list.html": {
+				"resources": [],
+				"refer": [
+					"app/project/asset/process_store_det.html"
+				],
+				"priority": 0
+			},
+			"app/project/asset/process_in_list.html": {
+				"resources": [],
+				"refer": [
+					"app/project/asset/process_in_item.html"
+				],
+				"priority": 0
+			},
+			"app/project/asset/process_in.html": {
+				"resources": [],
+				"refer": [
+					"app/util/select-process-forproductpick.html",
+					"app/util/select-process-forproductpickdet.html",
+					"app/util/select-process-forprocessin.html",
+					"app/util/select-process-forprocessindet.html"
 				],
 				"priority": 0
 			}

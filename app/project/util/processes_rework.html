@@ -312,6 +312,7 @@
 				}
 				//拼接参数
 				params += "&det_id=" + det_id + "&work_num=" + accomplish+"&work_date="+work_date;
+				console.log(work_date);
 				jxm.post(params, function(data) {
 					if(data.type == 'sucess') {
 						pageClear();

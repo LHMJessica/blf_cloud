@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title>半成品入库</title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link rel="stylesheet" href="../../../mui/css/mui.min.css" />
+		<link rel="stylesheet" href="../../../jxm/css/jxm.css">
+		<link rel="stylesheet" type="text/css" href="../../../mui/css/icons-extra.css" />
+		<link rel="stylesheet" type="text/css" href="../../../Resources/css/table.css" />
+		<style>
+			body,
+			html {
+				height: 100%;
+				width: 100%;
+				overflow: hidden;
+				margin: 0;
+			}
+			
+			.mui-content {
+				height: 100%;
+			}
+			
+			.processes-title {
+				font-size: 14px;
+				color: #000000;
+			}
+			
+			.processes-value {
+				font-size: 12px;
+				color: #555555;
+			}
+			
+			.s0 .mui-btn {
+				width: 98%;
+				height: 98%;
+				border: none;
+				background-color: rgba(255, 255, 255, 0);
+			}
+			/*清除浏览器自带的内边距样式*/
+			
+			ul,
+			menu,
+			dir,
+			p {
+				-webkit-margin-before: 0em;
+				-webkit-margin-after: 0em;
+				-webkit-margin-start: 0px;
+				-webkit-margin-end: 0px;
+				-webkit-padding-start: 0px;
+			}
+			
+			#cu_pick_info {
+				text-align: center;
+			}
+			
+			.s0 {
+				width: 11%;
+			}
+			
+			.s1 {
+				width: 11%;
+			}
+			
+			.s2 {
+				width: 11%;
+			}
+			
+			.s3 {
+				width: 11%;
+			}
+			
+			.s4 {
+				width: 11%;
+			}
+			
+			.s5 {
+				width: 11%;
+			}
+			
+			.s6 {
+				width: 12%;
+			}
+			
+			th.s7 {
+				width: 11%;
+				background-color: green !important;
+				color: #FFF !important;
+			}
+			
+			td.s7 {
+				width: 11%;
+				color: green !important;
+			}
+			
+			th.s8 {
+				width: 11%;
+				background-color: orange !important;
+				color: #FFF !important;
+			}
+			
+			td.s8 {
+				width: 11%;
+				color: orange !important;
+			}
+			
+			.mui-content-header {
+				height: 11%;
+			}
+			
+			.mui-content-body {
+				height: 92%;
+			}
+			
+			a {
+				color: #fff;
+			}
+		</style>
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav mui-bar-primary">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<h1 class="mui-title" id="title">半成品入库</h1>
+			<!--<a class="mui-pull-right mui-btn mui-btn-primary" style="font-size: 14px;top: 0px;" id="import">导入加工单<span class="mui-icon mui-icon-download "></span></a>-->
+		</header>
+		<div class="mui-content">
+			<form class="mui-input-group">
+				<div class="mui-input-row">
+					<label style="width: 40%;">入库仓库：</label>
+					<select style="width: 60%;" id="in_store" required="required">
+					</select>
+				</div>
+			</form>
+			<div class="mui-content-body">
+				<div class="grid_4" style="height: 100%;width: 130%;">
+					<table class="fancyTable" id="data-table" cellpadding="0" cellspacing="0">
+						<thead>
+							<tr>
+								<th class="s0">操作</th>
+								<th class="s1">采购单号</th>
+								<th class="s2">工单号</th>
+								<th class="s3">款号</th>
+								<th class="s5">半成品</th>
+								<th class="s7">入库数量</th>
+								<th class="s8">剩余数量</th>
+								<th class="s6">编号</th>
+								<th class="s4">品名</th>
+							</tr>
+						</thead>
+						<tbody id="datas">
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</div>
+		<script src="../../../mui/js/mui.min.js"></script>
+		<script src="../../../jxm/js/jxm.js"></script>
+		<script src="../../../jxm/js/jxm-image-input.js"></script>
+		<script src="../../util/jxm-util.js"></script>
+		<script src="../../../Resources/js/jquery-3.3.1.min.js"></script>
+		<script src="../../../Resources/js/jquery.fixedheadertable.min.js" type="text/javascript" charset="utf-8"></script>
+		<script type="text/javascript">
+			mui.init({
+				swipeBack: false //关闭-右滑关闭功能
+			});
+			mui.plusReady(function() {
+				setStores();
+				loadPage();
+			})
+			var loadPage = function() {
+				$("#datas").html("");
+				var params = "funid=queryevent&eventcode=query_data&query_funid=product_in_will&limit=100&start=0";
+				jxm.post(params, function(data) {
+					mui.each(data.root, function(i, obj) {
+						let ext = {
+							"order_det_id": obj.product_order_det__order_det_id,
+							"order_id": obj.product_order_det__order_id,
+							"product_id": obj.product_order_det__product_id,
+							"un_num": parseFloat(obj.product_order_det__un_num),
+							"sp_name": obj.product_order__sp_name,
+							"sp_code": obj.product_order__sp_code,
+							"color_name": obj.product_order__color_name,
+							"order_num": parseFloat(obj.product_order_det__order_num),
+							"product_code": obj.product_order_det__product_code,
+							"product_size": obj.product_order_det__product_size,
+							"div_code": obj.product_order__div_code,
+							"order_code": obj.product_order__order_code,
+							"unit_name": obj.product_order_det__unit_name,
+							"product_name": obj.product_order_det__product_name,
+							"product_process": obj.product_order_det__product_process,
+							"work_det_id": obj.product_order__work_det_id
+						}
+						let html = '<tr dataid="' + ext.order_det_id + '" class="plan_item" size="' + ext.product_size + '" unit="' + ext.unit_name + '">' +
+							'<td class="s0"><button class="mui-btn" style="font-size: 14px;top: 0px;color:green;"><span class="mui-icon mui-icon-upload " style="font-weight: bold;"></span>提交</button></td>' +
+							'<td class="s1" dataid="'+ext.order_id+'">' + ext.order_code + '</td>' +
+							'<td class="s2">' + ext.div_code + '</td>' +
+							'<td class="s3">' + ext.sp_code + '</td>' +
+							'<td class="s5" dataid="' + ext.product_id + '">' + ext.product_name + '</td>' +
+							'<td class="s7"><input type="number" class="table-input" value="' + parseFloat(ext.un_num) + '" /></td>' +
+							'<td class="s8">' + ext.un_num + '</td>' +
+							'<td class="s6">' + ext.product_code + '</td>' +
+							'<td class="s4">' + ext.sp_name + '</td>' +
+							'</tr>';
+						$("#datas").append(html);
+					});
+					$('#data-table').fixedHeaderTable({
+						altClass: 'odd',
+					});
+				});
+			}
+			var setStores = function() {
+				var param = "funid=queryevent&eventcode=query_data&query_funid=sp_house&limit=50&start=0";
+				jxm.post(param, function(data) {
+					var html = '';
+					$.each(data.root, function(i, obj) {
+						html += '<option value="' + obj.sp_house__house_id + '" ' + (obj.sp_house__house_name === "中转仓" ? "selected='selected'" : "") + '>' + obj.sp_house__house_name + '</option>';
+					});
+					$("#in_store").html(html);
+
+				});
+			}
+			//全局绑定
+			$("#datas").on("blur", ".table-input", function() {
+				var out_num = $(this).val();
+				var number = $(this).parent().parent().find(".s8").html();
+				if(isNaN(out_num) || parseInt(out_num) <= 0 || out_num == "" || parseFloat(number) < parseFloat(out_num)) {
+					$(this).focus();
+					mui.toast("入库数量填写有误！");
+				}
+			});
+			//全局绑定
+			mui("#datas").on("tap", ".mui-btn", function() {
+				var obj = $(this).parent().parent();
+				var product_id = $(obj).find(".s5").attr("dataid");
+				var product_name = $(obj).find(".s5").html();
+				var btnArray = ['取消', '确定'];
+				mui.confirm('确认提交入库信息吗？','', btnArray, function(e) {
+					if(e.index == 0) {
+						return;
+					} else {
+						var product_code = $(obj).find(".s6").html();
+						var unit_name = $(obj).attr("unit");
+						var det_id = $(obj).attr("dataid");
+						var product_size = $(obj).attr("size");
+						var in_num = $(obj).find(".s7").find("input").val();
+						var inList = [];
+						var house_name = $("#in_store").find("option:selected").text();
+						var house_id = $("#in_store").find("option:selected").val();
+						var order_id = $(obj).find(".s1").attr("dataid");
+						if(house_id == undefined || house_id == "" || house_id == null) {
+							mui.toast("仓库未选择，不能提交");
+							return;
+						}
+						var user_id = jxm.getUserId();
+						var user_name = jxm.getUserName();
+						var dept_id = jxm.getDeptId();
+						var dept_name = jxm.getDeptName();
+						var item = {
+							"product_name": product_name,
+							"product_code": product_code,
+							"product_size": product_size,
+							"unit_name": unit_name,
+							"product_id": product_id,
+							"in_num": parseFloat(in_num),
+							"order_det_id": det_id
+						};
+						inList.push(item);
+						/*console.log("inList" + JSON.stringify(inList));
+						console.log("house_name" + house_name);
+						console.log("house_id" + house_id);
+						console.log("order_id" + order_id);
+						console.log("user_name" + user_name);*/
+						var params = "funid=app_full&eventcode=productIn&&user_id=" + user_id + "&user_name=" + user_name + "&dept_id=" + dept_id + "&dept_name=" + dept_name + "&order_id=" + order_id;
+						params += "&inList=" + JSON.stringify(inList) + "&house_id=" + house_id + "&house_name=" + house_name;
+						console.log("user_name" + params);
+						jxm.post(params, function(data) {
+							console.log(JSON.stringify(data));
+							mui.toast("提交成功");
+							window.location.reload(); //页面更新 
+						});
+					}
+				})
+
+			});
+		</script>
+		</script>
+	</body>
+
+</html>

@@ -11,6 +11,7 @@
 		<link rel="stylesheet" href="../../../mui/css/mui.min.css" />
 		<link rel="stylesheet" href="../../../jxm/css/jxm.css">
 		<link rel="stylesheet" type="text/css" href="../../../mui/css/icons-extra.css" />
+		<link rel="stylesheet" type="text/css" href="../../../Resources/css/table.css" />
 		<style>
 			body,
 			html {
@@ -82,9 +83,11 @@
 			.s6 {
 				width: 16%;
 			}
-			td.s6{
+			
+			td.s6 {
 				color: red;
 			}
+			
 			.mui-content-header {
 				height: 20%;
 			}
@@ -149,21 +152,22 @@
 				</div>
 			</div>
 			<div class="mui-content-body">
-				<table cellspacing="0" cellpadding="0" style="width: 100%;overflow-x:scroll;overflow-y: scroll;">
-					<thead>
-						<tr>
-							<th class="s1">不良描述</th>
-							<th class="s2">致命</th>
-							<th class="s3">嚴重</th>
-							<th class="s4">輕微</th>
-							<th class="s5">数量</th>
-							<th class="s6">不良率</th>
-						</tr>
-					</thead>
-					<tbody id="datas">
-
-					</tbody>
-				</table>
+				<div class="grid_4" style="height: 100%;width: 100%;">
+					<table class="fancyTable" id="data-table" cellpadding="0" cellspacing="0">
+						<thead>
+							<tr>
+								<th class="s1">不良描述</th>
+								<th class="s2">致命</th>
+								<th class="s3">嚴重</th>
+								<th class="s4">輕微</th>
+								<th class="s5">数量</th>
+								<th class="s6">不良率</th>
+							</tr>
+						</thead>
+						<tbody id="datas">
+						</tbody>
+					</table>
+				</div>
 			</div>
 		</div>
 		<script src="../../../mui/js/mui.min.js"></script>
@@ -171,6 +175,7 @@
 		<script src="../../../jxm/js/jxm-image-input.js"></script>
 		<script src="../../util/jxm-util.js"></script>
 		<script src="../../../Resources/js/jquery-3.3.1.min.js"></script>
+		<script src="../../../Resources/js/jquery.fixedheadertable.min.js" type="text/javascript" charset="utf-8"></script>
 		<script type="text/javascript">
 			mui.init({
 				swipeBack: false //关闭-右滑关闭功能
@@ -184,7 +189,7 @@
 			var setData = function(report_id) {
 				var params = "funid=app_full&eventcode=selQCWorkPlan&plan_id=" + report_id;
 				jxm.post(params, function(obj) {
-					
+
 					$("#group_name").html(obj.group_name);
 					$("#div_code").html(obj.div_code);
 					$("#report_date").html(obj.date.substr(0, 10));
@@ -217,11 +222,8 @@
 							'</tr>';
 					});
 					$("#datas").html(html);
-					$("#datas tr:odd").css({
-						"background-color": "#f2f2f2"
-					}).children("td").css({
-						"border-top": "none",
-						"border-bottom": "none"
+					$('#data-table').fixedHeaderTable({
+						altClass: 'odd',
 					});
 				});
 			}

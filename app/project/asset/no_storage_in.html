@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title>待入库</title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link rel="stylesheet" href="../../../mui/css/mui.min.css" />
+		<link rel="stylesheet" href="../../../jxm/css/jxm.css">
+		<link rel="stylesheet" type="text/css" href="../../../mui/css/icons-extra.css" />
+		<link rel="stylesheet" type="text/css" href="../../../Resources/css/table.css" />
+		<style>
+			body,
+			html {
+				height: 100%;
+				width: 100%;
+				overflow: hidden;
+				margin: 0;
+			}
+			
+			.mui-content {
+				height: 100%;
+			}
+			
+			.processes-title {
+				font-size: 14px;
+				color: #000000;
+			}
+			
+			.processes-value {
+				font-size: 12px;
+				color: #555555;
+			}
+			/*清除浏览器自带的内边距样式*/
+			
+			ul,
+			menu,
+			dir,
+			p {
+				-webkit-margin-before: 0em;
+				-webkit-margin-after: 0em;
+				-webkit-margin-start: 0px;
+				-webkit-margin-end: 0px;
+				-webkit-padding-start: 0px;
+			}
+			
+			#cu_pick_info {
+				text-align: center;
+			}
+			
+			.s1 {
+				width: 20%;
+			}
+			
+			.s2 {
+				width: 10%;
+			}
+			
+			.s3 {
+				width: 16%;
+			}
+			
+			.s4 {
+				width: 10%;
+			}
+			
+			th.s5 {
+				width: 15%;
+				background-color: green !important;
+				color: #FFF !important;
+			}
+			
+			td.s5 {
+				width: 15%;
+				color: green !important;
+			}
+			
+			th.s6 {
+				width: 15%;
+				background-color: orange !important;
+				color: #FFF !important;
+			}
+			
+			td.s6 {
+				width: 15%;
+				color: orange !important;
+			}
+			
+			.s7 {
+				width: 19%;
+			}
+			
+			.mui-content-header {
+				height: 0%;
+			}
+			
+			.mui-content-body {
+				height: 98%;
+			}
+		</style>
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav mui-bar-primary">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<h1 class="mui-title" id="title">待入库工单</h1>
+		</header>
+		<div class="mui-content">
+			<div class="mui-content-body">
+				<div class="grid_4" style="height: 100%;width: 130%;">
+					<table class="fancyTable" id="data-table" cellpadding="0" cellspacing="0">
+						<thead>
+							<tr>
+								<th class="s1">工单号</th>
+								<th class="s2">款号</th>
+								<th class="s3">品名</th>
+								<th class="s4">颜色</th>
+								<th class="s6">入库数量</th>
+								<th class="s5">工单数量</th>
+								<th class="s7">入库单号</th>
+							</tr>
+						</thead>
+						<tbody id="datas">
+						</tbody>
+					</table>
+				</div>
+				<p class="mui-hidden mui-text-center" style="width: 100%;text-align: center;height: 20px;margin: 15px 0px;">暂无数据</p>
+			</div>
+		</div>
+		<script src="../../../mui/js/mui.min.js"></script>
+		<script src="../../../jxm/js/jxm.js"></script>
+		<script src="../../../jxm/js/jxm-image-input.js"></script>
+		<script src="../../util/jxm-util.js"></script>
+		<script src="../../../Resources/js/jquery-3.3.1.min.js"></script>
+		<script src="../../../Resources/js/jquery.fixedheadertable.min.js" type="text/javascript" charset="utf-8"></script>
+		<script type="text/javascript">
+			mui.init({
+				swipeBack: false //关闭-右滑关闭功能
+			});
+			var codes = {};
+			//var pick_id = null;
+			mui.plusReady(function() {
+				//setStores();
+				qryUnaudit();
+			})
+			var qryUnaudit = function() {
+				let params = "funid=queryevent&eventcode=query_data&query_funid=sp_in&limit=100&start=0&where_sql=sp_in.auditing='0'";
+				jxm.post(params, function(data) {
+					//console.log(JSON.stringify(data))
+					if(data.total <= 0) {
+						$("p").removeAttr("class");
+					} else {
+						let ids = "";
+						$.each(data.root, function(i, obj) {
+							ids += "'" + obj.sp_in__in_id + "',";
+							codes[obj.sp_in__in_id] = obj.sp_in__in_code;
+						});
+						qryIndet(ids);
+					}
+				});
+			}
+			var qryIndet = function(ids) {
+				//console.log(ids.substring(0, ids.length - 1));
+				let params = "funid=queryevent&eventcode=query_data&query_funid=sp_in_det&limit=100&start=0&where_sql=sp_in_det.in_id in (" + ids.substring(0, ids.length - 1) + ")";
+				jxm.post(params, function(data) {
+					console.log(JSON.stringify(data))
+					if(data.total <= 0) {
+						$("p").removeAttr("class");
+					} else {
+						let html = "";
+						$.each(data.root, function(i, obj) {
+							html += '<tr>' +
+								'<td class="s1">' + obj.sp_in_det__div_code + '</td>' +
+								'<td class="s2">' + obj.sp_in_det__sp_code + '</td>' +
+								'<td class="s3">' + obj.sp_in_det__sp_name + '</td>' +
+								'<td class="s4">' + obj.sp_in_det__color_name + '</td>' +
+								'<td class="s6">' + parseFloat(obj.sp_in_det__in_num).toFixed(0) + '</td>' +
+								'<td class="s5">' + parseFloat(obj.sp_in_det__div_num).toFixed(0) + '</td>' +
+								'<td class="s7">' + codes[obj.sp_in_det__in_id] + '</td></tr>';
+						});
+						$("#datas").html(html);
+						$('#data-table').fixedHeaderTable({
+							altClass: 'odd',
+						});
+
+					}
+				});
+			}
+		</script>
+		</script>
+	</body>
+
+</html>

@@ -1,242 +1,303 @@
 <!DOCTYPE html>
 <html>
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
-    <title>消息</title>
-    <link rel="stylesheet" href="../../mui/css/mui.min.css"/>
-    <link rel="stylesheet" href="../../jxm/css/jxm.css">
-    <style>
-		.icon-left {
-			padding-top: 12px !important;
-		}
-		.mui-title {/*挡住了左上角的图标*/
-			left: 50px !important;
-		}
-		
-		input[type=search] {
-			height: 38px;
-			font-size: 15px;
-			line-height: 30px !important;
-			padding-top: 10px;
-			padding-left: 40px !important;
-			margin:5px 0 !important;
-			background-color:#efeff4;
-			border-radius: 0;
-		}
-		input[type=search]:focus {
-			background-color:#fff;
-		}
-		.mui-search.mui-active:before {
-			padding-left: 5px;
-			padding-top: 8px;
-		}
-		.mui-search .mui-icon-clear {
-			margin-top: 8px;
-		}
-		.mui-search .mui-placeholder {
-			top:8px;
-		}
-		
-		.mui-table-view:after {
-			height: 0;
-		}/*解决最后一条消息不出现两条线*/
-		.mui-table-view-cell.msg-item:last-child {
-			height: 69px;
-		}
-		.mui-media-object .iconfont {
-			color: #fff;
-			font-size: 28px;
-		}
-		.mui-media-object .mui-icon {
-			color: #fff;
-		}
-		.mui-media-object {
-			margin: 0 !important;
-			margin-right: 10px !important;
-			height:48px !important;
-			line-height:48px !important;
-			width:48px !important;
-			max-width:48px !important;
-		}
-		.mui-media-green {
-			background-color:limegreen;
-		}
-		.mui-media-blue {
-			background-color:darkturquoise;
-		}
-		.mui-media-grey {
-			background-color:lavender;
-		}
-		.mui-media-warn {
-			background-color:orange;
-		}
-		.mui-media-grey .mui-icon {
-			padding: 10px;
-		}
-		.mui-table-view .mui-table-view-cell.mui-media-icon .mui-media-body:after {
-			left: 0px;
-			background-color:#D8D8D8;
-		}
-		.mui-media-title {
-			padding: 12px 0;
-		}
-		.mui-media-msg {
-			padding: 2px 0;
-		}
-		
-		.mui-media-object .mui-badge {
-			position: absolute;
-			top: 6px;
-			left: 48px;
-			vertical-align: top;
-		}
-		.face {
-			width: 50px !important;
-			height: 50px !important;
-			line-height: 50px !important;
-		    max-width: 50px !important;
-		}
-		
-		.fast-plus {
-			position: fixed;
-			bottom: 15px;
-			right: 15px;
-			width: 60px;
-			height: 60px;
-			z-index: 20;
-			padding: 5px 4px;
-			border-radius: 30px;
-			background-color:gold;/*coral*/
-		}
-		.fast-plus .mui-icon {
-			color: #fff;
-			font-weight: bold;
-			font-size: 50px;
-		}
-		
-		.daiban {
-			padding: 2px 4px;
-		}
-		.gonggao {
-			padding: 5px 10px;
-		}
-		.tongzhi {
-			padding: 5px 10px;
-		}
-	</style>
-</head>
-<body>
-	<header class="mui-bar mui-bar-nav1 mui-bar-primary mui-hidden">
-		<a class="mui-icon mui-pull-left icon-left"><i class="iconfont icon-saoma1"></i></a>
-		<h1 id="title" class="mui-title">消息</h1>
-		<span id="im-chat.html" class="mui-icon mui-pull-right">
+
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<title>消息</title>
+		<link rel="stylesheet" href="../../mui/css/mui.min.css" />
+		<link rel="stylesheet" href="../../jxm/css/jxm.css">
+		<style>
+			.icon-left {
+				padding-top: 12px !important;
+			}
+			
+			.mui-title {
+				/*挡住了左上角的图标*/
+				left: 50px !important;
+			}
+			
+			input[type=search] {
+				height: 38px;
+				font-size: 15px;
+				line-height: 30px !important;
+				padding-top: 10px;
+				padding-left: 40px !important;
+				margin: 5px 0 !important;
+				background-color: #efeff4;
+				border-radius: 0;
+			}
+			
+			input[type=search]:focus {
+				background-color: #fff;
+			}
+			
+			.mui-search.mui-active:before {
+				padding-left: 5px;
+				padding-top: 8px;
+			}
+			
+			.mui-search .mui-icon-clear {
+				margin-top: 8px;
+			}
+			
+			.mui-search .mui-placeholder {
+				top: 8px;
+			}
+			
+			.mui-table-view:after {
+				height: 0;
+			}
+			/*解决最后一条消息不出现两条线*/
+			
+			.mui-table-view-cell.msg-item:last-child {
+				height: 69px;
+			}
+			
+			.mui-media-object .iconfont {
+				color: #fff;
+				font-size: 28px;
+			}
+			
+			.mui-media-object .mui-icon {
+				color: #fff;
+			}
+			
+			.mui-media-object {
+				margin: 0 !important;
+				margin-right: 10px !important;
+				height: 48px !important;
+				line-height: 48px !important;
+				width: 48px !important;
+				max-width: 48px !important;
+			}
+			
+			.mui-media-green {
+				background-color: limegreen;
+			}
+			
+			.mui-media-blue {
+				background-color: darkturquoise;
+			}
+			
+			.mui-media-grey {
+				background-color: lavender;
+			}
+			
+			.mui-media-warn {
+				background-color: orange;
+			}
+			
+			.mui-media-warning {
+				background-color: deeppink;
+			}
+			
+			.mui-media-grey .mui-icon {
+				padding: 10px;
+			}
+			
+			.mui-table-view .mui-table-view-cell.mui-media-icon .mui-media-body:after {
+				left: 0px;
+				background-color: #D8D8D8;
+			}
+			
+			.mui-media-title {
+				padding: 12px 0;
+			}
+			
+			.mui-media-msg {
+				padding: 2px 0;
+			}
+			
+			.mui-media-object .mui-badge {
+				position: absolute;
+				top: 6px;
+				left: 48px;
+				vertical-align: top;
+			}
+			
+			.face {
+				width: 50px !important;
+				height: 50px !important;
+				line-height: 50px !important;
+				max-width: 50px !important;
+			}
+			
+			.fast-plus {
+				position: fixed;
+				bottom: 15px;
+				right: 15px;
+				width: 60px;
+				height: 60px;
+				z-index: 20;
+				padding: 5px 4px;
+				border-radius: 30px;
+				background-color: gold;
+				/*coral*/
+			}
+			
+			.fast-plus .mui-icon {
+				color: #fff;
+				font-weight: bold;
+				font-size: 50px;
+			}
+			
+			.daiban {
+				padding: 2px 4px;
+			}
+			
+			.gonggao {
+				padding: 5px 10px;
+			}
+			
+			.tongzhi,
+			.warning {
+				padding: 5px 10px;
+			}
+		</style>
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav1 mui-bar-primary mui-hidden">
+			<a class="mui-icon mui-pull-left icon-left"><i class="iconfont icon-saoma1"></i></a>
+			<h1 id="title" class="mui-title">消息</h1>
+			<span id="im-chat.html" class="mui-icon mui-pull-right">
 			<i class="iconfont icon-xiaoxi1"></i>
 		</span>
-	</header>
-	<div class="mui-content">
+		</header>
+		<div class="mui-content">
 
-		<ul class="mui-table-view noline">
-			<li class="mui-table-view-cell mui-media mui-media-icon msg-menu" id="im-check">
-				<a class="mui-navigate-right">
-					<div class="mui-media-object mui-media-green mui-pull-left daiban">
-						<span class="mui-icon"><i class="iconfont icon-daiban"></i></span>
-					</div>
-					<span class="mui-badge mui-badge-danger mui-hidden">0</span>
-					<div class="mui-media-body mui-media-title">
-						待办
-					</div>
-				</a>
-			</li>
-			<li class="mui-table-view-cell mui-media mui-media-icon msg-menu" id="im-news">
-				<a class="mui-navigate-right">
-					<div class="mui-media-object mui-media-blue mui-pull-left gonggao">
-						<span class="mui-icon"><i class="iconfont icon-gonggao"></i></span>
-					</div>
-					<span class="mui-badge mui-badge-danger mui-hidden">0</span>
-					<div class="mui-media-body mui-media-title">
-						公告
-					</div>
-				</a>
-			</li>
-			<li class="mui-table-view-cell mui-media mui-media-icon msg-menu" id="im-notify">
-				<a class="mui-navigate-right">
-					<div class="mui-media-object mui-media-warn mui-pull-left tongzhi">
-						<span class="mui-icon"><i class="iconfont icon-tongzhi"></i></span>
-					</div>
-					<span class="mui-badge mui-badge-danger mui-hidden">0</span>
-					<div class="mui-media-body mui-media-title">
-						通知
-					</div>
-				</a>
-			</li>
-		</ul>
-	</div>
-	
-	<!-- mui -->
-	<script src="../../mui/js/mui.min.js"></script>
-   	<script src="../../jxm/js/jxm.js"></script>
-	    
-	<script type="text/javascript" charset="UTF-8">
-		mui.init();
-		
-		mui.plusReady(function() {
-			 //从后台查询消息数量
-	        var querynum = function(){
-	        	var hdcall = function(data){
-	        		if (!data) return;
-	        		updateNum('im-check', data.checknum);
-					updateNum('im-news', data.newsnum);
-					updateNum('im-notify', data.msgNum);
-	        	};
-	        	var params = "funid=wf_assign&eventcode=checknum";
-	        	jxm.post(params,hdcall,{hasmask:false});
-	        };
-	        
-	        querynum();
-		});
-		
-		//更新消息数量
-		window.addEventListener('updateNum', function(event){
-			var num = event.detail.checknum;
-			updateNum('im-check', num);
-		});
-		//更新公告数量
-		window.addEventListener('updateNum1', function(event){
-			var num = event.detail.checknum;
-			updateNum('im-news', num);
-		});
-		//更新通知数量
-		window.addEventListener('updateNum2', function(event){
-			var num = event.detail.checknum;
-			updateNum('im-notify', num);
-		});
-        //查看待办审批
-        document.getElementById("im-check").addEventListener("tap", function(){
-        	var id = "check-msg.html";
-        	jxm.open(id);
-        });
-        //查看公告
-        document.getElementById("im-news").addEventListener("tap", function(){
-        	jxm.open("../oa/oa-news-list.html");
-        });
-        //查看通知
-        document.getElementById("im-notify").addEventListener("tap", function(){
-        	jxm.open("notify-list.html");
-        });
-        
-        //更新消息数量
-        var updateNum = function(name, num) {
-        	if (typeof(num) == "undefined") return;
-			var check = document.getElementById(name).querySelector('.mui-badge');
-			check.innerHTML = num;
-			if (num && num > 0) {
-				check.classList.remove('mui-hidden');
-			} else {
-				check.classList.add('mui-hidden');
-			}
-        };
-        
-    </script>
-</body>
+			<ul class="mui-table-view noline">
+				<li class="mui-table-view-cell mui-media mui-media-icon msg-menu" id="im-check">
+					<a class="mui-navigate-right">
+						<div class="mui-media-object mui-media-green mui-pull-left daiban">
+							<span class="mui-icon"><i class="iconfont icon-daiban"></i></span>
+						</div>
+						<span class="mui-badge mui-badge-danger mui-hidden">0</span>
+						<div class="mui-media-body mui-media-title">
+							待办
+						</div>
+					</a>
+				</li>
+				<li class="mui-table-view-cell mui-media mui-media-icon msg-menu" id="im-news">
+					<a class="mui-navigate-right">
+						<div class="mui-media-object mui-media-blue mui-pull-left gonggao">
+							<span class="mui-icon"><i class="iconfont icon-gonggao"></i></span>
+						</div>
+						<span class="mui-badge mui-badge-danger mui-hidden">0</span>
+						<div class="mui-media-body mui-media-title">
+							公告
+						</div>
+					</a>
+				</li>
+				<li class="mui-table-view-cell mui-media mui-media-icon msg-menu" id="im-notify">
+					<a class="mui-navigate-right">
+						<div class="mui-media-object mui-media-warn mui-pull-left tongzhi">
+							<span class="mui-icon"><i class="iconfont icon-tongzhi"></i></span>
+						</div>
+						<span class="mui-badge mui-badge-danger mui-hidden">0</span>
+						<div class="mui-media-body mui-media-title">
+							通知
+						</div>
+					</a>
+				</li>
+				<li class="mui-table-view-cell mui-media mui-media-icon msg-menu" id="im-warning">
+					<a class="mui-navigate-right">
+						<div class="mui-media-object mui-media-warning mui-pull-left warning">
+							<span class="mui-icon"><i class="iconfont icon-tongji2"></i></span>
+						</div>
+						<span class="mui-badge mui-badge-danger mui-hidden">0</span>
+						<div class="mui-media-body mui-media-title">
+							预警
+						</div>
+					</a>
+				</li>
+			</ul>
+		</div>
+
+		<!-- mui -->
+		<script src="../../mui/js/mui.min.js"></script>
+		<script src="../../jxm/js/jxm.js"></script>
+
+		<script type="text/javascript" charset="UTF-8">
+			mui.init();
+
+			mui.plusReady(function() {
+				//从后台查询消息数量
+				var querynum = function() {
+					var hdcall = function(data) {
+						console.log(JSON.stringify(data));
+						if(!data) return;
+						updateNum('im-check', data.checknum);
+						updateNum('im-news', data.newsnum);
+						updateNum('im-notify', data.msgNum);
+					};
+					var params = "funid=wf_assign&eventcode=checknum";
+					jxm.post(params, hdcall, {
+						hasmask: false
+					});
+				};
+
+				querynum();
+				qryWarnNum();
+			});
+			var qryWarnNum = function() {
+				let hdcall = function(data) {
+					var check = document.getElementById("im-warning").querySelector('.mui-badge');
+					check.innerHTML = data.root.length;
+					if(data.root.length && data.root.length > 0) {
+						check.classList.remove('mui-hidden');
+					} else {
+						check.classList.add('mui-hidden');
+					}
+				}
+				var params = "funid=sys_warn&eventcode=cntwarn";
+				jxm.post(params, hdcall);
+			};
+			//更新消息数量
+			window.addEventListener('updateNum', function(event) {
+				var num = event.detail.checknum;
+				updateNum('im-check', num);
+			});
+			//更新公告数量
+			window.addEventListener('updateNum1', function(event) {
+				var num = event.detail.checknum;
+				updateNum('im-news', num);
+			});
+			//更新通知数量
+			window.addEventListener('updateNum2', function(event) {
+				var num = event.detail.checknum;
+				updateNum('im-notify', num);
+			});
+			//查看待办审批
+			document.getElementById("im-check").addEventListener("tap", function() {
+				var id = "check-msg.html";
+				jxm.open(id);
+			});
+			//查看公告
+			document.getElementById("im-news").addEventListener("tap", function() {
+				jxm.open("../oa/oa-news-list.html");
+			});
+			//查看通知
+			document.getElementById("im-notify").addEventListener("tap", function() {
+				jxm.open("notify-list.html");
+			});
+			//查看预警
+			document.getElementById("im-warning").addEventListener("tap", function() {
+				jxm.open("warning-list.html");
+			});
+			//更新消息数量
+			var updateNum = function(name, num) {
+				if(typeof(num) == "undefined") return;
+				var check = document.getElementById(name).querySelector('.mui-badge');
+				check.innerHTML = num;
+				if(num && num > 0) {
+					check.classList.remove('mui-hidden');
+				} else {
+					check.classList.add('mui-hidden');
+				}
+			};
+		</script>
+	</body>
+
 </html>

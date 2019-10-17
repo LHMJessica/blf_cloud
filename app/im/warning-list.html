@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+    <title>工作预警</title>
+    <link rel="stylesheet" href="../../mui/css/mui.min.css"/>
+    <link href="../../mui/css/mui.indexedlist.css" rel="stylesheet" />
+    <link rel="stylesheet" href="../../jxm/css/jxm.css">
+    <style type="text/css">
+    	.mui-bar {
+			-webkit-box-shadow: none;
+			box-shadow: none;
+		}
+		.iconfont, .mui-icon-search{
+			font-size:24px;
+		}
+		.mui-table-view:before {
+			height: 0;
+		}
+		.mui-search,
+		.mui-search .mui-icon-clear,
+		.mui-search .mui-placeholder {
+			padding-top: 5px;
+			padding-bottom: 5px;
+		}
+		.mui-table-view .mui-table-view-cell.mui-media-icon .mui-media-body:after {
+			left: 70px;
+			background-color:#D8D8D8;
+		}
+		.mui-indexed-list {
+			height: 100%;
+		}
+		.mui-indexed-list-item {
+			padding-right: 10px;
+			line-height: 50px;
+		}
+		
+    </style>
+    
+</head>
+<body>
+	<header class="mui-bar mui-bar-nav mui-bar-primary">
+		<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+		<h1 class="mui-title">工作预警</h1>
+	</header>
+	
+	<div class="mui-content">
+		<div id='main-list' class="mui-indexed-list">
+			<div class="mui-indexed-list-inner">
+				<div class="mui-indexed-list-empty-alert" style="margin-top: 100px;">没有数据</div>
+				<ul id="data_list" class="mui-table-view noline">
+				</ul>
+			</div>
+		</div>
+		<div class="mui-loader">加载中...</div>
+		
+	</div>
+	
+	<script src="../../mui/js/mui.min.js"></script>
+	<script src="../../jxm/js/jxm.js"></script>
+	<script src="../util/jxm-util.js"></script>
+	<script src="../util/combo-data.js"></script>
+	<script type="text/javascript" charset="UTF-8">
+      	mui.init();
+      	
+  		//加载单据列表
+  		var loadDataList = function(){
+  			var html = '';
+  			var hdcall = function(data) {
+  				var mainlist = document.getElementById('data_list');
+  				console.log(JSON.stringify(data));
+  				if (!data || data.root.length == 0) {
+  					jxm.loadhint(mainlist, false);
+  					return;
+  				}
+  				
+  				var checknum = 0;
+  				//遍历通知记录
+  				mui.each(data.root, function(i, obj){
+					var record = obj;					
+					html += '<li class="mui-table-view-cell" data-id="'+ record.warn_id +'">';
+				  	html += '<div class="mui-table">';
+				    html += '<div class="mui-table-cell mui-col-xs-10">';
+				    html += record.warn_name;
+				    html += '<p style="display:inline;">['+record.warn_num+']</p>';
+				    html += '</div>';
+				    html += '<div class="mui-table-cell mui-col-xs-2 mui-text-right">';
+				    html += '</div>';
+				    html += '</div>';
+				    html += '</li>';
+  				});
+  				document.getElementById('data_list').innerHTML = html;
+  				jxm.loadhint(mainlist, (html.length > 0));
+  			};
+  			//发送请求
+			var params = "funid=sys_warn&eventcode=cntwarn";
+			jxm.post(params, hdcall);
+  		};
+  		
+  		//加载数据
+  		mui.ready(function(){
+  			loadDataList();
+  			var update = function(){
+  				var params = "funid=oa_msg&eventcode=readmsg&isall=1&msgid=";
+				jxm.post(params, loadDataList, {hasmask:false});
+  			};
+  		});
+  		
+  		window.addEventListener('load-data', function(event){
+  			var data = event.detail;
+			loadDataList();
+		});
+	  		
+    </script>
+</body>
+</html>

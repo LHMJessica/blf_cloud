@@ -8,6 +8,7 @@
 		<link rel="stylesheet" href="../../../mui/css/mui.min.css" />
 		<link rel="stylesheet" href="../../../jxm/css/jxm.css">
 		<link rel="stylesheet" type="text/css" href="../../../mui/css/icons-extra.css" />
+		<link rel="stylesheet" type="text/css" href="../../../Resources/css/table.css" />
 		<style>
 			body,
 			html {
@@ -77,12 +78,13 @@
 			
 			td.s6 {
 				width: 11%;
-				color: green;
+				color: green !important;
 			}
+			
 			th.s6 {
 				width: 11%;
-				color: #FFFFFF;
-				background-color: green;
+				color: #FFFFFF !important;
+				background-color: green !important;
 			}
 			
 			.s7 {
@@ -92,13 +94,18 @@
 			.mui-content {
 				background-color: #FFFFFF;
 			}
-			.mui-content-header{
+			
+			.mui-content-header {
 				height: 20%;
 			}
-			.mui-content-body{
-				height: 68%;
+			
+			.mui-content-body {
+				height: 78%;
 			}
-			#repair_user{text-align: center;}
+			
+			#repair_user {
+				text-align: center;
+			}
 		</style>
 	</head>
 
@@ -143,7 +150,7 @@
 							<p class="processes-title">款号</p>
 							<p id="sp_code" class="processes-value"></p>
 						</li>
-						
+
 					</ul>
 					<hr />
 					<ul>
@@ -170,37 +177,32 @@
 				</div>
 			</div>
 			<div class="mui-content-body">
-				<table cellspacing="0" cellpadding="0" style="width: 230%;overflow-x:scroll;overflow-y: scroll;">
-					<thead>
-						<tr>
-							<th class="s2">物料名称</th>
-							<th class="s6">发料数量</th>
-							<th class="s7">总数量</th>
-							<th class="s1">物料编码</th>
-							<th class="s3">颜色</th>
-							<th class="s4">件数</th>
-							<th class="s5">单位</th>
-						</tr>
-					</thead>
-					<tbody id="datas">
-						<!--<tr>
-							<td class="s1">物料编码</td>
-							<td class="s2">物料名称</td>
-							<td class="s3">颜色</td>
-							<td class="s4">件数</td>
-							<td class="s5">单位</td>
-							<td class="s6"><input type="number" class="table-input" /></td>
-							<td class="s7">总数量</td>
-						</tr>-->
-					</tbody>
-				</table>
+				<div class="grid_4" style="height: 100%;width: 200%;">
+					<table class="fancyTable" id="data-table" cellpadding="0" cellspacing="0">
+						<thead>
+							<tr>
+								<th class="s2">物料名称</th>
+								<th class="s6">发料数量</th>
+								<th class="s7">总数量</th>
+								<th class="s1">物料编码</th>
+								<th class="s3">颜色</th>
+								<th class="s4">件数</th>
+								<th class="s5">单位</th>
+							</tr>
+						</thead>
+						<tbody id="datas">
+						</tbody>
+					</table>
+				</div>
 			</div>
+
 		</div>
 		<script src="../../../mui/js/mui.min.js"></script>
 		<script src="../../../jxm/js/jxm.js"></script>
 		<script src="../../../jxm/js/jxm-image-input.js"></script>
 		<script src="../../util/jxm-util.js"></script>
 		<script src="../../../Resources/js/jquery-3.3.1.min.js"></script>
+		<script src="../../../Resources/js/jquery.fixedheadertable.min.js" type="text/javascript" charset="utf-8"></script>
 		<script type="text/javascript">
 			mui.init({
 				swipeBack: false //关闭-右滑关闭功能
@@ -252,14 +254,16 @@
 							'</tr>';
 					});
 					$("#datas").html(html);
-				$("#datas tr:odd").css({"background-color":"#f2f2f2"}).children("td").css({"border-top":"none","border-bottom":"none"});
+					$('#data-table').fixedHeaderTable({
+						altClass: 'odd',
+					});
 				});
 			};
 			//全局绑定
-			$("#datas").on("blur", ".table-input", function(){
-				var out_num=$(this).val();
-				var unit_use=$(this).parent().parent().find(".s4").html();
-				$(this).parent().parent().find(".s7").find("input").val(parseInt(out_num)*parseInt(unit_use));
+			$("#datas").on("blur", ".table-input", function() {
+				var out_num = $(this).val();
+				var unit_use = $(this).parent().parent().find(".s4").html();
+				$(this).parent().parent().find(".s7").find("input").val(parseInt(out_num) * parseInt(unit_use));
 			});
 			/**
 			 * 选择用户
@@ -294,35 +298,42 @@
 			$("#btncommit").on("click", function() {
 				var doms = document.getElementsByClassName("out_det");
 				var outDetList = [];
-				var out_id = $("#out_code").attr("dataid");
-				var pick_id = $("#out_code").attr("pick_id");
-				var edit_user = $("#repair_user").val();
-				var edit_userid = $("#repair_user").attr("userid");
-				if(edit_user == undefined || edit_user == "" || edit_user == null) {
-					mui.toast("领料人未选择，不能提交");
-					return;
-				}
-				var user_id = jxm.getUserId();
-				var user_name = jxm.getUserName();
-				var sum = 0;
-				$.each(doms, function(i, obj) {
-					var pick_det_id = $(obj).attr("pick_det_id");
-					var out_det_id = $(obj).attr("out_det_id");
-					var number = $(obj).find(".s6").find("input").val();
-					var unit_all = $(obj).find(".s7").find("input").val();
-					var item = {
-						"pick_det_id": pick_det_id,
-						"out_det_id": out_det_id,
-						"out_num": number,
-						"unit_all": unit_all
-					};
-					outDetList.push(item);
-				});
-				var params = "funid=app_full&eventcode=plantProOutAudit&edit_userid=" + edit_userid + "&user_id=" + user_id+"&user_name="+user_name;
-				params += "&outDetList=" + JSON.stringify(outDetList) + "&out_id=" + out_id + "&pick_id=" + pick_id + "&edit_user=" + edit_user;
-				jxm.post(params, function(data) {
-					mui.toast("提交成功");
-					mui.back();
+				var btnArray = ['取消', '确定'];
+				mui.confirm('确认提交吗？', '', btnArray, function(e) {
+					if(e.index == 0) {
+						return;
+					} else {
+						var out_id = $("#out_code").attr("dataid");
+						var pick_id = $("#out_code").attr("pick_id");
+						var edit_user = $("#repair_user").val();
+						var edit_userid = $("#repair_user").attr("userid");
+						if(edit_user == undefined || edit_user == "" || edit_user == null) {
+							mui.toast("领料人未选择，不能提交");
+							return;
+						}
+						var user_id = jxm.getUserId();
+						var user_name = jxm.getUserName();
+						var sum = 0;
+						$.each(doms, function(i, obj) {
+							var pick_det_id = $(obj).attr("pick_det_id");
+							var out_det_id = $(obj).attr("out_det_id");
+							var number = $(obj).find(".s6").find("input").val();
+							var unit_all = $(obj).find(".s7").find("input").val();
+							var item = {
+								"pick_det_id": pick_det_id,
+								"out_det_id": out_det_id,
+								"out_num": number,
+								"unit_all": unit_all
+							};
+							outDetList.push(item);
+						});
+						var params = "funid=app_full&eventcode=plantProOutAudit&edit_userid=" + edit_userid + "&user_id=" + user_id + "&user_name=" + user_name;
+						params += "&outDetList=" + JSON.stringify(outDetList) + "&out_id=" + out_id + "&pick_id=" + pick_id + "&edit_user=" + edit_user;
+						jxm.post(params, function(data) {
+							mui.toast("提交成功");
+							mui.back();
+						});
+					}
 				});
 			});
 		</script>

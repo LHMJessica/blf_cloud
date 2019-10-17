@@ -76,7 +76,7 @@
 
 	<body>
 		<header class="mui-bar mui-bar-nav mui-bar-primary">
-			<a class="mui-icon mui-pull-left icon-header mui-hidden"><i class="iconfont icon-saoma1"></i></a>
+			<a class="mui-pull-left" id="reload"><i class="mui-icon mui-icon-reload"></i></a>
 			<h1 id="home-title" class="mui-title">消息</h1>
 			<span id="right-icon" class="mui-pull-right mui-hidden" fun-type="im" href="app/util/select-user.html">
 		<span class="mui-icon"><i class="iconfont icon-xiaoxi1"></i></span>
@@ -117,6 +117,7 @@
 			mui.init();
 			var imurl = 'im.html';
 			var use_im = jxm.getSession().app_useim;
+			console.log(JSON.stringify(use_im));
 			if(use_im == '1') imurl = 'im-all.html';
 			var subpages = {
 				im: {
@@ -135,77 +136,107 @@
 					win: null
 				}
 			};
-
+			$("#reload").on("tap",function () {
+				window.location.reload();
+			});
 			var subpage_style = {
 				top: '54px',
 				bottom: '61px',
 				scrollIndicator: 'none'
 			};
 
-			//创建子页面，首个选项卡页面显示，其它均隐藏；
-			mui.plusReady(function() {
-				//orient();
-				//仅支持竖屏显示
-				plus.screen.lockOrientation("portrait-primary");
-				//console.log('home window id='+mui.currentWebview.id);
-				//直接加载home.html时需要关闭
-				plus.navigator.closeSplashscreen();
-
-				plus.runtime.setBadgeNumber(0);
-				//显示第一个页面
-				var self = plus.webview.currentWebview();
-				var sub = plus.webview.create(subpages.im.href, "im-main", subpage_style);
-				subpages.im.win = sub;
-				subpages.im.showed = true;
-				//避免白屏等待
-				setTimeout(function() {
-					self.append(sub);
-					jxm.loadhint(null, true);
-				}, 100);
-
-				//延时加载后面的页面，提高首页显示速度
-				setTimeout(function() {
-					for(var key in subpages) {
-						if(key == 'im') continue;
-						var sub = plus.webview.create(subpages[key].href, key + "-main", subpage_style);
-						subpages[key].win = sub;
-						sub.hide();
+			function plusReady() {
+				mui.plusReady(function() {
+					console.log("当前页面URL：" + plus.webview.currentWebview().getURL());
+					//仅支持竖屏显示
+					try {
+						plus.screen.lockOrientation("portrait-primary");
+						console.log('home window id=' + mui.currentWebview.id);
+						//直接加载home.html时需要关闭
+						plus.navigator.closeSplashscreen();
+						console.log("plusReady");
+						plus.runtime.setBadgeNumber(0);
+					} catch(err) {
+						setTimeout(function() {
+							localStorage.clear();
+							window.location.href = "index.html";
+						}, 100);
+					}
+					//显示第一个页面
+					var self = plus.webview.currentWebview();
+					var sub = plus.webview.create(subpages.im.href, "im-main", subpage_style);
+					subpages.im.win = sub;
+					subpages.im.showed = true;
+					//避免白屏等待
+					setTimeout(function() {
 						self.append(sub);
-					}
+						console.log("jxm.loadhint(null, true);");
+						jxm.loadhint(null, true);
+					}, 100);
 
-					//取最新的后台授权功能列表，并重新加载业务与办公模块的功能列表
-					//setTimeout(jxm.updateRoleFun, 200);
-				}, 200);
+					//延时加载后面的页面，提高首页显示速度
+					setTimeout(function() {
+						for(var key in subpages) {
+							if(key == 'im') continue;
+							var sub = plus.webview.create(subpages[key].href, key + "-main", subpage_style);
+							subpages[key].win = sub;
+							sub.hide();
+							console.log("jxm.loadhint(null, true);");
+							self.append(sub);
+						}
 
-				//网络状态判断
-				/*document.addEventListener("netchange", function() {
-					var network = plus.networkinfo.getCurrentType();
-					if(network < 2) {
-						mui.toast('网络未连接！');
-					}
-				});*/
+						//取最新的后台授权功能列表，并重新加载业务与办公模块的功能列表
+						//setTimeout(jxm.updateRoleFun, 200);
+					}, 200);
 
-				//保存设备信息，后台推送消息需要用到
-				//setTimeout(jxm.saveDevInfo, 1000);
-				setTimeout(function() {
-					jxm.checkVersion(true);
-				}, 1000);
+					//网络状态判断
+					/*document.addEventListener("netchange", function() {
+						var network = plus.networkinfo.getCurrentType();
+						if(network < 2) {
+							mui.toast('网络未连接！');
+						}
+					});*/
 
-				//开启推送消息监听
-				setTimeout(jxm.pushListener, 2000);
-			});
+					//保存设备信息，后台推送消息需要用到
+					//setTimeout(jxm.saveDevInfo, 1000);
+					setTimeout(function() {
+						console.log("checkVersion");
+						jxm.checkVersion(true);
+					}, 1000);
+
+					//开启推送消息监听
+					setTimeout(jxm.pushListener, 2000);
+				});
+			}
+			console.log(window.plus)
+			if(window.plus) {
+				plusReady();
+				console.log("window.plus");
+			} else {
+				document.addEventListener("plusready", plusReady(), false);
+				console.log("plusready");
+			}
 
 			//绑定了右上角的图标
 			var right = document.getElementById("right-icon");
-			if(use_im == "1") {
-				right.classList.remove("mui-hidden");
-			} else {
-				right.classList.add("mui-hidden");
+			var msg = "";
+			try {
+				if(use_im == "1") {
+					right.classList.remove("mui-hidden");
+					console.log("right.classList.remove(\"mui-hidden\");");
+				} else {
+					right.classList.add("mui-hidden");
+					console.log("right.classList.add(\"mui-hidden\");");
+				}
+			} catch(err) {
+				console.log(err)
+				console.log(err.message + "111");
 			}
+
 			right.addEventListener('tap', function(e) {
 				var href = right.getAttribute("href");
 				var type = right.getAttribute("fun-type");
-
+				console.log("right.addEventListener('tap', function(e) {");
 				//选择用户后打开聊天窗口
 				if(type == 'im') {
 					var param = {
@@ -233,7 +264,7 @@
 			var updateTitle = function(title, target) {
 				right.setAttribute("fun-type", target);
 				var td = document.getElementById("home-title");
-
+				console.log("var updateTitle = function(title, target) {");
 				//更换标题
 				td.innerHTML = title;
 
@@ -256,7 +287,7 @@
 			mui('.mui-bar-tab').on('tap', 'a', function(e) {
 				var targetTab = this.getAttribute('data-id');
 				if(targetTab == activeTab) return;
-
+				console.log("mui('.mui-bar-tab').on('tap', 'a', function(e) {");
 				//更新标题
 				var label = this.querySelector('.mui-tab-label').innerHTML;
 				updateTitle(label, targetTab);
@@ -287,7 +318,7 @@
 			window.addEventListener('showTab', function(event) {
 				var targetTab = event.detail.tabid;
 				if(targetTab == activeTab) return;
-
+				console.log("window.addEventListener('showTab', function(event) {");
 				//标签样式处理
 				var t = document.querySelector('.mui-tab-item[data-id=' + targetTab + ']');
 				if(!t) return;

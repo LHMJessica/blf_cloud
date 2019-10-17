@@ -11,7 +11,6 @@ html {
 	font-family: Microsoft YaHei, sans-serif;
 	-webkit-text-size-adjust: 100%
 }
-
 body {
 	margin: 0
 }
@@ -4764,6 +4763,10 @@ textarea,
 	content: '\e441'
 }
 
+.mui-content {
+	height: 100%;
+}
+
 .mui-content-header {
 	height: 20%;
 	background-color: #FFFFFF;
@@ -4771,11 +4774,10 @@ textarea,
 
 .mui-content-body {
 	height: 78%;
-	margin-top: 10px;
-	margin-bottom: 20px;
+	margin-top: 5px;
 	width: 100%;
 	overflow-x: scroll;
-	overflow-y: scroll;
+	overflow-y: hidden;
 	background-color: #FFFFFF;
 	/*解决ios上滑动不流畅*/
 	-webkit-overflow-scrolling: touch;
@@ -4788,8 +4790,6 @@ textarea,
 	overflow: hidden;
 	border-collapse: collapse;
 	border-spacing: 0;
-	/*height: 100%;*/
-	overflow-y: scroll;
 }
 
 .mui-content-body th,
@@ -4803,7 +4803,9 @@ textarea,
 	word-break: break-all;
 	border: 1px solid #e9ecf5;
 }
-.mui-content-body thead tr,.mui-content-body tbody tr {
+
+.mui-content-body thead tr,
+.mui-content-body tbody tr {
 	width: 100%;
 	height: auto;
 	table-layout: fixed;
@@ -4823,17 +4825,14 @@ textarea,
 
 .mui-content-body thead {
 	text-align: center;
-	width: 100%;
 	vertical-align: middle;
 	background-color: #464b5e;
 	color: #FFFFFF;
-	overflow: hidden;
 	/*解决ios上滑动不流畅*/
 	-webkit-overflow-scrolling: touch;
 }
 
 .mui-content-body tbody {
-	max-height: 90%;
 	width: 100%;
 	background-color: #FFFFFF;
 	overflow-y: scroll;

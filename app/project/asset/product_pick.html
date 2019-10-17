@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title>半成品领料</title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link rel="stylesheet" href="../../../mui/css/mui.min.css" />
+		<link rel="stylesheet" href="../../../jxm/css/jxm.css">
+		<link rel="stylesheet" type="text/css" href="../../../mui/css/icons-extra.css" />
+		<link rel="stylesheet" type="text/css" href="../../../Resources/css/table.css" />
+		<style>
+			body,
+			html {
+				height: 100%;
+				width: 100%;
+				overflow: hidden;
+				margin: 0;
+			}
+			
+			.mui-content {
+				height: 100%;
+			}
+			
+			.processes-title {
+				font-size: 14px;
+				color: #000000;
+			}
+			
+			.processes-value {
+				font-size: 12px;
+				color: #555555;
+			}
+			/*清除浏览器自带的内边距样式*/
+			
+			ul,
+			menu,
+			dir,
+			p {
+				-webkit-margin-before: 0em;
+				-webkit-margin-after: 0em;
+				-webkit-margin-start: 0px;
+				-webkit-margin-end: 0px;
+				-webkit-padding-start: 0px;
+			}
+			
+			#cu_pick_info {
+				text-align: center;
+			}
+			
+			.s1 {
+				width: 22%;
+			}
+			
+			.s2 {
+				width: 14%;
+			}
+			
+			.s3 {
+				width: 12%;
+			}
+			
+			th.s4 {
+				width: 15%;
+				background-color: green !important;
+				color: #FFF !important;
+			}
+			
+			td.s4 {
+				width: 15%;
+				color: green !important;
+			}
+			
+			th.s5 {
+				width: 15%;
+				background-color: orange !important;
+				color: #FFF !important;
+			}
+			
+			td.s5 {
+				width: 15%;
+				color: orange !important;
+			}
+			
+			.mui-content-header {
+				height: 40%;
+			}
+			
+			.mui-content-body {
+				height: 58%;
+			}
+			
+			a {
+				color: #fff;
+			}
+		</style>
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav mui-bar-primary">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<h1 class="mui-title" id="title">半成品领料</h1>
+			<a class="mui-pull-right mui-btn mui-btn-primary" style="font-size: 14px;top: 0px;" id="import">导入工单<span class="mui-icon mui-icon-download "></span></a>
+		</header>
+		<nav class="mui-bar mui-bar-footer">
+			<center>
+				<button type="button" id="btncommit" class="mui-btn mui-btn-primary mui-pull-right" style="width:30%;">提交</button>
+			</center>
+		</nav>
+		<div class="mui-content">
+			<form class="mui-input-group">
+				<div class="mui-input-row">
+					<label style="width: 40%;">工单号：</label>
+					<input style="width: 60%;" type="text" id="div_code" readonly="readonly">
+					</input>
+				</div>
+				<div class="mui-input-row">
+					<label style="width: 40%;">款号：</label>
+					<input style="width: 60%;" type="text" id="sp_code" readonly="readonly">
+					</input>
+				</div>
+				<div class="mui-input-row">
+					<label style="width: 40%;">品名：</label>
+					<input style="width: 60%;" type="text" id="sp_name" readonly="readonly">
+					</input>
+				</div>
+				<div class="mui-input-row">
+					<label style="width: 40%;">颜色：</label>
+					<input style="width: 60%;" type="text" id="color_name" readonly="readonly">
+					</input>
+				</div>
+				<div class="mui-input-row">
+					<label style="width: 40%;">工单数量：</label>
+					<input style="width: 60%;" type="text" id="div_num" readonly="readonly">
+					</input>
+				</div>
+				<div class="mui-input-row">
+					<label style="width: 40%;">出库仓库：</label>
+					<select style="width: 60%;" id="in_store" required="required">
+					</select>
+				</div>
+			</form>
+			<div class="mui-content-body">
+				<div class="grid_4" style="height: 100%;width: 100%;">
+					<table class="fancyTable" id="data-table" cellpadding="0" cellspacing="0">
+						<thead>
+							<tr>
+								<th class="s1">半成品名</th>
+								<th class="s2">编号</th>
+								<th class="s3">单位</th>
+								<th class="s5">型号规格</th>
+								<th class="s4">领料数量</th>
+							</tr>
+						</thead>
+						<tbody id="datas">
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</div>
+		<script src="../../../mui/js/mui.min.js"></script>
+		<script src="../../../jxm/js/jxm.js"></script>
+		<script src="../../../jxm/js/jxm-image-input.js"></script>
+		<script src="../../util/jxm-util.js"></script>
+		<script src="../../../Resources/js/jquery-3.3.1.min.js"></script>
+		<script src="../../../Resources/js/jquery.fixedheadertable.min.js" type="text/javascript" charset="utf-8"></script>
+		<script type="text/javascript">
+			mui.init({
+				swipeBack: false //关闭-右滑关闭功能
+			});
+			mui.plusReady(function() {
+				setStores();
+			})
+			var setStores = function() {
+				var param = "funid=queryevent&eventcode=query_data&query_funid=sp_house&limit=50&start=0";
+				jxm.post(param, function(data) {
+					var html = '';
+					$.each(data.root, function(i, obj) {
+						html += '<option value="' + obj.sp_house__house_id + '" ' + (obj.sp_house__house_name === "中转仓" ? "selected='selected'" : "") + '>' + obj.sp_house__house_name + '</option>';
+					});
+					$("#in_store").html(html);
+				});
+			}
+			/**
+			 * 选择工单
+			 */
+			$("#import").on('tap', function(e) {
+				var href = "../../util/select-process-forproductpick.html";
+				var param = {
+					callbackWinId: mui.currentWebview.id,
+					callbackEvent: "PRODUCTPICK",
+					mutilsel: false //bu需要多选,
+
+				};
+				jxm.open(href, {
+					extras: {
+						selectParams: param
+					}
+				});
+			});
+			/**
+			 * 选择工单回调函数
+			 */
+			window.addEventListener("PRODUCTPICK", function(e) {
+				var obj = e.detail.dataext;
+				obj = JSON.parse(obj);
+				console.log(JSON.stringify(obj))
+				$("#div_code").prop("dataid", obj.plan_id);
+				$("#div_code").val(obj.div_code);
+				$("#sp_code").val(obj.sp_code);
+				$("#sp_name").val(obj.sp_name);
+				$("#color_name").val(obj.color_name);
+				$("#div_num").val(obj.div_num);
+				var href = "../../util/select-process-forproductpickdet.html";
+				var param = {
+					callbackWinId: mui.currentWebview.id,
+					callbackEvent: "PRODUCTPICKDET",
+					mutilsel: true, //需要多选,
+					sp_id: obj.sp_id,
+					color_name: obj.color_name
+				};
+				jxm.open(href, {
+					extras: {
+						selectParams: param
+					}
+				});
+				//qryIndet(obj.order_id);
+			});
+			/**
+			 * 选择工单回调函数
+			 */
+			window.addEventListener("PRODUCTPICKDET", function(e) {
+				var obj = e.detail.selectdata;
+				var html = '';
+				$.each(obj, function(i, rs) {
+					var ext = JSON.parse(rs.dataext);
+					html += '<tr dataid="' + ext.det_id + '" class="plan_item">' +
+						'<td class="s1">' + ext.product_name + '</td>' +
+						'<td class="s2">' + ext.product_code + '</td>' +
+						'<td class="s3">' + ext.unit_name + '</td>' +
+						'<td class="s5">' + ext.product_size + '</td>' +
+						'<td class="s4"><input type="number" class="table-input" value="0" /></td>' +
+						'</tr>';
+				});
+				$("#datas").html(html);
+				$('#data-table').fixedHeaderTable({
+					altClass: 'odd',
+				});
+			});
+			//全局绑定
+			$("#datas").on("blur", ".table-input", function() {
+				var out_num = $(this).val();
+				if(isNaN(out_num) || parseInt(out_num) <= 0 || out_num == "") {
+					$(this).focus();
+					mui.toast("领料数量填写有误！");
+				}
+			});
+			$("#btncommit").on("click", function() {
+				var doms = document.getElementsByClassName("plan_item");
+				var outList = [];
+				var btnArray = ['取消', '提交'];
+				mui.confirm('确认提交吗？', '', btnArray, function(e) {
+					if(e.index == 0) {
+						return;
+					} else {
+						var house_name = $("#in_store").find("option:selected").text();
+						var house_id = $("#in_store").find("option:selected").val();
+						var plan_id = $("#div_code").prop("dataid");
+						if(house_id == undefined || house_id == "" || house_id == null) {
+							mui.toast("仓库未选择，不能提交");
+							return;
+						}
+						var user_id = jxm.getUserId();
+						var user_name = jxm.getUserName();
+						var dept_id = jxm.getDeptId();
+						var dept_name = jxm.getDeptName();
+						var sum = 0;
+						if(doms.length > 0) {
+							$.each(doms, function(i, obj) {
+								var product_name = $(obj).find(".s1").html();
+								var product_code = $(obj).find(".s2").html();
+								var unit_name = $(obj).find(".s3").html();
+								var product_id = $(obj).attr("dataid");
+								var product_size = $(obj).find(".s5").html();
+								var out_num = $(obj).find(".s4").find("input").val();
+								if(parseFloat(out_num) <= 0) {
+									return true;
+								}
+								var item = {
+									"product_name": product_name,
+									"product_code": product_code,
+									"product_size": product_size,
+									"unit_name": unit_name,
+									"product_id": product_id,
+									"out_num": parseFloat(out_num)
+								};
+								outList.push(item);
+							});
+							/*console.log("outList" + JSON.stringify(outList));
+							console.log("house_name" + house_name);
+							console.log("house_id" + house_id);
+							console.log("user_id" + user_id);
+							console.log("user_name" + user_name);*/
+							var params = "funid=app_full&eventcode=productOut&&user_id=" + user_id + "&user_name=" + user_name + "&dept_id=" + dept_id + "&dept_name=" + dept_name + "&plan_id=" + plan_id;
+							params += "&outList=" + JSON.stringify(outList) + "&house_id=" + house_id + "&house_name=" + house_name;
+							console.log("user_name" + params);
+							jxm.post(params, function(data) {
+								console.log(JSON.stringify(data));
+								mui.toast("提交成功");
+								window.location.reload(); //页面更新 
+							});
+						}
+					}
+				});
+			});
+		</script>
+		</script>
+	</body>
+
+</html>

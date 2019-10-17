@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1,user-scalable=no">
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black">
+		<title>计时报工申请报告</title>
+
+		<link rel="stylesheet" href="../../../mui/css/mui.min.css" />
+		<link rel="stylesheet" href="../../../jxm/css/jxm.css">
+		<link rel="stylesheet" type="text/css" href="../../../mui/css/icons-extra.css" />
+		<style>
+			body,
+			html {
+				height: 100%;
+				width: 100%;
+				overflow: hidden;
+				margin: 0;
+			}
+			
+			.mui-content {
+				height: 100%;
+			}
+			
+			.processes-title {
+				font-size: 14px;
+				color: #000000;
+			}
+			
+			.processes-value {
+				font-size: 12px;
+				color: #555555;
+			}
+			/*清除浏览器自带的内边距样式*/
+			
+			ul,
+			menu,
+			dir,
+			p {
+				-webkit-margin-before: 0em;
+				-webkit-margin-after: 0em;
+				-webkit-margin-start: 0px;
+				-webkit-margin-end: 0px;
+				-webkit-padding-start: 0px;
+			}
+			
+			#cu_pick_info li {
+				display: inline-block;
+				list-style: none;
+				text-align: center;
+				vertical-align: top;
+			}
+			
+			#cu_pick_info {
+				padding: 10px 0px;
+				text-align: center;
+				height: 100%;
+			}
+			
+			.s1 {
+				width: 10%;
+			}
+			
+			.s2 {
+				width: 15%;
+			}
+			
+			.s3 {
+				width: 15%;
+			}
+			
+			.s4 {
+				width: 15%;
+			}
+			
+			.s5 {
+				width: 15%;
+			}
+			
+			.s6 {
+				width: 30%;
+			}
+			
+			.mui-content-header {
+				height: 20%;
+			}
+			
+			.mui-content-body {
+				height: 78%;
+			}
+		</style>
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav mui-bar-primary">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<h1 class="mui-title" id="title">计时报工申请报告</h1>
+		</header>
+		<div class="mui-content">
+			<div class="mui-content-header">
+				<form class="mui-input-group">
+					<div id="search-box">
+						<div class="mui-input-row">
+							<label style="width: 35%;">起始时间：</label>
+							<input type="date" id="start_date" style="width: 65%;" />
+						</div>
+						<div class="mui-input-row">
+							<label style="width: 35%;">结束时间：</label>
+							<input type="date" id="end_date" style="width: 65%;" />
+						</div>
+						<div class="mui-input-row">
+							<input type="button" value="查询" id="dosearch" style="width: 80%;margin: 5px 10%;color: #FFFFFF;background-color: deepskyblue;border-radius:5px 5px ;" />
+						</div>
+					</div>
+				</form>
+			</div>
+			<div class="mui-content-body">
+				<table cellspacing="0" cellpadding="0" style="width: 150%;overflow-x:scroll;overflow-y: scroll;">
+					<thead>
+						<tr>
+							<th class="s1">状态</th>
+							<th class="s2">日期</th>
+							<th class="s3">申请工时</th>
+							<th class="s4">申请部门</th>
+							<th class="s5">审核人</th>
+							<th class="s6">申请原因</th>
+						</tr>
+					</thead>
+					<tbody id="datas">
+
+					</tbody>
+				</table>
+			</div>
+		</div>
+		<script src="../../../mui/js/mui.min.js"></script>
+		<script src="../../../jxm/js/jxm.js"></script>
+		<script src="../../../jxm/js/jxm-image-input.js"></script>
+		<script src="../../util/jxm-util.js"></script>
+		<script src="../../../Resources/js/jquery-3.3.1.min.js"></script>
+		<script type="text/javascript">
+			mui.init({
+				swipeBack: false //关闭-右滑关闭功能
+			});
+			mui.plusReady(function() {
+				dateFormat(jxm.getTimeStamp());
+				loadPage();
+			})
+			var dateFormat = function(date) {
+				var year = date.substr(0, 4);
+				var month = date.substr(4, 2);
+				var day = date.substr(6, 2);
+				var hh = date.substr(8, 2);
+				var mm = date.substr(10, 2);
+				var str = year + "-" + month + "-" + day;
+				$("#start_date").val(str);
+				$("#end_date").val(str);
+			}
+			var setTable = function(data) {
+				let html = "";
+				$.each(data.root, function(i, obj) {
+					html += '<tr>' +
+						'<td class="s1">' + formatNumber(obj.timing_apply__auditing) + '</td>' +
+						'<td class="s2">' + obj.timing_apply__apply_date.substr(5, 5) + '</td>' +
+						'<td class="s3">' + obj.timing_apply__work_hours + '</td>' +
+						'<td class="s4">' + obj.timing_apply__dept_name + '</td>' +
+						'<td class="s5">' + obj.timing_apply__edit_user + '</td>' +
+						'<td class="s6">' + obj.timing_apply__apply_desc + '</td>' +
+						'</tr>';
+				});
+				$("#datas").html(html);
+				$("#datas tr:odd").css({
+					"background-color": "#f2f2f2"
+				}).children("td").css({
+					"border-top": "none",
+					"border-bottom": "none"
+				});
+			}
+			$("#search").on("click", function() {
+				$("#search-box").toggle();
+			});
+			/**
+			 * 格式化字符串
+			 * @param {Object} number
+			 */
+			var formatNumber = function(number) {
+				let str = "";
+				switch(number) {
+					case "0":
+						str = "未提交";
+						break;
+					case "1":
+						str = "已提交";
+						break;
+					case "2":
+						str = "审批中";
+						break;
+					case "3":
+						str = "已审批";
+						break;
+					case "4":
+						str = "已否决";
+						break;
+					case "6":
+						str = "已退回";
+						break;
+					case "7":
+						str = "已注销";
+						break;
+				}
+				return str;
+			}
+			var loadPage = function() {
+				var end_date = $("#end_date").val();
+				var start_date = $("#start_date").val();
+				if(start_date == "" || start_date == undefined) {
+					mui.toast("起始时间必填");
+					return;
+				}
+				if(end_date == "" || end_date == undefined) {
+					mui.toast("结束时间必填");
+					return;
+				}
+				var params = "funid=queryevent&eventcode=query_data&query_funid=timing_apply&limit=50&start=0&where_sql=timing_apply.user_id='" + jxm.getUserId() + "' and timing_apply.apply_date BETWEEN '"+start_date+"' and '"+end_date+"'";
+				jxm.post(params, function(data) {
+					setTable(data);
+				});
+			};
+			$("#dosearch").on("tap", function() {
+				loadPage();
+			});
+		</script>
+	</body>
+
+</html>

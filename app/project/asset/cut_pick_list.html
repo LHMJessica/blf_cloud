@@ -78,7 +78,7 @@
 
 			});
 			var appendData = function() {
-				var params = "funid=queryevent&eventcode=query_data&query_funid=cut_pick&limit=50&start=0&where_sql=cut_pick.status ='0' and cut_pick.auditing='1'";
+				var params = "funid=queryevent&eventcode=query_data&query_funid=cut_pick&limit=50&start=0&where_sql=cut_pick.auditing='1'";
 				jxm.post(params, function(data) {
 					//console.log("kjk" + JSON.stringify(data));
 					var html = '';
@@ -86,7 +86,7 @@
 						html += '<li class="mui-table-view-cell" dataid="'+obj.cut_pick__pick_id+'">' +
 							'<div class="mui-table">' +
 							'<div class="mui-table-cell mui-col-xs-12">' +
-							'<h4 class="mui-ellipsis">工单编号：'+obj.cut_pick__div_code+'</h4>' +
+							'<h4 class="mui-ellipsis">工单编号：'+obj.cut_pick__div_code+'<span style="color:'+(obj.cut_pick__status=='0'?"red":"green")+';font-size:12px;">('+(obj.cut_pick__status=='0'?"未领":"已领")+')</span></h4>' +
 							'<div class="mui-table">' +
 							'<p class="mui-h5 mui-ellipsis mui-table-cell mui-col-xs-12">领料单号：'+obj.cut_pick__pick_code+'</p>' +
 							'</div>' +

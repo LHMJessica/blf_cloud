@@ -3,10 +3,10 @@
 
 	<head>
 		<meta charset="UTF-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1,user-scalable=no">
-	<meta name="apple-mobile-web-app-capable" content="yes">
-	<meta name="apple-mobile-web-app-status-bar-style" content="black">
-	<title>报工核对</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1,user-scalable=no">
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black">
+		<title>报工核对</title>
 		<link rel="stylesheet" href="../../../mui/css/mui.min.css" />
 		<link rel="stylesheet" href="../../../jxm/css/jxm.css">
 		<link rel="stylesheet" type="text/css" href="../../../mui/css/icons-extra.css" />
@@ -256,7 +256,8 @@
 					<td class="qiantian" status="3"><span class="title">已核对：</span><span class="yesked" id="yesyes-check"></span></td>
 				</tr>
 			</table>
-		</section><!--
+		</section>
+		<!--
 		<footer class="mui-bar mui-bar-footer">
 			<div class="mui-content-padded">
 				<ul class="mui-pager">
@@ -296,35 +297,27 @@
 				dateFormat(jxm.getTimeStamp());
 				loadPage();
 			});
-			mui(".tablist").on("tap","td",function () {
-				var classname=$(this).attr("class");
-				var status=$(this).attr("status");
-				var year = parseInt(jxm.getToday().substr(0, 4));
-				var day = parseInt(jxm.getToday().substr(8, 10));
-				var month = parseInt(jxm.getToday().substr(5, 7));
-			//	mui.toast(classname+":"+status);
-				$(".radio[value=2]").prop("checked","checked");
+			mui(".tablist").on("tap", "td", function() {
+				var classname = $(this).attr("class");
+				var status = $(this).attr("status");
+				//	mui.toast(classname+":"+status);
+				$(".radio[value=2]").prop("checked", "checked");
+				var temp = new Date();
+				var now = new Date();
+				//console.log(formatDate(temp));
 				if("qiantian" == classname) {
-					day = (day - 2) + "";
-					day = day.length == 1 ? "0" + day : day;
-					month = month + "";
-					month = month.length == 1 ? "0" + month : month;
-					$("#start_date").val(year + "-" + month + "-" + day);
-					$("#end_date").val(year + "-" + month + "-" + day);
-				}else if("today" == classname) {
-					month = month + "";
-					month = month.length == 1 ? "0" + month : month;
-					day = day + "";
-					day = day.length == 1 ? "0" + day : day;
-					$("#start_date").val(year + "-" + month + "-" + day);
-					$("#end_date").val(year + "-" + month + "-" + day);
+					let qiantian=new Date((now.getTime() - 24 * 60 * 60 * 1000 * 2));
+					//console.log(formatDate(qiantian))
+					$("#start_date").val(formatDate(qiantian));
+					$("#end_date").val(formatDate(qiantian));
+				} else if("today" == classname) {
+					$("#start_date").val(formatDate(now));
+					$("#end_date").val(formatDate(now));
 				} else if("yesterday" == classname) {
-					day = (day - 1) + "";
-					day = day.length == 1 ? "0" + day : day;
-					month = month + "";
-					month = month.length == 1 ? "0" + month : month;
-					$("#start_date").val(year + "-" + month + "-" + day);
-					$("#end_date").val(year + "-" + month + "-" + day);
+					temp.setDate(temp.getDate() - 1); //注意是Date
+					console.log(formatDate(temp));
+					$("#start_date").val(formatDate(temp));
+					$("#end_date").val(formatDate(temp));
 				}
 				$("#useres").remove();
 				loadPage();
@@ -352,69 +345,58 @@
 				}, function(e) {}, {});
 			})
 			$("#time_temporal").on("change", function() {
+				//initLastMonth("2018-10-31")
 				var temporal = $(this).val();
-				var year = parseInt(jxm.getToday().substr(0, 4));
-				var day = parseInt(jxm.getToday().substr(8, 10));
-				var month = parseInt(jxm.getToday().substr(5, 7));
-				var nowmonth=(parseInt(jxm.getToday().substr(5, 7))+"").length<=1?"0"+parseInt(jxm.getToday().substr(5, 7)):parseInt(jxm.getToday().substr(5, 7));
-				var nowday =(parseInt(jxm.getToday().substr(8, 10))+"").length<=1?"0"+parseInt(jxm.getToday().substr(5, 7)):parseInt(jxm.getToday().substr(5, 7));
+				var temp = new Date();
+				var now = new Date();
+				//console.log(formatDate(temp));
 				if("threemonth" == temporal) {
-					month = (month - 2) + "";
-					month = month.length == 1 ? "0" + month : month;
-					day = day + "";
-					day = day.length == 1 ? "0" + day : day;
-					$("#start_date").val(year + "-" + month + "-01");
-					$("#end_date").val(year + "-" + nowmonth + "-" + day);
+					temp.setMonth(temp.getMonth() - 2); //
+					temp.setDate("01"); //注意是Date
+					$("#start_date").val(formatDate(temp));
+					$("#end_date").val(formatDate(now));
 				} else if("twomonth" == temporal) {
-					month = (month - 1) + "";
-					month = month.length == 1 ? "0" + month : month;
-					day = day + "";
-					day = day.length == 1 ? "0" + day : day;
-					$("#start_date").val(year + "-" + month + "-01");
-					$("#end_date").val(year + "-" + nowmonth + "-" + day);
+					temp.setMonth(temp.getMonth() - 1); //两个月内-1
+					temp.setDate("01"); //注意是Date
+					$("#start_date").val(formatDate(temp));
+					$("#end_date").val(formatDate(now));
 				} else if("today" == temporal) {
-					month = month + "";
-					month = month.length == 1 ? "0" + month : month;
-					day = day + "";
-					day = day.length == 1 ? "0" + day : day;
-					$("#start_date").val(year + "-" + month + "-" + day);
-					$("#end_date").val(year + "-" + month + "-" + day);
+					$("#start_date").val(formatDate(now));
+					$("#end_date").val(formatDate(now));
 				} else if("yesterday" == temporal) {
-					day = (day - 1) + "";
-					day = day.length == 1 ? "0" + day : day;
-					month = month + "";
-					month = month.length == 1 ? "0" + month : month;
-					$("#start_date").val(year + "-" + month + "-" + day);
-					$("#end_date").val(year + "-" + month + "-" + day);
+					temp.setDate(temp.getDate() - 1); //注意是Date
+					$("#start_date").val(formatDate(temp));
+					$("#end_date").val(formatDate(temp));
 				} else if("currmonth" == temporal) {
-					month = month + "";
-					month = month.length == 1 ? "0" + month : month;
-					$("#start_date").val(year + "-" + nowmonth + "-" + "01");
-					$("#end_date").val(year + "-" + month + "-" + day);
+					temp.setDate("01"); //注意是Date
+					$("#start_date").val(formatDate(temp));
+					$("#end_date").val(formatDate(now));
 				} else if("qiantian" == temporal) {
-					day = (day - 2) + "";
-					day = day.length == 1 ? "0" + day : day;
-					month = month + "";
-					month = month.length == 1 ? "0" + month : month;
-					$("#start_date").val(year + "-" + month + "-" + day);
-					$("#end_date").val(year + "-" + month + "-" + day);
+					let qiantian=new Date((now.getTime() - 24 * 60 * 60 * 1000 * 2));
+					//console.log(formatDate(qiantian))
+					$("#start_date").val(formatDate(qiantian));
+					$("#end_date").val(formatDate(qiantian));
 				} else if("beforemonth" == temporal) {
-					month = (month - 1) + "";
-					month = month.length == 1 ? "0" + month : month;
-					$("#start_date").val(year + "-" + nowmonth + "-01");
-					$("#end_date").val(year + "-" + month +"-"+getCurrentMonthLast(year + "-" + month));
-				}else if("beforeyear" == temporal) {
-					$("#start_date").val(year + "-01-01");
-					$("#end_date").val(year + "-06-30");
-				}else if("nextyear" == temporal) {
-					$("#start_date").val(year + "-07-01");
-					$("#end_date").val(year + "-12-31");
-				}else if("beforeyears" == temporal) {
-					$("#start_date").val((year-1) + "-01-01");
-					$("#end_date").val((year-1) + "-12-31");
-				}else if("curryear" == temporal) {
-					$("#start_date").val(year + "-01-01");
-					$("#end_date").val(year + "-12-31");
+					temp.setMonth(temp.getMonth() - 1); //
+					now.setMonth(temp.getMonth()); //
+					temp.setDate("01"); //注意是Date
+				//	console.log(formatDate(temp));
+					now.setDate(getCurrentMonthLast(temp.getFullYear() + "-" + temp.getMonth()));
+					$("#start_date").val(formatDate(temp));
+					$("#end_date").val(formatDate(now));
+				} else if("beforeyear" == temporal) {
+					$("#start_date").val(temp.getFullYear() + "-01-01");
+					$("#end_date").val(temp.getFullYear() + "-06-30");
+				} else if("nextyear" == temporal) {
+					$("#start_date").val(temp.getFullYear() + "-07-01");
+					$("#end_date").val(temp.getFullYear() + "-12-31");
+				} else if("beforeyears" == temporal) {
+					temp.setFullYear(temp.getFullYear() - 1); //注意是FullYear
+					$("#start_date").val(temp.getFullYear() + "-01-01");
+					$("#end_date").val(temp.getFullYear() + "-12-31");
+				} else if("curryear" == temporal) {
+					$("#start_date").val(temp.getFullYear() + "-01-01");
+					$("#end_date").val(temp.getFullYear() + "-12-31");
 				}
 				page_num = 1;
 				loadPage();
@@ -428,7 +410,7 @@
 				var oneDay = 1000 * 60 * 60 * 24;
 				var dateString = new Date(nextMonthFirstDay - oneDay);
 				console.log(dateString) //Wed Oct 31 2018 00:00:00 GMT+0800 (中国标准时间)
-				return dateString.toLocaleDateString().substr(2,2) //toLocaleDateString() 返回 如：2018/8/31
+				return dateString.toLocaleDateString().substr(2, 2) //toLocaleDateString() 返回 如：2018/8/31
 
 			};
 			//单选按钮选中事件切换
@@ -522,8 +504,15 @@
 					$("#works").children().remove();
 					$.each(data, function(i, rs) {
 						if(i < data.length - 3) {
-						//	console.log(JSON.stringify(rs))
-							var ext={"edit_user":rs.edit_user,"edit_userid":rs.edit_userid,"div_code":rs.div_code,"process_name":rs.process_name,"process_code":rs.process_code,"det_id":rs.det_id};
+							//	console.log(JSON.stringify(rs))
+							var ext = {
+								"edit_user": rs.edit_user,
+								"edit_userid": rs.edit_userid,
+								"div_code": rs.div_code,
+								"process_name": rs.process_name,
+								"process_code": rs.process_code,
+								"det_id": rs.det_id
+							};
 							var html = '<div class="mui-card">' +
 								'<div class="mui-card-header"><span class="clerk-name">姓名：' + rs.edit_user + '</span></div>' +
 								'<div class="mui-card-content">' +
@@ -545,7 +534,7 @@
 								'<td class="s1">生产日期：<span class="work-date">' + (rs.work_date.substr(0, 10)) + '</span></td>' +
 								'<td class="s2"><button det-id=' + rs.det_id + ' status=' + rs.status + ' type="button" class="mui-btn ' + (rs.status == "0" ? "mui-btn-green" : "") + ' check mui-btn-outlined  mui-pull-left">' +
 								(rs.status == "0" ? "核对" : "反核") +
-								'</button><button dataext='+JSON.stringify(ext)+' status=' + rs.status + ' type="button" class="mui-btn ' + (rs.status == "0" ? "mui-btn-danger" : "mui-hidden") + ' return mui-btn-outlined  mui-pull-right ">' +
+								'</button><button dataext=' + JSON.stringify(ext) + ' status=' + rs.status + ' type="button" class="mui-btn ' + (rs.status == "0" ? "mui-btn-danger" : "mui-hidden") + ' return mui-btn-outlined  mui-pull-right ">' +
 								'退回</button></td>' +
 								'</tr>' +
 								'</table>' +
@@ -575,9 +564,9 @@
 			 */
 			$("#works").on('click', '.return', function() {
 				var dataext = $(this).attr("dataext");
-				dataext=JSON.parse(dataext)
+				dataext = JSON.parse(dataext)
 				var params = "funid=app_full&eventcode=workReturn&user_name=" + jxm.getUserName() + "&user_id=" + jxm.getUserId() + "&edit_user=" + dataext.edit_user + "&edit_userid=" + dataext.edit_userid;
-				params+="&div_code="+dataext.div_code+"&process_code="+dataext.process_code+"&process_name="+dataext.process_name+"&det_id="+dataext.det_id;
+				params += "&div_code=" + dataext.div_code + "&process_code=" + dataext.process_code + "&process_name=" + dataext.process_name + "&det_id=" + dataext.det_id;
 				jxm.post(params, function(data) {
 					loadPage();
 				});
@@ -622,38 +611,31 @@
 				$("#selects").append('<button type="button" id="useres" userId=' + obj.dataid + ' class="mui-btn mui-btn-grey result">' + obj.dataname + '<span class="mui-icon mui-icon-closeempty"></span></button>');
 				console.log(JSON.stringify(obj));
 			});
-			/**
-			 * 选择部门
-			 */
-			/*var seldep = "seldep";
-			$("#seldep").click(function() {
-				var href = "../../util/select-dept.html";
-				var param = {
-					callbackWinId: mui.currentWebview.id,
-					callbackEvent: seldep,
-					main_cache: "",
-					mutilsel: false //不需要多选
-				};
-				jxm.open(href, {
-					extras: {
-						selectParams: param
-					}
-				});
-
-			});
-			window.addEventListener(seldep, function(e) {
-				var obj = e.detail;
-				user_id = obj.dataid;
-				$("#deprs").remove();
-				$("#selects").append('<button type="button" id="deprs" deptId=' + obj.dataid + ' class="mui-btn mui-btn-grey result">' + obj.dataname + '<span class="mui-icon mui-icon-closeempty"></span></button>');
-				console.log(JSON.stringify(obj));
-			});*/
 			$(".mui-input-row").on("click", "#useres", function() {
 				$(this).remove();
 			});
 			$(".mui-input-row").on("click", "#deprs", function() {
 				$(this).remove();
 			});
+			var formatDate = function(date) {
+				let format = 'yyyy-MM-dd';
+				let o = {
+					"M+": date.getMonth()+1,
+					"d+": date.getDate(),
+					"H+": date.getHours(),
+					"m+": date.getMinutes(),
+					"s+": date.getSeconds(),
+					"q+": Math.floor((date.getMonth() + 3) / 3), //季度
+					"f+": date.getMilliseconds(), //毫秒
+				};
+				if(/(y+)/.test(format))
+					format = format.replace(RegExp.$1, date.getFullYear() + "").substr(4 - RegExp.$1.length);
+				for(let k in o) {
+					if(new RegExp("(" + k + ")").test(format))
+						format = format.replace(RegExp.$1, (RegExp.$1.length == 1) ? (o[k]) : (("00" + o[k]).substr(("" + o[k]).length)));
+				}
+				return format;
+			}
 		</script>
 	</body>
 

@@ -10,6 +10,7 @@
 		<link rel="stylesheet" href="../../../mui/css/mui.min.css" />
 		<link rel="stylesheet" href="../../../jxm/css/jxm.css">
 		<link rel="stylesheet" href="../../../mui/css/main.css">
+		<link rel="stylesheet" type="text/css" href="../../../Resources/css/table.css"/>
 		<style type="text/css">
 			.mui-bar {
 				-webkit-box-shadow: none;
@@ -120,7 +121,7 @@
 			
 			table th:nth-child(2),
 			table td:nth-child(2) {
-				width: 4%;
+				width: 5%;
 			}
 			
 			table th:nth-child(7),
@@ -135,31 +136,31 @@
 			
 			table th:nth-child(3),
 			table td:nth-child(3) {
-				color: #00AAEF;
-				width: 5%;
+				color: #00AAEF !important;
+				width: 7%;
 			}
 			
 			table th:nth-child(4),
 			table td:nth-child(4) {
-				color: #00AAEF;
+				color: #00AAEF !important;
 				width: 5%;
 			}
 			
 			table th:nth-child(5),
 			table td:nth-child(5) {
-				color: green;
-				width: 6%;
+				color: green !important;
+				width: 7%;
 			}
 			
 			table th:nth-child(6),
 			table td:nth-child(6) {
-				color: green;
-				width: 5%;
+				color: green !important;
+				width: 7%;
 			}
 			
 			table th:nth-child(13),
 			table td:nth-child(13) {
-				color: #00AAEF;
+				color: #00AAEF !important;
 				width: 6%;
 			}
 			
@@ -189,6 +190,13 @@
 				width: 32%;
 				height: 30px;
 				vertical-align: middle;
+			}
+			.mui-content-header {
+				height: 42%;
+			}
+			
+			.mui-content-body {
+				height: 58%;
 			}
 		</style>
 
@@ -255,28 +263,29 @@
 				</form>
 			</div>
 			<div class="mui-content-body">
-				<table cellspacing="0" cellpadding="0" style="width: 300%;overflow-x:scroll;overflow-y: scroll;">
-					<thead>
-						<tr>
+				<div class="grid_4" style="height: 100%;width: 300%;">
+					<table class="fancyTable" id="data-table" cellpadding="0" cellspacing="0">
+						<thead>
+							<tr>
 							<th><span class='mspan'>员工</span></th>
 							<th><span class='mspan'>日期</span></th>
-							<th style="background: #00AAEF;color: #ffffff;"><span class='mspan'>计件工资</span></th>
-							<th style="background: #00AAEF;color: #ffffff;"><span class='mspan'>日工资</span></th>
-							<th style="background: green;color: #ffffff;"><span class='mspan'>工序达成</span></th>
-							<th style="background: green;color: #ffffff;"><span class='mspan'>日达成率</span></th>
+							<th style="background: #00AAEF;color: #ffffff !important;"><span class='mspan'>计件工资</span></th>
+							<th style="background: #00AAEF;color: #ffffff !important;"><span class='mspan'>日工资</span></th>
+							<th style="background: green;color: #ffffff !important;"><span class='mspan'>工序达成</span></th>
+							<th style="background: green;color: #ffffff !important;"><span class='mspan'>日达成率</span></th>
 							<th><span class='mspan'>生产单号</span></th>
 							<th><span class='mspan'>产品代码</span></th>
 							<th><span class='mspan'>产品名称</span></th>
 							<th><span class='mspan'>工序代码</span></th>
 							<th><span class='mspan'>工序名称</span></th>
 							<th><span class='mspan'>数量</span></th>
-							<th style="background: #00AAEF;color: #ffffff;"><span class='mspan'>单价</span></th>
+							<th style="background: #00AAEF;color: #ffffff !important;"><span class='mspan'>单价</span></th>
 						</tr>
-					</thead>
-					<tbody id="datas">
-
-					</tbody>
-				</table>
+						</thead>
+						<tbody id="datas">
+						</tbody>
+					</table>
+				</div>
 			</div>
 		</div>
 
@@ -284,6 +293,7 @@
 		<script src="../../../jxm/js/jxm.js"></script>
 		<script src="../../util/jxm-util.js" type="text/javascript" charset="utf-8"></script>
 		<script src="../../../Resources/js/jquery-3.3.1.min.js"></script>
+		<script src="../../../Resources/js/jquery.fixedheadertable.min.js" type="text/javascript" charset="utf-8"></script>
 		<script type="text/javascript" charset="UTF-8">
 			mui.init({
 				swipeBack: false //关闭-右滑关闭功能
@@ -334,11 +344,14 @@
 							'</tr>';
 					}
 				});
-				$('#datas').html(item);				
+				$('#datas').html(item);
 				_w_table_rowspan("#datas", 1);
 				_w_table_rowspan("#datas", 2);
 				_w_table_rowspan("#datas", 4);
 				_w_table_rowspan("#datas", 6);
+				$('#data-table').fixedHeaderTable({
+					altClass: 'none',
+				});
 			};
 			//页面加载执行方法
 			var loadPage = function() {

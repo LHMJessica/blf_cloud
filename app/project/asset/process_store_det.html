@@ -1,0 +1,188 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title>半成品库存流水</title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link rel="stylesheet" href="../../../mui/css/mui.min.css" />
+		<link rel="stylesheet" href="../../../jxm/css/jxm.css">
+		<link rel="stylesheet" type="text/css" href="../../../mui/css/mui.indexedlist.css" />
+		<link rel="stylesheet" type="text/css" href="../../../Resources/css/table.css" />
+		<style>
+			body,
+			html {
+				height: 100%;
+				width: 100%;
+				overflow: hidden;
+				margin: 0;
+			}
+			
+			.mui-content {
+				height: 100%;
+			}
+			
+			.processes-title {
+				font-size: 14px;
+				color: #000000;
+			}
+			
+			.processes-value {
+				font-size: 12px;
+				color: #555555;
+			}
+			
+			.s0 .mui-btn {
+				width: 98%;
+				height: 98%;
+				border: none;
+				background-color: rgba(255, 255, 255, 0);
+			}
+			/*清除浏览器自带的内边距样式*/
+			
+			ul,
+			menu,
+			dir,
+			p {
+				-webkit-margin-before: 0em;
+				-webkit-margin-after: 0em;
+				-webkit-margin-start: 0px;
+				-webkit-margin-end: 0px;
+				-webkit-padding-start: 0px;
+			}
+			
+			.s1 {
+				width: 11%;
+			}
+			
+			.s2 {
+				width: 11%;
+			}
+			
+			.s3 {
+				width: 11%;
+			}
+			
+			th.s4 {
+				width: 11%;
+				background-color: green !important;
+				color: #FFF !important;
+			}
+			
+			td.s4 {
+				width: 11%;
+				color: green !important;
+			}
+			
+			.s5 {
+				width: 11%;
+			}
+			
+			.s6 {
+				width: 11%;
+			}
+			
+			.s7 {
+				width: 11%;
+			}
+			
+			.s8 {
+				width: 11%;
+			}
+			
+			.s9 {
+				width: 11%;
+			}
+			
+			.mui-content-header {
+				height: 0%;
+			}
+			
+			.mui-content-body {
+				height: 98%;
+			}
+		</style>
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav mui-bar-primary">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<h1 class="mui-title" id="title">半成品库存流水</h1>
+			<!--<a class="mui-pull-right mui-btn mui-btn-primary" style="font-size: 14px;top: 0px;" id="import">导入加工单<span class="mui-icon mui-icon-download "></span></a>-->
+		</header>
+		<div class="mui-content">
+			<div class="mui-content-body">
+				<div class="grid_4" style="height: 100%;width: 200%;">
+					<table class="fancyTable" id="data-table" cellpadding="0" cellspacing="0">
+						<thead>
+							<tr>
+								<th class="s1">工单号</th>
+								<th class="s2">编号</th>
+								<th class="s3">品名</th>
+								<th class="s4">数量</th>
+								<th class="s5">单位</th>
+								<th class="s6">单据类型</th>
+								<th class="s7">单据编号</th>
+								<th class="s8">单据日期</th>
+								<th class="s9">仓库</th>
+							</tr>
+						</thead>
+						<tbody id="datas">
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</div>
+		<script src="../../../mui/js/mui.min.js"></script>
+		<script src="../../../jxm/js/jxm.js"></script>
+		<script src="../../../jxm/js/jxm-image-input.js"></script>
+		<script src="../../util/jxm-util.js"></script>
+		<script src="../../../Resources/js/jquery-3.3.1.min.js"></script>
+		<script src="../../../Resources/js/jquery.fixedheadertable.min.js" type="text/javascript" charset="utf-8"></script>
+		<script type="text/javascript">
+			mui.init({
+				swipeBack: false
+			});
+			var store_id = null;
+			mui.plusReady(function() {
+				store_id = mui.currentWebview.selectParams.store_id;
+				console.log(store_id);
+				setTimeout(function() {
+					loadDatas(store_id);
+				}, 200);
+			});
+			var loadDatas = function(sp_id) {
+				var params = "funid=queryevent&eventcode=query_data&query_funid=sp_water&limit=500&start=0&where_sql=sp_water.store_id='" + store_id + "'";
+				jxm.post(params, function(data) {
+					//console.log(JSON.stringify(data));
+					let html = '';
+					$.each(data.root, function(i, obj) {
+						html += '<tr>' +
+							'<td class="s1">' + obj.sp_water__work_code + '</td>' +
+							'<td class="s2">' + obj.sp_water__sp_code + '</td>' +
+							'<td class="s3">' + obj.sp_water__sp_name + '</td>' +
+							'<td class="s4">' + parseFloat(obj.sp_water__num) + '</td>' +
+							'<td class="s5">' + obj.sp_water__unit_name + '</td>' +
+							'<td class="s6">' + formatStr(obj.sp_water__inout_type) + '</td>' +
+							'<td class="s7">' + obj.sp_water__inout_code + '</td>' +
+							'<td class="s8">' + jxm.formatDate(new Date(obj.sp_water__inout_date),null) + '</td>' +
+							'<td class="s9">' + obj.sp_water__house_name + '</td>' +
+							'</tr>';
+					});
+					$("#datas").html(html);
+					$('#data-table').fixedHeaderTable({
+						altClass: 'odd',
+					});
+				});
+			}
+			var formatStr=function (value) {
+				if (value == "0") {
+					return "入库单";
+				} else if (value == "1"){
+					return "出库单";
+				}
+			}
+		</script>
+	</body>
+
+</html>

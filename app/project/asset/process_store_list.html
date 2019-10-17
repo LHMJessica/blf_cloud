@@ -1,0 +1,210 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title>半成品库存清单</title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link rel="stylesheet" href="../../../mui/css/mui.min.css" />
+		<link rel="stylesheet" href="../../../jxm/css/jxm.css">
+		<link rel="stylesheet" type="text/css" href="../../../mui/css/mui.indexedlist.css" />
+		<link rel="stylesheet" type="text/css" href="../../../Resources/css/table.css" />
+		<style>
+			body,
+			html {
+				height: 100%;
+				width: 100%;
+				overflow: hidden;
+				margin: 0;
+			}
+			
+			.mui-content {
+				height: 100%;
+			}
+			
+			.processes-title {
+				font-size: 14px;
+				color: #000000;
+			}
+			
+			.processes-value {
+				font-size: 12px;
+				color: #555555;
+			}
+			
+			.s0 .mui-btn {
+				width: 98%;
+				height: 98%;
+				border: none;
+				background-color: rgba(255, 255, 255, 0);
+			}
+			/*清除浏览器自带的内边距样式*/
+			
+			ul,
+			menu,
+			dir,
+			p {
+				-webkit-margin-before: 0em;
+				-webkit-margin-after: 0em;
+				-webkit-margin-start: 0px;
+				-webkit-margin-end: 0px;
+				-webkit-padding-start: 0px;
+			}
+			
+			.s1 {
+				width:25%;
+			}
+			
+			.s2 {
+				width: 32%;
+			}
+			
+			.s3 {
+				width: 18%;
+			}
+			th.s4 {
+				width: 25%;
+				background-color: green !important;
+				color: #FFF !important;
+			}
+			
+			td.s4 {
+				width: 25%;
+				color: green !important;
+			}
+			}
+			.mui-content-header {
+				height: 0%;
+			}
+			
+			.mui-content-body {
+				height: 92%;
+			}
+		</style>
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav mui-bar-primary">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<h1 class="mui-title" id="title">半成品库存清单</h1>
+			<!--<a class="mui-pull-right mui-btn mui-btn-primary" style="font-size: 14px;top: 0px;" id="import">导入加工单<span class="mui-icon mui-icon-download "></span></a>-->
+		</header>
+		<div class="mui-content">
+			<form class="mui-input-group">
+				<div class="mui-indexed-list-search mui-input-row mui-search">
+					<input type="search" id="serchbox" onkeypress="enterSearch(event)" class="mui-input-clear mui-indexed-list-search-input" placeholder="搜索">
+				</div>
+			</form>
+			<div class="mui-content-body">
+				<div class="grid_4" style="height: 100%;width: 100%;">
+					<table class="fancyTable" id="data-table" cellpadding="0" cellspacing="0">
+						<thead>
+							<tr>
+								<th class="s1">编号</th>
+								<th class="s2">名称</th>
+								<th class="s3">单位</th>
+								<th class="s4">数量</th>
+							</tr>
+						</thead>
+						<tbody id="datas">
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</div>
+		<script src="../../../mui/js/mui.min.js"></script>
+		<script src="../../../jxm/js/jxm.js"></script>
+		<script src="../../../jxm/js/jxm-image-input.js"></script>
+		<script src="../../util/jxm-util.js"></script>
+		<script src="../../../Resources/js/jquery-3.3.1.min.js"></script>
+		<script src="../../../Resources/js/jquery.fixedheadertable.min.js" type="text/javascript" charset="utf-8"></script>
+		<script type="text/javascript">
+			mui.init({
+				swipeBack: false
+			});
+			mui.plusReady(function() {
+				setTimeout(function() {
+					loadDatas();
+				}, 200);
+			});
+			var loadDatas = function() {
+				var params = "funid=app_full&eventcode=qryProStore";
+				jxm.post(params, function(data) {
+					//console.log(JSON.stringify(data));
+					let html = '';
+					$.each(data, function(i, obj) {
+						html += '<tr dataid="'+obj.store_id+'">' +
+							'<td class="s1">' + obj.sp_code + '</td>' +
+							'<td class="s2">' + obj.sp_name + '</td>' +
+							'<td class="s3">' + obj.unit_name + '</td>' +
+							'<td class="s4">' + parseFloat(obj.store_num) + '</td>' +
+							'</tr>';
+					});
+					$("#datas").html(html);
+					$('#data-table').fixedHeaderTable({
+						altClass: 'odd',
+					});
+				});
+			}
+			//点击数量查看此产品的库存流水
+			mui("#datas").on("tap", ".s4", function() {
+				var store_id=$(this).parent().attr("dataid");
+				console.log(store_id);
+				var href = "process_store_det.html";
+				var param = {
+					callbackWinId: mui.currentWebview.id,
+					callbackEvent: "showdet",
+					store_id: store_id
+				};
+				jxm.open(href, {
+					extras: {
+						selectParams: param
+					}
+				});
+			});
+			/**
+			 * 行选择事件回调函数
+			 */
+			window.addEventListener("showdet", function(e) {
+
+			});
+			//检测搜索事件
+			function enterSearch(e) {
+				if(e.keyCode == 13) {
+					console.log("111")
+					$("#serchbox").blur();
+					var content = $("#serchbox").val();
+					onSearch(content);
+					event.preventDefault();
+				}
+			}
+			/**
+			 * js 前台搜索
+			 * @param searchContent 搜索的内容
+			 * @col 要搜索的哪一列，这里是第一列，从0开始数起  
+			 */
+			function onSearch(searchContent, col) {
+				setTimeout(function() { //因为是即时查询，需要用setTimeout进行延迟，让值写入到input内，再读取  
+					var storeId = document.getElementById('datas'); //获取table的id标识  
+					var rowsLength = storeId.rows.length; //表格总共有多少行  
+					var cellLength = document.getElementById("datas").rows.item(0).cells.length;
+					//var searchCol = col; //要搜索的哪一列，这里是第一列，从0开始数起
+					for(var i = 0; i < rowsLength; i++) { //按表的行数进行循环，如果第一行是标题，i=1
+						for(var j = 0; j < cellLength; j++) { //按表的列数进行循环
+							var searchCol = j;
+							var searchText = storeId.rows[i].cells[searchCol].innerHTML; //取得table行，列的值  
+							//alert(searchText);
+							if(searchText.match(searchContent) || searchText.toUpperCase().match(searchContent.toUpperCase())) { //用match函数进行筛选，如果input的值，即变量 key的值为空，返回的是ture，  
+								storeId.rows[i].style.display = ''; //显示行操作，  
+								break; //当这一行中有一列满足时就不必再循环，直接显示这行，再遍历下一行
+							} else {
+								storeId.rows[i].style.display = 'none'; //隐藏行操作  
+							}
+						}
+					}
+				}, 20); //20为延时时间  
+			}
+		</script>
+	</body>
+
+</html>

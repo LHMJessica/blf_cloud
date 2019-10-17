@@ -1,5 +1,3 @@
-
-
 /*!
  * =====================================================
  * Jxm v1.0.0 (http://jxstar.com)
@@ -57,7 +55,27 @@ var jxm = (function(document, mui) {
 			return ts.substr(4, 2) + '-' + ts.substr(6, 2) + (isbr ? '<br>' : ' ') + ts.substr(8, 2) + ':' + ts.substr(10, 2); //不要年份：ts.substr(0, 4)+'-'+
 		}
 	};
-
+	$.formatDate = function(date, format) {
+		if(format == "" || format == undefined || format == null) {
+			format = 'yyyy-MM-dd';
+		}
+		let o = {
+			"M+": date.getMonth() + 1,
+			"d+": date.getDate(),
+			"H+": date.getHours(),
+			"m+": date.getMinutes(),
+			"s+": date.getSeconds(),
+			"q+": Math.floor((date.getMonth() + 3) / 3), //季度
+			"f+": date.getMilliseconds(), //毫秒
+		};
+		if(/(y+)/.test(format))
+			format = format.replace(RegExp.$1, date.getFullYear() + "").substr(4 - RegExp.$1.length);
+		for(let k in o) {
+			if(new RegExp("(" + k + ")").test(format))
+				format = format.replace(RegExp.$1, (RegExp.$1.length == 1) ? (o[k]) : (("00" + o[k]).substr(("" + o[k]).length)));
+		}
+		return format;
+	}
 	/**
 	 * 获取当前时间戳 YYYYMMddHHmmss
 	 * 
@@ -155,7 +173,7 @@ var jxm = (function(document, mui) {
 		}
 
 		options = options || {};
-		var timeout = options.timeout || 10000;
+		var timeout = options.timeout || 30 * 1000;
 		var dataType = options.type || 'json'; //xml json
 		var async = (options.async == null ? true : options.async); //true 为异步请求
 		var hasmask = (options.hasmask == null ? true : options.hasmask); //是否需要遮挡层
